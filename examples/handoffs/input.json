@@ -1,0 +1,35 @@
+{
+  "schema_version": "2.0",
+  "run_id": "sample-001",
+  "purpose": "synthetic_experiment",
+  "seed": 42,
+  "duration_months": 1,
+  "start_month": 1,
+  "parameters_csv": "data/parameters/iberian_lynx_baseline.csv",
+  "parameters_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "sources_csv": "data/parameters/sources.csv",
+  "sources_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "initial_population": {
+    "females": 10,
+    "males": 10,
+    "age_months_min": 36,
+    "age_months_max": 96
+  },
+  "patches": [
+    {
+      "id": "A",
+      "area_km2": 100,
+      "habitat_quality": 1.0
+    },
+    {
+      "id": "B",
+      "area_km2": 100,
+      "habitat_quality": 1.0
+    }
+  ],
+  "food_rabbits_per_ha": 4.6,
+  "persistence_rule": "settled_breeding_pair_same_patch_at_end",
+  "model_conventions": "proposed-2026-10-22",
+  "male_patch_crossing_probability": 0.1,
+  "parameter_overrides": {}
+}

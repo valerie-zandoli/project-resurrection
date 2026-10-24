@@ -32,6 +32,14 @@ Drafted 2026-10-20 on branch `dev-valerie` by Valerie with Claude Code.  Nothing
 - **Provisional counts are revised later.**  Andalusia 2010 appears as 253, 279, and 275; 2002 appears as 102 and 94; 2011 appears as 298 (provisional) and 312 (final); Andalusia territorial females for 2010 appear as 66 and, by later arithmetic, 63.
 - **Management helped growth:**  169 agreements covering 180,840 ha for rabbit and lynx habitat (2011), reintroductions at Guadalmellato (2009) and Guarrizas (2010) using lynx from Sierra Morena, and genetic reinforcement of Donana.  The model should be expected to match the trend only roughly.
 
+## Species-wide counts through 2025 (added 2026-10-21)
+
+- The official ministry censuses for 2024 and 2025 are now in `data/history/counts.csv`:  2023 had 2,021 individuals, 406 breeding (territorial) females, and 722 cubs; 2024 had 2,401, 470, and 844; 2025 had 2,663, 542, and 952.  The 2023 total is stale; date every count.
+- The report says its figures are a minimum, because counting every animal is increasingly difficult.
+- The eastern Sierra Morena nuclei, which include Andujar-Cardena, went from 638 individuals in 2024 to 613 in 2025 while the species total grew 10.9%.  That fits habitat saturation, but it is one year of data (our reading).
+- **Reproduction sanity check (computed by us):**  litter size 3.0 times breeding probability 0.833 times survival to 3 months 0.75 gives about 1.87 cubs per breeding female.  The census reports 1.75 cubs per territorial female in 2025 (1.8 in 2024, 1.77 in 2023), with Andalusia at 1.5 and Castilla-La Mancha at 2.1.  The two agree closely, so the Donana values are a reasonable start.  Use 1.5 to 2.1 as the range for a model output check.  The census counts territorial females whether or not they bred, which lowers its figure.
+- The 2002 to 2025 chart in the 2025 report has no printed values, so no yearly series was taken from it.
+
 ## How food and habitat should enter the model (revised)
 
 - **Reproduction does not respond to rabbit density in Coto del Rey** between 4 and 55 per hectare (palomares2005; n=8 years, so low power).  One cub starved in the year with the lowest density.
@@ -58,3 +66,7 @@ Drafted 2026-10-20 on branch `dev-valerie` by Valerie with Claude Code.  Nothing
 - palomares2005 reports lifetime output as 11 to 19 cubs in the abstract but at least 14, 8, and 19 in the text.
 - Disease, genetics, and maps are deferred by agreement.
 - Survival of released lynx was 56 to 83% (WWF conference conclusions 2019); this is not in the table because the model has no releases.
+
+## Source registry: the `origin` column (added 2026-10-22)
+
+`origin` holds one or more stable origin IDs, separated by semicolons.  An origin ID is the registry key of the study or dataset that a source's numbers come from.  A primary study lists its own key.  A source that repeats other studies lists the key of each one; every ID has its own registry row, even when the study was named but not read (`how_read` says `NOT READ; named only`).  `unknown` means the source does not say, and it never counts as an independent origin.  The registry value is a menu of what a source reports, not a count:  `eu_spain_report2018` reports both Palomares 2001 and the 2017 census, which support different claims.  A planned `origin` column in the parameter table lists only the origins that support each row, and two sources with the same row-level origin count as one confirmation.  The rule is in `docs/handoff-decisions.md` (proposed); the validator does not apply it yet.  The IDs for the press items and for `eu_spain_report2018` come from the quality notes and are not checked against the original documents.

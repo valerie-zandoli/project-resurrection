@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "run_id": "sample-001",
+  "data_kind": "sample",
+  "revision_round": 0,
+  "parameters_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "sources_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "status": "pass",
+  "issues": [],
+  "checks": [
+    {
+      "name": "handoff_format",
+      "passed": true,
+      "detail": "Illustrative format-only report; not a biological evaluation."
+    }
+  ],
+  "historical_validation": "not_assessed"
+}

@@ -1,4 +1,4 @@
-# Project rules for coding tools
+# Project Resurrection: rules for coding tools
 
 Claude Code and Codex both read these rules (`CLAUDE.md` imports this file).  Change the rules here, not in a tool-specific file.
 
@@ -30,11 +30,21 @@ Also agreed:
 
 Run the black-footed ferret and prairie dog with the same model template.  It passes if the second pair needs no change to the model code, only a new sourced parameter table, and its report passes the same checks.  Run it only if the lynx build leaves time.
 
+## Git workflow (from LaNice, Task 10, 2026-10-21)
+
+- `main` is the stable version.  It changes only by a pull request from `develop`, after `develop` is checked.
+- `develop` is where finished work lands first.  It changes only by pull requests from task branches.
+- Each task gets one branch, started from `develop` and named for what it does (for example `data/census-2024-2025`).  Never push straight to `main` or `develop`.
+- Pull `develop` before you start and again right before you push.  Push your task branch often.
+- One pull request, one thing:  if the description needs the word "and", split it.  Keep each one small enough to read in a few minutes.
+- Keep AI changes small:  ask for one task, name the files the AI may change, read `git diff` before every commit, and undo anything you did not ask for.  Commit after each small win.
+- To fix a conflict, pull `develop` into your task branch first, resolve it there, remove every marker, run `python -m pytest`, then commit.
+- `main` and `develop` both need a pull request, one approval, and a passing `tests` check.  Delete a task branch after it merges.
+
 ## Working rules
 
 - Ask "push or wait?" before changing a shared file.
-- Draft work goes on your own branch (`dev-valerie`, `dev-anastasiya`).  Changes reach `main` only through a pull request, after the tests pass and the other person reviews it.  Do not push unproven work to `main`.
-- Work in separate files; review each other through pull requests.
+- Work in separate files, and follow the Git workflow above.
 - Write the interfaces between the agents before anyone builds.
 - A prompt asks; code guarantees.  Any rule that must always hold goes in code with a test, and the design notes which of the two enforces it.
 - Never commit keys, `.env`, or private data.  This repository is public.

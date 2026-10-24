@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lynx evaluation handoff v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "data_kind": {
+      "enum": [
+        "sample",
+        "evaluation"
+      ]
+    },
+    "revision_round": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "parameters_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sources_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "revise",
+        "stop"
+      ]
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requested_change": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "requested_change"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "name",
+          "passed",
+          "detail"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "historical_validation": {
+      "const": "not_assessed"
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "data_kind",
+    "revision_round",
+    "parameters_sha256",
+    "sources_sha256",
+    "status",
+    "issues",
+    "checks",
+    "historical_validation"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "pass"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "issues": {"maxItems": 0},
+          "checks": {"items": {"properties": {"passed": {"const": true}}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "revise"}}, "required": ["status"]},
+      "then": {"properties": {"issues": {"minItems": 1}}}
+    }
+  ]
+}

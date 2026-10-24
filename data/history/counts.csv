@@ -41,3 +41,21 @@ Andalusia total,2011,73,"territorial females (settled, reproductive age)",ep_201
 Andalusia total,2011,76,"territorial females (settled, reproductive age)",ep_2012_03,Final.
 Andalusia total,2010,87,cubs born during the year,efe_2011_01,
 Andalusia total,2011,86,cubs (estimated),ep_2012_03,"Stated as 58 more than 2002, which implies 28 in 2002 (our arithmetic)."
+Spain and Portugal,2024,2401,individuals,mite_census2024,"Spain 2,047 and Portugal 354; 19% more than 2023."
+Spain and Portugal,2024,1557,adults and subadults,mite_census2024,708 males and 706 females could be sexed.
+Spain and Portugal,2024,844,cubs born in 2024,mite_census2024,
+Spain and Portugal,2024,470,breeding (territorial) females,mite_census2024,64 more than 2023.
+Spain and Portugal,2024,214,deaths detected,mite_census2024,162 (75.4%) were road collisions.
+Spain and Portugal,2025,2663,individuals,mite_census2025,"Spain 2,269 and Portugal 394; 10.9% more than 2024.  Official figures are a minimum."
+Spain and Portugal,2025,1711,adults and subadults,mite_census2025,824 males and 791 females could be sexed (sex ratio 1.04 males per female).
+Spain and Portugal,2025,952,cubs born in 2025,mite_census2025,
+Spain and Portugal,2025,542,breeding (territorial) females,mite_census2025,72 more than 2024.  Counted whether or not they bred.
+Spain and Portugal,2025,273,deaths detected,mite_census2025,212 (77.9%) were road collisions.
+Spain and Portugal,2025,1.75,cubs per territorial female (fecundity),mite_census2025,"Spain 1.8, Portugal 1.7, Andalusia 1.5, Castilla-La Mancha 2.1.  The 2023 release gives 1.77."
+Andalusia total,2024,836,individuals,mite_census2024,
+Andalusia total,2025,885,individuals,mite_census2025,"622 adults and subadults, 180 breeding females, 263 cubs."
+Eastern Sierra Morena nuclei (Jaen and Cordoba),2024,638,individuals,mite_census2024,Includes Andujar-Cardena and neighbouring nuclei; not the same as Andujar-Cardena alone.
+Eastern Sierra Morena nuclei (Jaen and Cordoba),2025,613,individuals,mite_census2025,"436 adults and subadults, 127 breeding females, 177 cubs.  Lower than 2024 (638)."
+Sierra Morena connection areas,2024,53,individuals,mite_census2024,
+Sierra Morena connection areas,2025,61,individuals,mite_census2025,"42 adults and subadults, 9 breeding females, 19 cubs."
+Donana-Aljarafe,2025,133,individuals,mite_census2025,"92 adults and subadults (50 males, 35 females, 7 unknown), 32 breeding females, 41 cubs."

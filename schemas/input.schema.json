@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lynx input handoff v2",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "2.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "const": "synthetic_experiment"
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "duration_months": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "start_month": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12
+    },
+    "parameters_csv": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parameters_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sources_csv": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sources_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "initial_population": {
+      "type": "object",
+      "properties": {
+        "females": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "males": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "age_months_min": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "age_months_max": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "females",
+        "males",
+        "age_months_min",
+        "age_months_max"
+      ],
+      "additionalProperties": false
+    },
+    "patches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "area_km2": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "habitat_quality": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "id",
+          "area_km2",
+          "habitat_quality"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "food_rabbits_per_ha": {
+      "type": "number",
+      "minimum": 0
+    },
+    "persistence_rule": {
+      "const": "settled_breeding_pair_same_patch_at_end"
+    },
+    "model_conventions": {
+      "const": "proposed-2026-10-22"
+    },
+    "male_patch_crossing_probability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "parameter_overrides": {
+      "type": "object",
+      "properties": {
+        "annual_mortality_rate_all_causes": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 0.5
+        },
+        "female_home_range_km2": {
+          "type": "number",
+          "minimum": 4,
+          "maximum": 30
+        },
+        "rabbit_density_spring_min_for_territorial_breeding": {
+          "type": "number",
+          "minimum": 3,
+          "maximum": 6
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "purpose",
+    "seed",
+    "duration_months",
+    "start_month",
+    "parameters_csv",
+    "parameters_sha256",
+    "sources_csv",
+    "sources_sha256",
+    "initial_population",
+    "patches",
+    "food_rabbits_per_ha",
+    "persistence_rule",
+    "model_conventions",
+    "male_patch_crossing_probability",
+    "parameter_overrides"
+  ],
+  "additionalProperties": false
+}
