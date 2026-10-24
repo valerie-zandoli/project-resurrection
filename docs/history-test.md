@@ -1,6 +1,6 @@
 # History test: what is compared, how, and when (PROPOSED)
 
-Drafted 2026-10-22 by Valerie with Claude Code.  Valerie owns the history test.  Everything here is a proposal until Anastasiya agrees, except the two tolerances, which Valerie accepted on 2026-10-22 and Anastasiya has not yet confirmed.  Items marked (assumption) have no support in the data we hold.
+Drafted 2026-10-22 by Valerie with Claude Code.  Valerie owns the history test.  Everything here is a proposal until Anastasiya agrees, except the two tolerances, which Valerie accepted on 2026-10-22 and Anastasiya has not yet confirmed.  The area decision of 2026-10-24 is also Valerie's and awaits Anastasiya.  Items marked (assumption) have no support in the data we hold.
 
 ## The question
 
@@ -32,13 +32,14 @@ Does the model, run with the Donana parameters, grow a population from the 2002 
 - Non-adults:  whole-month ages drawn uniformly from 0 to 35 months; the cub sex ratio of the table (1.03 females per male).
 - All draws use the run seed.  The synthetic 20-lynx start is a separate experiment and is never reused here.
 
-## Open decision:  the usable area of the history run
+## Decision:  the usable area of the history run (2026-10-24)
 
-The usable area sets how many female territories exist (area divided by the 10 km2 home range).  The 2010 count gives 44 adult females, but that count does not show 44 territorial females, because the model lets living females stay unsettled.  So the count does not fix a minimum area.
+Valerie chose the recommendation below on 2026-10-24.  Anastasiya has not yet confirmed it.
 
-- If the usable area of the Andujar-Cardena nucleus can be sourced, use it and cite it.
-- Otherwise label the chosen area (and so the territory capacity) as an assumption, and calibrate at two or three areas to show how far the area moves the calibrated mortality.
-- A small capacity can limit growth and so affect the calibration; it does not by itself make the calibration meaningless.
+- **Main run:**  750 km2 in total, labeled in every report as an assumption.  The usable area of the Andujar-Cardena nucleus alone is not sourced.  The nearest figure found is the Sierra de Andujar protected area, 74,774 hectares or about 750 km2 (https://web.ujaen.es/revista/jja/pdf/0004-01/jja-0004-01-12-diputacion.pdf).  A protected area is not the same as usable lynx habitat, so the figure is a stand-in.
+- **Sensitivity runs:**  500 km2 and 1,000 km2.  The 1,000 km2 figure matches two rough ranges for the wider area:  Sierra Morena near 1,000 km2 (a 2020 news report, https://theolivepress.es/spain-news/2020/05/11/once-endangered-iberian-lynx-now-thriving-in-spains-andalucia/) and the Andalusian lynx range of 1,019 km2 in 2011 (the EU LIFE project page, project LIFE10-NAT-ES-000570).  Valerie has read none of these three sources in full.
+- **Capacity:**  the area sets the number of female territories:  about 75 at 750 km2 (area divided by the 10 km2 home range), 50 at 500 km2, and 100 at 1,000 km2.  All three exceed the 44 adult females counted in 2010, but that count still does not fix a minimum area, because living females can stay unsettled.
+- **What does not change:**  the tolerances, the calibration steps, the trial count, and the held-out rule below.  Calibrate at each of the three areas.  The pass or fail verdict uses the 750 km2 run only; that rule is fixed here, before any run.  The runs at 500 and 1,000 km2 are reported beside it, with the calibrated mortality at each area, to show how far the assumption moves the result.  They never replace it.
 
 ## Calibration
 
@@ -50,4 +51,4 @@ The usable area sets how many female territories exist (area divided by the 10 k
 
 ## The report must say
 
-The three-anchor limit; that Donana parameters are applied to Andujar-Cardena (a transfer assumption); the starting-population assumptions; the census-date assumption; the trial count; the median and the 10th to 90th percentile of growth and of the 2011 count; and the share of trials that went extinct.
+The three-anchor limit; that Donana parameters are applied to Andujar-Cardena (a transfer assumption); the starting-population assumptions; the census-date assumption; the usable area as an assumption, with the calibrated mortality and results at 500 and 1,000 km2; the trial count; the median and the 10th to 90th percentile of growth and of the 2011 count; and the share of trials that went extinct.
