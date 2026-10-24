@@ -49,6 +49,12 @@ Run the black-footed ferret and prairie dog with the same model template.  It pa
 - A prompt asks; code guarantees.  Any rule that must always hold goes in code with a test, and the design notes which of the two enforces it.
 - Never commit keys, `.env`, or private data.  This repository is public.
 
+## Working with LLM tools (added 2026-10-24, from Anastasiya's suggestions)
+
+- Before implementation work, read `.agents/skills/project-resurrection/SKILL.md`.  It applies to Codex and to Claude Code alike.
+- LaNice's learning slides are teaching material.  Any architecture in them is only an example.  Our architecture is already established (see above and `docs/architecture.md`), so when a slide differs, follow ours.
+- Review code carefully for correctness and for whether it works, then stop.  Do not chase perfection, and do not loop between Claude Code and Codex reviewing each other's reviews.  Flag any remaining non-blocking concern in the pull request, and the owners decide.
+
 ## Setup
 
 - Python version:  3.12.  The Mac default `python3` is 3.9, which we do not use.
