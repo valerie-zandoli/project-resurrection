@@ -1,4 +1,4 @@
-# Agent handoffs — results version 2.0
+# Agent handoffs — results version 3.0
 
 For Valerie and Anastasiya to review before simulation integration. JSON Schemas
 in `schemas/` define the shapes; matching examples live in `examples/handoffs/`.

@@ -12,6 +12,13 @@ monthly settlement attempts in seeded random order, current patch then other
 patch. The required `--preview` flag acknowledges those unresolved conventions.
 Their use in code or tests is not scientific approval.
 
+## Conventions in the code that the plan did not spell out
+
+These are written here so that nobody has to read the code to learn them.  Each is a convention to agree, not a measured fact.
+
+- **Male crossing starts at the breeding minimum age.**  Only males aged 36 months or more (`breeding_age_min`) can cross to the other patch, with the agreed probability of 0.10 a month.  Younger males stay in their patch.
+- **A settled female keeps her territory until she dies,** even after she passes the maximum breeding age (108 months).  An old female can therefore hold a slot that a young female is waiting for, which changes when vacancies open and how fast the population can grow.
+
 ## Try after reviewing the model code
 
 Use the repository Python 3.12 environment and install `requirements.txt` plus
@@ -60,8 +67,12 @@ Newborns are age 0 at birth and face their first survival risk next month.
 
 `random.Random(seed)` is local to each run. Replays require the same Python
 version, configuration, parameter files, and code. The future multi-trial runner
-must define trial-seed derivation; no outcome-based reruns or failed-trial removal
-are implemented here. Errors stop the single run without retry.
+must define trial-seed derivation (the proposal in `model-conventions.md`, section 4:
+each trial's seed comes from the run seed, the cell name, and the trial number by one
+documented rule); no outcome-based reruns or failed-trial removal are implemented
+here. Errors stop the single run without retry.  Replays are checked on Python 3.12
+only; a different Python version can change the random stream, so the version is
+part of what a replay needs.
 
 ## Evidence and remaining work
 
@@ -69,6 +80,8 @@ Unit tests exercise these controls; no running multi-agent harness applies them
 yet. **TESTED ONLY** remains the status of that integration. This code is not
 an execution sandbox. Live generated-code execution still follows the isolation
 plan and human-review requirement in `execution-sandbox.md`.
+
+**Contract freeze (proposed).**  The input, results, and evaluation schemas changed twice in two days (results went from 2.0 to 3.0).  Before the first final run (100 pilot and 500 final trials per cell), both owners freeze them.  After the freeze, a change needs a version bump and both owners' agreement, so the Evaluator never checks against a moving schema.
 
 Next work: agree the conventions; independent Evaluator checks; repeated-trial
 aggregation/uncertainty; sensitivity orchestration; graphs; and a separate
