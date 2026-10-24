@@ -28,7 +28,7 @@
     }
   ],
   "food_rabbits_per_ha": 4.6,
-  "persistence_rule": "breeding_pair_same_patch_at_end",
+  "persistence_rule": "settled_breeding_pair_same_patch_at_end",
   "model_conventions": "proposed-2026-10-22",
   "male_patch_crossing_probability": 0.1,
   "parameter_overrides": {}

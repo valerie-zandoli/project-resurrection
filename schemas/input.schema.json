@@ -104,7 +104,7 @@
       "minimum": 0
     },
     "persistence_rule": {
-      "const": "breeding_pair_same_patch_at_end"
+      "const": "settled_breeding_pair_same_patch_at_end"
     },
     "model_conventions": {
       "const": "proposed-2026-10-22"

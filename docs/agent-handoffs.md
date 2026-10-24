@@ -49,6 +49,8 @@ reproduction separately. Report births in the final 12 months alongside
 persistence so surviving pairs without recent reproduction remain visible.
 This endpoint does not establish long-term viability.
 
+The input field `persistence_rule` carries the rule name `settled_breeding_pair_same_patch_at_end`.  It was `breeding_pair_same_patch_at_end` until 2026-10-24, a name that left out the territory.  The name changed inside the unmerged input 2.0 and results 3.0 contracts, so no further version bump was needed; an input file that still has the old name no longer validates.
+
 Every entry in `final_animals` requires a boolean `settled`:
 
 - A living female is `true` after acquiring a free female territory. Starting
