@@ -113,9 +113,10 @@ def test_unsettled_living_female_and_dead_former_holder_are_valid_states():
     jsonschema.validate(result, load("schema", "results"))
 
 
-def test_old_results_version_is_rejected():
+@pytest.mark.parametrize('version', ['1.0', '2.0'])
+def test_old_results_version_is_rejected(version):
     result = load("example", "results")
-    result["schema_version"] = "1.0"
+    result["schema_version"] = version
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate(result, load("schema", "results"))
 
@@ -125,3 +126,17 @@ def test_sample_has_five_settled_females_per_patch_and_no_settled_males():
     for patch in ("A", "B"):
         assert sum(a["settled"] for a in animals if a["patch_id"] == patch) == 5
     assert all(not a["settled"] for a in animals if a["sex"] == "male")
+
+
+def test_mixed_age_input_requires_both_bounds():
+    result = load("example", "input")
+    del result["initial_population"]["age_months_max"]
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(result, load("schema", "input"))
+
+
+def test_unrecorded_parameter_override_is_rejected():
+    result = load("example", "input")
+    result["parameter_overrides"]["disease_mortality"] = 0.5
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(result, load("schema", "input"))

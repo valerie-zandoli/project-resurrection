@@ -1,11 +1,11 @@
 {
-  "schema_version": "2.0",
+  "schema_version": "3.0",
   "run_id": "sample-001",
   "data_kind": "sample",
   "seed": 42,
   "revision_round": 0,
   "config": {
-    "schema_version": "1.0",
+    "schema_version": "2.0",
     "run_id": "sample-001",
     "purpose": "synthetic_experiment",
     "seed": 42,
@@ -18,7 +18,8 @@
     "initial_population": {
       "females": 10,
       "males": 10,
-      "age_months": 36
+      "age_months_min": 36,
+      "age_months_max": 96
     },
     "patches": [
       {
@@ -33,7 +34,10 @@
       }
     ],
     "food_rabbits_per_ha": 4.6,
-    "persistence_rule": "breeding_pair_same_patch_at_end"
+    "persistence_rule": "settled_breeding_pair_same_patch_at_end",
+    "model_conventions": "proposed-2026-10-22",
+    "male_patch_crossing_probability": 0.1,
+    "parameter_overrides": {}
   },
   "history": [
     {
@@ -221,6 +225,7 @@
   "assumptions": [
     "Hand-authored sample; no simulation or biological validation has run.",
     "Patch areas, habitat scores and equal allocation are illustrative assumptions.",
-    "Starting females hold five territories in each patch; males use no female slots. Food is excluded from endpoint persistence eligibility."
+    "Starting females hold five territories in each patch; males use no female slots. Food is excluded from endpoint persistence eligibility.",
+    "The final states are illustrative fixtures, not a run of the mixed-age configuration."
   ]
 }

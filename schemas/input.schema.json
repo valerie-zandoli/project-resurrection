@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Lynx input handoff v1",
+  "title": "Lynx input handoff v2",
   "type": "object",
   "properties": {
     "schema_version": {
-      "const": "1.0"
+      "const": "2.0"
     },
     "run_id": {
       "type": "string",
@@ -53,7 +53,11 @@
           "type": "integer",
           "minimum": 0
         },
-        "age_months": {
+        "age_months_min": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "age_months_max": {
           "type": "integer",
           "minimum": 0
         }
@@ -61,7 +65,8 @@
       "required": [
         "females",
         "males",
-        "age_months"
+        "age_months_min",
+        "age_months_max"
       ],
       "additionalProperties": false
     },
@@ -99,7 +104,36 @@
       "minimum": 0
     },
     "persistence_rule": {
-      "const": "breeding_pair_same_patch_at_end"
+      "const": "settled_breeding_pair_same_patch_at_end"
+    },
+    "model_conventions": {
+      "const": "proposed-2026-10-22"
+    },
+    "male_patch_crossing_probability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "parameter_overrides": {
+      "type": "object",
+      "properties": {
+        "annual_mortality_rate_all_causes": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 0.5
+        },
+        "female_home_range_km2": {
+          "type": "number",
+          "minimum": 4,
+          "maximum": 30
+        },
+        "rabbit_density_spring_min_for_territorial_breeding": {
+          "type": "number",
+          "minimum": 3,
+          "maximum": 6
+        }
+      },
+      "additionalProperties": false
     }
   },
   "required": [
@@ -116,7 +150,10 @@
     "initial_population",
     "patches",
     "food_rabbits_per_ha",
-    "persistence_rule"
+    "persistence_rule",
+    "model_conventions",
+    "male_patch_crossing_probability",
+    "parameter_overrides"
   ],
   "additionalProperties": false
 }

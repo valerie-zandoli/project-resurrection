@@ -8,6 +8,9 @@ and pending decisions, synchronized from all four Google PRD project tabs.
 
 ## Setup
 
+The [synthetic simulator preview](docs/simulator.md) runs the first seeded
+numerical milestone; the live multi-agent harness is still pending.
+
 Use Python 3.12.  The Mac default `python3` is 3.9, which we do not use.  `python3.12 --version` shows whether 3.12 is installed.
 
 ```bash
