@@ -1,9 +1,16 @@
 # Project Resurrection — Product requirements
 
-Owners: Anastasiya Glegg and Valerie Zandoli. Synchronized October 22, 2026.
+Owners: Anastasiya Glegg and Valerie Zandoli. Synchronized October 22, 2026; five passages
+updated October 24, 2026 (see the note after the source line).
 
 Source: [Google PRD](https://docs.google.com/document/d/1Hki-aSMezwRhHNW6Luye2z_ExSv5C_etIIxb4rqSoHc).
-Source revision: `AHj4eMQFw1S02f_cz2RAmPjNIUGZjdxBgVr9yfwvIUeqjV0182-oekqMJ6pjSt9M9Z1TkZ-PSXMXwy_IPbh2hDLf_BkEqi7xdA9WNESaunU`.
+Source revision of the full synchronization: `AHj4eMQFw1S02f_cz2RAmPjNIUGZjdxBgVr9yfwvIUeqjV0182-oekqMJ6pjSt9M9Z1TkZ-PSXMXwy_IPbh2hDLf_BkEqi7xdA9WNESaunU`.
+
+Targeted update, October 24, 2026:  five passages below were changed to match the Google PRD at
+revision `AHj4eMTnw-BAwiilLc4dSN01v_lda1lYIRWesZM9B--MI7lOvHCY27rcZKAtluzwq2EyoD7TGFX6jIRN8qh02SOCYi_0GGZG7HUMTlEyYKs`
+(the usable area of the history run, the settlement retry rule, the status of PR #32, and the
+simulator preview in PR #40).  The other sections were not compared again and are as synchronized
+on October 22.
 
 This specification consolidates all four project tabs: **PRD: Net new build**,
 **PRD: New feature**, **Agent PRD: Net new build**, and **Agent PRD: New feature**.
@@ -152,14 +159,16 @@ Both owners accepted these tolerances on October 22, 2026:
 Never change tolerances or retune after viewing the holdout. Sparse counts make
 a pass weak evidence. Rough growth arithmetic is not a simulation result.
 
-The procedure remains under review in PR #32:
+The procedure from PR #32 (merged):
 
 - Fix census month, starting age/sex structure, trial count, and seeds before
   execution. Counts of 25 adults and 28 non-adults do not establish ages/sexes;
   proposed draws remain assumptions.
 - Forty-four adult females do not establish 44 occupied territories or a minimum
-  of 440 km². Source usable area or label the chosen area and its influence as
-  assumptions.
+  of 440 km². Usable area: the Andújar–Cardeña area is not sourced, so Valerie
+  chose on October 24, 2026 to use 750 km² as a labeled assumption, with
+  sensitivity runs at 500 and 1,000 km² and the verdict on the 750 km² run only;
+  Anastasiya has not yet confirmed this.
 - After calibration, freeze settings and evaluate one predefined ensemble
   through 2011. “Once” means one held-out batch, not one stochastic trial.
 - Report medians, 10th–90th percentiles, trial count, extinct share, and the
@@ -266,7 +275,8 @@ tools must not contact people, publish, merge, or take conservation actions.
 Preserve sources and redact secrets from logs.
 
 Parameter validation, schemas/examples, content-hash helpers, and automated
-checks exist. Numerical simulation, the complete harness, runtime role agents,
+checks exist. Numerical simulation (a first synthetic preview was merged in PR #40
+on October 24, 2026; no experiment has been run), the complete harness, runtime role agents,
 and end-to-end enforcement remain pending at synchronization. Test passes are
 not runtime results. Claude through LiteLLM with personal locally stored keys is
 the provider proposal; a direct-provider key check does not prove full integration.
@@ -284,11 +294,16 @@ recording; uniform litter sizes 2–4; and Wilson intervals plus population and
 extinction summaries. These conventions are not yet agreed. Before experiments:
 
 - Implement the agreed persistence/settled contract and independent runtime checks.
-- Agree monthly ordering, litter sampling, historical initialization/usable
-  area, observation/ensemble procedure, seed derivation, and aggregation.
-- Specify monthly settlement attempts after vacancies open, patch choices,
-  and seeded competition ordering. Current-patch-then-other-patch settlement is
-  a proposed female-movement assumption, not an approved rule.
+- Agree monthly ordering, litter sampling, historical initialization,
+  observation/ensemble procedure, seed derivation, and aggregation. The usable
+  area of the history run is the exception: Valerie chose 750 km² as a labeled
+  assumption on October 24, 2026 (sensitivity runs at 500 and 1,000 km²), and
+  Anastasiya has not yet confirmed it.
+- Settlement retries: Valerie chose on October 24, 2026 that every month each
+  unsettled female of at least 18 months retries, her current patch first and
+  then the other, in one seeded random order per month; Anastasiya has not yet
+  confirmed it. Two other rules (own patch only, one try only) run as
+  sensitivity checks, reported apart from the main grid.
 - Align crash handling with transient retry rules; define incomplete cells and
   denominators before running.
 - Finalize provider, execution limits/isolation, trace retention, and the shared
