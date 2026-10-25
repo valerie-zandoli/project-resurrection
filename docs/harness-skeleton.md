@@ -2,6 +2,12 @@
 
 Written 2026-10-24 by Valerie with Claude Code, for the pairing session on 2026-10-25.  The code is `harness/run_case.py`, `harness/snapshot.py`, and `harness/trace.py`; its tests are `tests/test_harness.py`.  Status:  **TESTED ONLY**.  The skeleton runs end to end offline, but it calls no model, so no agent runs through it yet.  Nothing here is agreed until Anastasiya says yes.
 
+## The diagram (version 3)
+
+![Architecture, version 3](diagrams/architecture-v3.png)
+
+Source: `docs/diagrams/architecture-v3.svg`.  Composed on 2026-10-24 by Claude Code from `docs/architecture.md` and the version 2 source, with the status tags brought up to date (TESTED ONLY, IN REVIEW, PLANNED, PROMPT ONLY).  Valerie's paper sketch has not been compared with it yet; if the sketch differs, the sketch wins and this file changes.  The tags are true on the day of this pull request and go stale as pull requests merge, so update them in the same pull request as the code they describe.
+
 ## What it does
 
 One case, from the research files to `pass`, `stop`, `rejected`, or `failed`:
