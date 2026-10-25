@@ -46,7 +46,8 @@ def test_an_incomplete_cell_is_never_shown_as_a_number():
     table = figures.markdown_table(batch(incomplete=True))
     assert "incomplete (failed)" in table
     svg = figures.persistence_svg(batch(incomplete=True))
-    assert "incomplete" in svg and svg.count("<circle") == 5 + 1 + 2  # five points, one hollow, two legend dots
+    assert "incomplete" in svg and svg.count("<circle") == 5 + 2  # five points and two legend dots; none for the incomplete cell
+    assert "stroke-dasharray" in svg
 
 
 def test_the_figure_is_valid_svg_with_one_point_and_one_interval_per_complete_cell():
@@ -65,6 +66,14 @@ def test_the_command_writes_a_figure_and_a_table_and_never_overwrites(tmp_path, 
     assert "Persisted (95% interval)" in (tmp_path / "t.md").read_text()
     assert figures.main(args) == 1 and "already exists" in capsys.readouterr().out
     assert figures.main([str(tmp_path / "missing.json")]) == 1
+
+
+def test_a_batch_without_cells_fails_cleanly(tmp_path, capsys):
+    path = tmp_path / "empty.json"
+    path.write_text(json.dumps(dict(trials_per_cell=1, cells=[])))
+    assert figures.main([str(path)]) == 1 and "no cells" in capsys.readouterr().out
+    with pytest.raises(ValueError):
+        figures.persistence_svg(dict(cells=[]))
 
 
 def test_with_no_output_option_the_table_is_printed(tmp_path, capsys):

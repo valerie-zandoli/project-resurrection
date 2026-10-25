@@ -17,6 +17,8 @@ def load_batch(path):
 
 def cells(batch):
     """Cells sorted by food level and then area; `stats` is None for a cell that is not complete."""
+    if not batch["cells"]:
+        raise ValueError("the batch has no cells")
     rows = []
     for cell in batch["cells"]:
         stats = cell.get("statistics") if cell.get("status") == "completed" else None
@@ -74,8 +76,9 @@ def persistence_svg(batch, title="Share of trials that persisted, with 95% inter
                 continue
             s = row["stats"]
             if s is None:
-                out.append(f'<circle cx="{x:.1f}" cy="{y(0):.1f}" r="6" fill="#ffffff" stroke="#888888" stroke-width="2"/>')
-                out.append(f'<text x="{x:.1f}" y="{y(0) - 12:.1f}" text-anchor="middle" font-size="11" fill="#888888">incomplete</text>')
+                # No marker on the axis, so an incomplete cell cannot be read as 0%:  a dashed line and a label only.
+                out.append(f'<line x1="{x:.1f}" x2="{x:.1f}" y1="{y(1):.1f}" y2="{y(0):.1f}" stroke="#aaaaaa" stroke-width="1" stroke-dasharray="4 4"/>')
+                out.append(f'<text x="{x:.1f}" y="{y(0.5):.1f}" text-anchor="middle" font-size="11" fill="#888888">incomplete</text>')
                 continue
             low, high = s["persistence_wilson_95"]
             out.append(f'<line x1="{x:.1f}" x2="{x:.1f}" y1="{y(low):.1f}" y2="{y(high):.1f}" stroke="{color}" stroke-width="3"/>')
