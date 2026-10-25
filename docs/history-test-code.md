@@ -18,7 +18,7 @@ Written 2026-10-24 by Valerie with Claude Code.  The code is `simulation/history
 | Start, adults | 25, ages 36 to 108 months uniform; 12 or 13 females, decided by the seed | `docs/history-test.md`. |
 | Start, non-adults | 28, ages 0 to 35 months uniform; female with probability 1.03 / 2.03 | `docs/history-test.md`. |
 | Start, patches | animals alternate between two equal patches; adult females start settled | The simulator has two patches. |
-| Usable area | total area split equally over two patches; the areas run are 750 (main), 500, and 1,000 km2 | Decided 2026-10-24 (the main run) with sensitivity runs. |
+| Arms | total area split equally over two patches; 750 km2 (main, the table's home range of 10 km2), 264 km2 at a home range of 6.1 km2, and 264 km2 at 10 km2 | 750 decided 2026-10-24; the 264 km2 arms follow #45 (Anastasiya's plan, accepted by Valerie on 2026-10-25); the 500 and 1,000 km2 runs are dropped because they calibrated identically in an exploratory check. |
 | Food | 4.6 rabbits per hectare | Breeding needs at least the spring threshold; any value at or above it gives the same run. |
 | Mortality grid | 0.10 to 0.50 in steps of 0.01 (41 values) | The range is agreed; the step is a choice. |
 | Calibration trials | 100 per mortality value | The pilot size of `docs/model-conventions.md`. |
@@ -34,7 +34,7 @@ Written 2026-10-24 by Valerie with Claude Code.  The code is `simulation/history
 python -m simulation.history --run-seed 20261101 --output history-run-1
 ```
 
-The run seed has no default.  Write it down before the first run; every trial seed comes from it.  Use `--areas`, `--calibration-trials`, `--heldout-trials`, and `--mortality-step` to change the run; a smaller step or fewer trials is for tests, never for the real batch.  The report is `history-run-1/report.json`.  It holds the calibration table for each area, the held-out medians with the 10th and 90th percentiles, the extinct share, the verdict for the main run, and the five statements that the report must make.
+The run seed has no default.  Write it down before the first run; every trial seed comes from it.  Use `--arms` (for example `--arms 750 264:6.1 264:10`), `--calibration-trials`, `--heldout-trials`, and `--mortality-step` to change the run; a smaller step or fewer trials is for tests, never for the real batch.  The report is `history-run-1/report.json`.  It holds the calibration table for each area, the held-out medians with the 10th and 90th percentiles, the extinct share, the verdict for the main run, and the five statements that the report must make.
 
 ## What the test cannot show
 
@@ -45,5 +45,5 @@ The run seed has no default.  Write it down before the first run; every trial se
 ## Not done
 
 - The held-out batch has not been run.  A pass would be weak evidence:  three counts are all we hold.
-- A run anchored to the occupied area of 264 to 282 km2 (Anastasiya's suggestion of 2026-10-24) is not in the default areas; `--areas` accepts it once Valerie decides.
+- At a home range of 10 km2, 264 km2 holds 26 territories against the 43 territorial females counted in 2010; the 6.1 km2 arm holds 42.  The arms show how far the result depends on that assumption.
 - The code uses the simulator as it stands (settlement retries every month, current patch first).  The sensitivity rules for retries need an option in the simulator first.

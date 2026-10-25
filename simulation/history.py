@@ -35,7 +35,10 @@ YEARS = CALIBRATION_MONTHS // 12
 START_MONTH = 12         # month 0 is a December:  census at the end of the year (assumption)
 FOOD = 4.6               # rabbits per hectare; any value at or above the spring threshold gives the same run
 MORTALITY_RANGE = (0.10, 0.50)
-AREAS = (750, 500, 1000)  # total usable km2; the first is the main run (decided 2026-10-24)
+# Arms of the run:  (total usable km2, female home range in km2 or None for the table's value).  The first is the
+# main run and the only one that decides the verdict (750 km2, decided 2026-10-24); the 264 km2 comparisons at
+# home ranges of 6.1 and 10 km2 follow the plan in #45 (Valerie accepted it on 2026-10-25).
+ARMS = ((750, None), (264, 6.1), (264, 10.0))
 CALIBRATION_TRIALS = 100
 HELDOUT_TRIALS = 500
 HELDOUT_CELL = 'heldout'
@@ -77,12 +80,30 @@ def history_config(area_km2, root=REPO):
     return config
 
 
+def territory_capacities(config, p):
+    """Female territories per patch:  usable area divided by the female home range, rounded down."""
+    return {patch['id']: math.floor(patch['area_km2'] / p.home_range) for patch in config['patches']}
+
+
+def parse_arm(text):
+    """'750' gives (750.0, None); '264:6.1' gives (264.0, 6.1)."""
+    area, separator, home_range = text.partition(':')
+    try:
+        if separator and not home_range:
+            raise ValueError
+        values = (float(area), float(home_range) if home_range else None)
+    except ValueError:
+        raise ValueError(f'cannot read the arm {text!r}; use AREA or AREA:HOME_RANGE') from None
+    if values[0] <= 0 or (values[1] is not None and values[1] <= 0):
+        raise ValueError(f'the arm {text!r} needs a positive area and home range')
+    return values
+
+
 def run_trial(p, config, seed, months):
     """Population of every living animal at months 0 to `months`, from one seeded run."""
     rng = random.Random(seed)
     patch_ids = [patch['id'] for patch in config['patches']]
-    capacities = {patch['id']: math.floor(patch['area_km2'] / p.home_range)
-                  for patch in config['patches']}
+    capacities = territory_capacities(config, p)
     animals = history_start(rng, p, patch_ids)
     check_states(animals, capacities)
     populations = [len(animals)]
@@ -158,27 +179,30 @@ REPORT_MUST_SAY = [
     'The starting population is an assumption except the two counts:  12 or 13 adult females, '
     'adult ages 36 to 108 months, non-adult ages 0 to 35 months, cub sex ratio of the table.',
     'The census date is assumed to be the end of the year (month 0 is a December).',
-    'The usable area is an assumption (750 km2 for the main run); the verdict uses the main run only.',
+    'The usable area is an assumption (750 km2 for the main run); the verdict uses the main run only.  '
+    'The 264 km2 arms use female home ranges of 6.1 and 10 km2 and are reported beside it.',
     "The 2011 target of 202 is the issuer's own figure (its 2011 and 2016 reports); 214 (Cat Specialist Group) "
     'is reported beside it and never used for pass or fail.',
     'The 2011 count adds one year at the calibrated rate; it is not independent of the calibration.',
 ]
 
 
-def run_protocol(output, run_seed, areas=AREAS, calibration_trials=CALIBRATION_TRIALS,
+def run_protocol(output, run_seed, arms=ARMS, calibration_trials=CALIBRATION_TRIALS,
                  heldout_trials=HELDOUT_TRIALS, step=0.01, root=REPO):
-    """Calibrate and then run the held-out batch at each area; write the report to a new directory."""
+    """Calibrate and then run the held-out batch at each arm; write the report to a new directory."""
     output = Path(output)
     if output.exists():
         raise ValueError('Output directory already exists; use a new directory')
-    first = history_config(areas[0], root)
-    p = load_parameters(first, root)
+    first = history_config(arms[0][0], root)
+    table = load_parameters(first, root)
     results = []
-    for area in areas:
-        config = first if area == areas[0] else history_config(area, root)
+    for number, (area, home_range) in enumerate(arms):
+        p = table if home_range is None else dataclasses.replace(table, home_range=home_range)
+        config = first if area == arms[0][0] else history_config(area, root)
         calibration = calibrate(p, config, run_seed, calibration_trials, mortality_grid(step))
         batch = heldout(p, config, run_seed, calibration['chosen_mortality'], heldout_trials)
-        results.append(dict(total_area_km2=area, main_run=area == areas[0],
+        results.append(dict(total_area_km2=area, female_home_range_km2=p.home_range, main_run=number == 0,
+                            territories=sum(territory_capacities(config, p).values()),
                             calibration=calibration, heldout=batch))
     main = results[0]['heldout']
     beside = dict(count_2011=BESIDE_COUNT, bounds=BESIDE_BOUNDS, used_for_verdict=False,
@@ -187,7 +211,7 @@ def run_protocol(output, run_seed, areas=AREAS, calibration_trials=CALIBRATION_T
                   parameters_sha256=first['parameters_sha256'], sources_sha256=first['sources_sha256'],
                   verdict=verdict(main['growth']['median'], main['count_2011']['median']),
                   reported_beside=beside,
-                  main_area_km2=areas[0], areas=results, must_say=REPORT_MUST_SAY,
+                  main_area_km2=arms[0][0], areas=results, must_say=REPORT_MUST_SAY,
                   historical_validation='weak evidence only; see must_say')
     output.mkdir(parents=True)
     (output / 'report.json').write_text(json.dumps(report, indent=2, allow_nan=False) + '\n')
@@ -198,15 +222,17 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-seed', type=int, required=True,
                         help='fixed and written down before the first run; every trial seed comes from it')
-    parser.add_argument('--areas', type=float, nargs='+', default=list(AREAS),
-                        help='total usable km2; the first is the main run')
+    parser.add_argument('--arms', nargs='+', metavar='AREA[:HOME_RANGE]',
+                        help='total usable km2 with an optional female home range in km2 (for example 264:6.1); '
+                             'the first is the main run (default: 750 264:6.1 264:10)')
     parser.add_argument('--calibration-trials', type=int, default=CALIBRATION_TRIALS)
     parser.add_argument('--heldout-trials', type=int, default=HELDOUT_TRIALS)
     parser.add_argument('--mortality-step', type=float, default=0.01)
     parser.add_argument('--output', type=Path, required=True, help='new output directory; never overwritten')
     args = parser.parse_args(argv)
     try:
-        report = run_protocol(args.output, args.run_seed, tuple(args.areas), args.calibration_trials,
+        arms = ARMS if args.arms is None else tuple(parse_arm(text) for text in args.arms)
+        report = run_protocol(args.output, args.run_seed, arms, args.calibration_trials,
                               args.heldout_trials, args.mortality_step)
     except (OSError, ValueError) as exc:
         print(f'History test failed: {exc}')

@@ -59,7 +59,22 @@ def test_the_census_is_taken_in_december_so_month_96_is_2010_and_108_is_2011(con
 def test_the_areas_split_equally_across_two_patches(config):
     assert [patch['area_km2'] for patch in config['patches']] == [375, 375]
     assert [patch['area_km2'] for patch in history_config(500)['patches']] == [250, 250]
-    assert history.AREAS[0] == 750
+    assert history.ARMS[0] == (750, None) and history.ARMS[1:] == ((264, 6.1), (264, 10.0))
+
+
+def test_territories_follow_the_area_and_the_home_range(params):
+    small = history_config(264)
+    assert sum(history.territory_capacities(small, dataclasses.replace(params, home_range=6.1)).values()) == 42
+    assert sum(history.territory_capacities(small, dataclasses.replace(params, home_range=10.0)).values()) == 26
+    assert sum(history.territory_capacities(history_config(750), params).values()) == 74
+
+
+def test_an_arm_is_an_area_with_or_without_a_home_range():
+    assert history.parse_arm('750') == (750.0, None)
+    assert history.parse_arm('264:6.1') == (264.0, 6.1)
+    for bad in ('', 'x', '264:', '264:y', '0', '-5', '264:0'):
+        with pytest.raises(ValueError):
+            history.parse_arm(bad)
 
 
 def test_start_has_53_animals_25_adults_and_28_non_adults(params):
@@ -217,10 +232,12 @@ def test_real_trial_is_deterministic_and_has_one_population_per_month(params, co
 
 def test_protocol_runs_end_to_end_and_writes_a_complete_report(tmp_path):
     out = tmp_path / 'run'
-    report = run_protocol(out, 99, areas=(750, 500), calibration_trials=2, heldout_trials=3, step=0.2)
+    report = run_protocol(out, 99, arms=((750, None), (264, 6.1)), calibration_trials=2, heldout_trials=3, step=0.2)
     saved = json.loads((out / 'report.json').read_text())
     assert saved == json.loads(json.dumps(report))
-    assert [a['total_area_km2'] for a in saved['areas']] == [750, 500]
+    assert [a['total_area_km2'] for a in saved['areas']] == [750, 264]
+    assert [a['female_home_range_km2'] for a in saved['areas']] == [10.0, 6.1]
+    assert [a['territories'] for a in saved['areas']] == [74, 42]
     assert saved['areas'][0]['main_run'] and not saved['areas'][1]['main_run']
     main_run = saved['areas'][0]
     assert main_run['heldout']['trials'] == 3 and main_run['calibration']['trials'] == 2
@@ -240,14 +257,14 @@ def test_protocol_runs_end_to_end_and_writes_a_complete_report(tmp_path):
 
 def test_protocol_never_overwrites_an_old_report(tmp_path):
     out = tmp_path / 'run'
-    run_protocol(out, 1, areas=(750,), calibration_trials=1, heldout_trials=1, step=0.4)
+    run_protocol(out, 1, arms=((750, None),), calibration_trials=1, heldout_trials=1, step=0.4)
     with pytest.raises(ValueError, match='already exists'):
-        run_protocol(out, 1, areas=(750,), calibration_trials=1, heldout_trials=1, step=0.4)
+        run_protocol(out, 1, arms=((750, None),), calibration_trials=1, heldout_trials=1, step=0.4)
 
 
 def test_command_line_runs_and_refuses_an_existing_directory(tmp_path, capsys):
     out = tmp_path / 'cli'
-    args = ['--run-seed', '5', '--areas', '750', '--calibration-trials', '1', '--heldout-trials', '2',
+    args = ['--run-seed', '5', '--arms', '750', '--calibration-trials', '1', '--heldout-trials', '2',
             '--mortality-step', '0.4', '--output', str(out)]
     assert main(args) == 0
     assert 'verdict' in capsys.readouterr().out
