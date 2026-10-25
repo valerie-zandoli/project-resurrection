@@ -28,8 +28,16 @@ def built(tmp_path_factory):
     return out, key
 
 
+def key_of(out):
+    return json.loads(out.with_name(out.name + "-key.json").read_text())
+
+
+def folder_of(out, case):
+    return out / key_of(out)["folders"][case]
+
+
 def load(out, case, name):
-    return json.loads((out / case / name).read_text())
+    return json.loads((folder_of(out, case) / name).read_text())
 
 
 def test_the_valid_case_passes_every_check(built):
@@ -49,15 +57,15 @@ def test_flaw1_breaks_the_population_accounting_in_one_month(built):
 
 def test_flaw2_is_stopped_by_the_input_schema_before_any_run(built):
     out, key = built
-    assert not (out / "flaw2" / "results.json").exists()
+    assert not (folder_of(out, "flaw2") / "results.json").exists()
     assert load(out, "flaw2", "input.json")["parameter_overrides"] == {"annual_mortality_rate_all_causes": 0.8}
     assert key["flaw2"]["simulator_refuses_to_run"] and "maximum of 0.5" in key["flaw2"]["input_schema_errors"][0]
 
 
 def test_flaw3_is_stopped_by_the_parameter_validator_with_current_hashes(built):
     out, key = built
-    root = out / "flaw3" / "root"
-    assert not (out / "flaw3" / "results.json").exists()
+    root = folder_of(out, "flaw3") / "root"
+    assert not (folder_of(out, "flaw3") / "results.json").exists()
     assert "no_such_source" in key["flaw3"]["parameter_validator_errors"][0]
     assert str(out) not in key["flaw3"]["parameter_validator_errors"][0]
     assert key["flaw3"]["simulator_refuses_to_run"]
@@ -80,8 +88,8 @@ def test_flaw6_is_a_real_run_whose_wrong_endpoint_differs_from_the_agreed_one(bu
     assert key["flaw6"]["code_checks"]["failed_checks"] == ["persistence_recomputed"]
     config, results = load(out, "flaw6", "input.json"), load(out, "flaw6", "results.json")
     assert results["persisted"] is True
-    assert cases.pair_only_persistence(results, _parameters(config, out / "flaw6" / "root"))
-    honest = simulate(config, root=out / "flaw6" / "root")
+    assert cases.pair_only_persistence(results, _parameters(config, folder_of(out, "flaw6") / "root"))
+    honest = simulate(config, root=folder_of(out, "flaw6") / "root")
     assert honest["persisted"] is False
 
 
@@ -96,20 +104,21 @@ def test_flaw5_plants_leakage_in_a_copy_of_the_report_and_leaves_the_valid_one_a
 def test_every_case_folder_has_a_root_with_the_research_files(built):
     out, _ = built
     for case in ("valid", "flaw1", "flaw2", "flaw3", "flaw4", "flaw6"):
-        assert (out / case / "root" / cases.PARAMETERS).exists() and (out / case / "root" / cases.SOURCES).exists()
-    assert (out / "valid" / "root" / cases.PARAMETERS).read_bytes() == (REPO / cases.PARAMETERS).read_bytes()
+        root = folder_of(out, case) / "root"
+        assert (root / cases.PARAMETERS).exists() and (root / cases.SOURCES).exists()
+    assert (folder_of(out, "valid") / "root" / cases.PARAMETERS).read_bytes() == (REPO / cases.PARAMETERS).read_bytes()
 
 
 def test_without_a_history_report_flaw5_is_marked_not_built(tmp_path):
     out, key = cases.build(tmp_path / "out", REPO)
-    assert "not built" in key["flaw5"]["what"] and not (out / "flaw5").exists()
+    assert "not built" in key["flaw5"]["what"] and "flaw5" not in key["folders"]
 
 
 def test_nothing_is_overwritten_and_no_temporary_folder_is_left(tmp_path):
     cases.build(tmp_path / "out", REPO)
     with pytest.raises(ValueError, match="already exists"):
         cases.build(tmp_path / "out", REPO)
-    assert sorted(path.name for path in tmp_path.iterdir()) == ["out"]
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["out", "out-key.json"]
 
 
 def test_the_search_for_a_wrong_endpoint_run_fails_loudly_when_there_is_none():
@@ -122,3 +131,31 @@ def test_the_command_reports_one_line_and_returns_nonzero_on_an_existing_folder(
     assert "flaw1: revise" in capsys.readouterr().out
     assert cases.main(["--output", str(tmp_path / "out")]) == 1
     assert "already exists" in capsys.readouterr().out
+
+
+def test_folder_names_do_not_reveal_which_case_is_which(built):
+    out, key = built
+    names = sorted(path.name for path in out.iterdir())
+    assert names == [f"case-{number}" for number in range(1, 9)]
+    assert sorted(key["folders"].values()) == names
+    assert set(key["folders"]) == {"valid", "flaw1", "flaw2", "flaw3", "flaw4", "flaw5", "flaw6", "valid_report"}
+    assert key_of(out)["folders"] == key["folders"]
+
+
+def test_the_key_lies_beside_the_cases_never_inside_them(built):
+    out, _ = built
+    assert not list(out.rglob("*key*"))
+    assert out.with_name(out.name + "-key.json").exists()
+
+
+def test_one_blind_seed_gives_one_order_and_another_seed_gives_another(tmp_path):
+    one = cases.build(tmp_path / "a", REPO, blind_seed=5)[1]["folders"]
+    two = cases.build(tmp_path / "b", REPO, blind_seed=5)[1]["folders"]
+    other = cases.build(tmp_path / "c", REPO, blind_seed=6)[1]["folders"]
+    assert one == two and one != other
+
+
+def test_a_key_inside_the_case_folder_is_refused(tmp_path):
+    with pytest.raises(ValueError, match="inside"):
+        cases.build(tmp_path / "out", REPO, key_path=tmp_path / "out" / "key.json")
+    assert not (tmp_path / "out").exists()

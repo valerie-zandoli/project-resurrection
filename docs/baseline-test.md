@@ -42,7 +42,7 @@ Eight cases times five runs (40 per arm) is a small sample.  Report counts, not 
 
 ## Case files for flaws 1 to 6
 
-`scripts/baseline_cases_runs.py` plants flaws 1 to 6 in copies of one valid, real simulator run and writes one folder per case (`valid`, `flaw1` to `flaw6`), each with an `input.json`, a `results.json` (not for flaws 2 and 3, which stop before any run), and a `root/` folder with the research files, plus a `key.json` with the truth.  Flaw 5 needs a history report from a real run (`--history-report`); without one it is marked "not built".  Flaws 7 and 8 live in the research files and are built by `scripts/baseline_cases.py`.
+`scripts/baseline_cases_runs.py` plants flaws 1 to 6 in copies of one valid, real simulator run and writes one blinded folder per case (`case-1` to `case-N` in a seeded random order; the key file maps each to `valid` or `flaw1` to `flaw6`), each with an `input.json`, a `results.json` (not for flaws 2 and 3, which stop before any run), and a `root/` folder with the research files, plus a key file beside the output folder (`<output>-key.json`, never inside it) with the truth; keep it from the arms until the scoring step.  Flaw 5 needs a history report from a real run (`--history-report`); without one it is marked "not built".  Flaws 7 and 8 live in the research files and are built by `scripts/baseline_cases.py`.
 
 What the code reported when the cases were built (seed 3, 24 months, food 4.6, area 50):
 

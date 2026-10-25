@@ -3,8 +3,10 @@
 Each flaw is planted in a copy of one valid, real simulator run (the folder `valid`).  Every folder has an
 `input.json`, a `results.json` (except flaws 2 and 3, which the pipeline stops before any run), and a `root/` folder
 with the research files, so `python -m validators.results_checks --root <case>/root ...` works on it.
-`key.json` holds the truth and, for each case, what the code checks actually reported when the case was
-built:  keep it away from the arms until the scoring step.
+The folders are named case-1, case-2, and so on, in a seeded random order, so a name never says which case is
+which.  The key file, written beside the output folder and never inside it, maps each folder to its case and holds
+the truth and, for each case, what the code checks actually reported when the case was built:  keep it away from
+the arms until the scoring step.
 
 Flaws 7 and 8 live in the research files and are built by `scripts/baseline_cases.py`.
 """
@@ -13,6 +15,8 @@ import argparse
 import copy
 import csv
 import json
+import random
+import secrets
 import shutil
 import sys
 import tempfile
@@ -30,6 +34,13 @@ from validators.results_checks import _parameters, build_evaluation  # noqa: E40
 PARAMETERS = Path("data/parameters/iberian_lynx_baseline.csv")
 SOURCES = Path("data/parameters/sources.csv")
 MORTALITY = "annual_mortality_rate_all_causes"
+
+
+def blinded_names(names, seed):
+    """Map each real case name to a folder name that does not reveal it:  case-1, case-2, ... in a seeded random order."""
+    labels = [f"case-{number}" for number in range(1, len(names) + 1)]
+    random.Random(seed).shuffle(labels)
+    return dict(zip(names, labels))
 
 
 def make_root(destination, source_root):
@@ -106,7 +117,8 @@ def write_case(folder, config, results, source_root):
         (folder / "results.json").write_text(json.dumps(results, indent=2, allow_nan=False) + "\n", encoding="utf-8")
 
 
-def build(output, source_root=REPO, seed=3, months=24, history_report=None):
+def _build_cases(output, source_root=REPO, seed=3, months=24, history_report=None):
+    """Write the cases under their real names into `output` (a staging folder) and return the key."""
     output = Path(output)
     if output.exists():
         raise ValueError(f"{output} already exists; use a new folder")
@@ -201,24 +213,50 @@ def build(output, source_root=REPO, seed=3, months=24, history_report=None):
     else:
         key["flaw5"] = dict(flaw=5, what="not built:  no history report was given (--history-report)")
 
-    (output / "key.json").write_text(json.dumps(key, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+    return key
+
+
+def build(output, source_root=REPO, seed=3, months=24, history_report=None, key_path=None, blind_seed=None):
+    """Build the cases, give every folder a blinded name, and write the key beside the output folder."""
+    output = Path(output)
+    key_path = Path(key_path) if key_path else output.with_name(output.name + "-key.json")
+    if output.exists():
+        raise ValueError(f"{output} already exists; use a new folder")
+    if key_path.exists():
+        raise ValueError(f"{key_path} already exists; use a new file")
+    if output.resolve() in key_path.resolve().parents:
+        raise ValueError("the key must not be inside the case folder; the arms would see it")
+    blind_seed = secrets.randbits(32) if blind_seed is None else blind_seed
+    with tempfile.TemporaryDirectory() as scratch:
+        stage = Path(scratch) / "cases"
+        key = _build_cases(stage, source_root, seed, months, history_report)
+        names = sorted(path.name for path in stage.iterdir())
+        folders = blinded_names(names, blind_seed)
+        output.mkdir(parents=True)
+        for name in names:
+            shutil.copytree(stage / name, output / folders[name])
+    key = {"folders": folders, "blind_seed": blind_seed, **key}
+    key_path.write_text(json.dumps(key, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     return output, key
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--output", type=Path, required=True, help="new folder; never overwritten")
+    parser.add_argument("--key", type=Path, help="new key file, outside the output folder (default: <output>-key.json)")
+    parser.add_argument("--blind-seed", type=int, help="seed of the folder order (default: random; the key records it)")
     parser.add_argument("--seed", type=int, default=3)
     parser.add_argument("--months", type=int, default=24)
     parser.add_argument("--history-report", type=Path, help="report.json of a history run, the base of flaw 5")
     args = parser.parse_args(argv)
     try:
-        out, key = build(args.output, REPO, args.seed, args.months, args.history_report)
+        out, key = build(args.output, REPO, args.seed, args.months, args.history_report, args.key, args.blind_seed)
     except (OSError, ValueError, KeyError, StopIteration, json.JSONDecodeError) as exc:
         print(f"Baseline cases failed: {exc}")
         return 1
-    print(f"Cases written to {out} with key.json; keep the key from the arms.")
-    for name in sorted(key):
+    key_file = args.key or out.with_name(out.name + "-key.json")
+    print(f"Cases written to {out} (blinded as case-N); the key is {key_file}:  keep it from the arms.")
+    for name in sorted(name for name in key if name not in ("folders", "blind_seed")):
         checks = key[name].get("code_checks")
         if isinstance(checks, dict):
             print(f"  {name}: {checks['status']}, failed checks: {', '.join(checks['failed_checks']) or 'none'}")
