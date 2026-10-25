@@ -34,6 +34,15 @@ def test_the_draw_is_10_distinct_rows_and_the_same_for_one_run_id(parameters):
     assert names(first) == names(audit.draw("batch-001", list(reversed(parameters))))
 
 
+def test_the_rows_drawn_for_one_run_id_are_pinned(parameters):
+    # random.sample may change between Python versions; this pin makes any drift visible.  Edit it only with a reason.
+    assert names(audit.draw("batch-001", parameters)) == [
+        "female_home_range_km2", "breeding_age_max", "cub_cumulative_survival_3mo",
+        "cub_cumulative_survival_to_dispersal", "food_level_medium_rabbits_per_ha", "diet_rabbit_fraction",
+        "rabbit_density_autumn_min_for_territorial_breeding", "rabbit_density_spring_min_for_territorial_breeding",
+        "dispersal_settlement_fraction", "litter_size_at_birth"]
+
+
 def test_another_run_id_draws_other_rows(parameters):
     draws = {tuple(names(audit.draw(f"batch-{i:03d}", parameters))) for i in range(20)}
     assert len(draws) > 10
@@ -60,6 +69,16 @@ def test_the_sheet_names_the_seed_the_rows_and_how_each_source_was_read(paramete
     assert all(f"`{row['name']}`" in sheet for row in rows)
     assert "Bar:  9 of 10 correct" in sheet and "Running table" in sheet
     assert sheet.count("\n| ") >= 10 + 2
+
+
+def test_a_source_missing_from_the_registry_is_named_on_the_sheet():
+    row = dict(name="x", baseline="1", low="0", high="2", units="u", area_age_group="g", source="nowhere;real")
+    sheet = audit.render("batch-x", [row], [dict(key="real", how_read="full text")])
+    assert "nowhere (not in the registry)" in sheet and "real (full text)" in sheet
+
+
+def test_a_pipe_or_a_newline_cannot_break_the_table():
+    assert audit.cell("a|b\nc ") == "a/b c"
 
 
 def test_the_command_writes_a_sheet_and_never_overwrites_it(tmp_path, capsys):
