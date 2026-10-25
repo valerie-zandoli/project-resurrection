@@ -40,11 +40,20 @@ We start with the 53 lynx counted in 2002 in Andújar-Cardeña.  We calibrate on
 
 **6. The grid and its limits (Table 1, Figure 1)**
 
-Across food levels and areas, [FILL: persistence share with 95% intervals, from the final batch].  Four limits matter most.  The model treats every food level above 4.6 per hectare the same, so it cannot tell them apart.  The cliff at 4.6 is our assumption.  Area matters only through the number of territories.  And persistence means a living breeding pair at month 120, not long-term viability.
+Across food levels and areas, [FILL: persistence share with 95% intervals, from the final batch].  Four limits matter most.  The model treats every food level above 4.6 per hectare the same, so it cannot tell them apart.  The cliff at 4.6 is our assumption.  Area matters only through the number of territories.  And persistence means that at month 120 a living female of breeding age holds a territory and a living male of breeding age shares her patch, not long-term viability.
 
 **7. What stays open**
 
-Still open:  the 2011 target, 214 or 202; the area assumption; [FILL: any decision still open on the day]; and several sources that we read only in abstract.  Everything is in the repository, with the commands to reproduce it.  Thank you.  We are glad to take questions.
+Still open:  the 2011 target, 214 or 202; the area assumption; [FILL: any decision still open on the day]; and the sources that we have not read in full (`docs/unread-sources.md`).  Everything is in the repository, with the commands to reproduce it.  Thank you.  We are glad to take questions.
+
+## Before you start
+
+1. Close every window that shows `.env` or a key, and turn on Do Not Disturb.
+2. Open the slide PDF and the saved files of `docs/demo-plan.md` ("The fallback") in the order of the beats:  the history report, the batch files and summaries, one `results.json` with its `evaluation.json`, and the traces of the live pass.
+3. Read the status tags from the repository that morning, and fill every [FILL] bracket from a saved file.
+4. If a command is shown live, set the terminal font to 24 points or larger.
+5. Keep the saved run and the slide PDF ready as the backup that needs no key and no network.
+6. The day before (Sunday 2026-11-01), rehearse once aloud with a timer, then rehearse only the seams four times:  the last line of one speaker into the first line of the next.
 
 ## Rehearsal rules
 
@@ -57,3 +66,16 @@ Still open:  the 2011 target, 214 or 202; the area assumption; [FILL: any decisi
 ## To agree
 
 Who speaks which beat; whether the slot is exactly four minutes or has a question period after it; which saved run to show in beat 4; which 2011 target to state in beat 5.
+
+## Facts behind the numbers (for questions)
+
+| Claim in the script | Source |
+|---|---|
+| Growth bounds 1.12 to 1.22 (1.17 plus or minus 0.05); observed growth (190 / 53) ^ (1 / 8) = 1.173 | `docs/history-test.md` |
+| One held-out batch of 500 trials; calibration changes post-dispersal mortality only | `docs/history-test.md`; `docs/history-preregistration.md` (#62) |
+| 2011 bounds 192.6 to 235.4 (for 214) or 181.8 to 222.2 (for 202), plus or minus 10% | `docs/history-test.md`; the choice is open |
+| 53 lynx counted in 2002 in Andujar-Cardena | `data/history/counts.csv` |
+| Food above 4.6 rabbits per hectare gives the same run; the 4.6 cliff is our assumption | `docs/model-conventions.md`; `docs/research-notes.md` (the monograph says 1.0 and 4.6 were enough, not minimums) |
+| Persistence:  a living female of breeding age holding a territory and a living male of breeding age in one patch at month 120 | `docs/agent-handoffs.md` (the `settled` field) |
+| Three roles, the harness, and the status tags | `docs/architecture.md`; `docs/demo-plan.md` |
+| The script runs near 3:30 | about 450 words at about 130 words a minute |
