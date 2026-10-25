@@ -57,7 +57,8 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
                     output = tools[name](**arguments)
                 except TypeError as exc:  # arguments that do not fit the tool are refused, not retried
                     output = f"refused:  bad arguments for {name}: {exc}"
-                results[name] = output
+                else:
+                    results[name] = output  # only a successful call is a result; a refusal is never the record
                 content, _ = scrub(output if isinstance(output, str) else repr(output), limit=2000)
                 if name in UNTRUSTED_TOOLS:
                     content = wrap_untrusted(content)
