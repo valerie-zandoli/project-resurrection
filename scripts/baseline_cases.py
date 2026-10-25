@@ -5,18 +5,29 @@ Flaw 7:  a conflict named in the research notes is dropped from the table (the `
 (its `origin` is relabeled and the confidence is raised).
 
 Both cases still pass `validators.parameters`:  the validator checks structure, not meaning, so only an
-arm that reads the sources can catch them.  The output holds three folders (valid, flaw7, flaw8) and
-`key.json`, the truth; keep the key away from the arms until the scoring step.
+arm that reads the sources can catch them.  The output holds three folders named case-1 to case-3 in a
+random order, so a name never says which case is which; the truth (which folder is valid, flaw7, or flaw8)
+is written to a key file beside the output folder, never inside it.  Keep the key from the arms until scoring.
 """
 
 import argparse
 import csv
 import json
+import random
+import secrets
 import shutil
 import sys
 from pathlib import Path
 
 SENTINELS = {"none_identified", "not_checked"}
+CASES = ("valid", "flaw7", "flaw8")
+
+
+def blinded_names(seed):
+    """Map each case to a folder name that does not reveal it:  case-1 to case-3 in a seeded random order."""
+    names = [f"case-{number}" for number in range(1, len(CASES) + 1)]
+    random.Random(seed).shuffle(names)
+    return dict(zip(CASES, names))
 
 
 def read_table(path):
@@ -82,10 +93,17 @@ def double_count_origin(parameter_rows, source_rows, evidence_rows, row_name, ex
             "before": before, "truth": f"{extra_source} repeats {', '.join(repeated)}; the table counts it as a separate origin"}
 
 
-def build(parameters, sources, evidence, output, row7, row8, extra_source, new_origin):
+def build(parameters, sources, evidence, output, row7, row8, extra_source, new_origin, key_path=None, blind_seed=None):
     output = Path(output)
+    key_path = Path(key_path) if key_path else output.with_name(output.name + "-key.json")
     if output.exists():
         raise ValueError(f"{output} already exists; use a new folder")
+    if key_path.exists():
+        raise ValueError(f"{key_path} already exists; use a new file")
+    if output.resolve() in key_path.resolve().parents:
+        raise ValueError("the key must not be inside the case folder; the arms would see it")
+    blind_seed = secrets.randbits(32) if blind_seed is None else blind_seed
+    folders = blinded_names(blind_seed)
     files = {"parameters": Path(parameters), "sources": Path(sources), "evidence": Path(evidence)}
     tables = {name: read_table(path) for name, path in files.items()}
     names = {"parameters": "parameters.csv", "sources": "sources.csv", "evidence": "evidence.csv"}
@@ -97,16 +115,18 @@ def build(parameters, sources, evidence, output, row7, row8, extra_source, new_o
                                row8, extra_source, new_origin)
 
     output.mkdir(parents=True)
-    for folder, changed in (("valid", ()), ("flaw7", ("evidence",)), ("flaw8", ("parameters", "sources", "evidence"))):
+    for case, changed in (("valid", ()), ("flaw7", ("evidence",)), ("flaw8", ("parameters", "sources", "evidence"))):
+        folder = folders[case]
         (output / folder).mkdir()
-        changes = {"flaw7": flaw7, "flaw8": flaw8}.get(folder, {})
+        changes = {"flaw7": flaw7, "flaw8": flaw8}.get(case, {})
         for name, path in files.items():
             target = output / folder / names[name]
             if name in changed:
                 write_table(target, *changes[name])
             else:
                 shutil.copyfile(path, target)
-    (output / "key.json").write_text(json.dumps({"flaw7": key7, "flaw8": key8}, indent=2) + "\n", encoding="utf-8")
+    key_path.write_text(json.dumps({"folders": folders, "blind_seed": blind_seed, "flaw7": key7, "flaw8": key8},
+                                   indent=2) + "\n", encoding="utf-8")
     return output
 
 
@@ -116,6 +136,8 @@ def main(argv=None):
     parser.add_argument("--sources", type=Path, required=True)
     parser.add_argument("--evidence", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True, help="new folder; never overwritten")
+    parser.add_argument("--key", type=Path, help="new key file, outside the output folder (default: <output>-key.json)")
+    parser.add_argument("--blind-seed", type=int, help="seed of the folder order (default: random; the key records it)")
     parser.add_argument("--row7", default="breeding_age_min", help="row whose named conflict is dropped")
     parser.add_argument("--row8", default="rabbit_density_spring_min_for_territorial_breeding",
                         help="row that gets the repeated source")
@@ -125,11 +147,12 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         out = build(args.parameters, args.sources, args.evidence, args.output,
-                    args.row7, args.row8, args.extra_source, args.new_origin)
+                    args.row7, args.row8, args.extra_source, args.new_origin, args.key, args.blind_seed)
     except (OSError, ValueError, KeyError, csv.Error) as exc:
         print(f"Baseline cases failed: {exc}")
         return 1
-    print(f"Cases written to {out} (valid, flaw7, flaw8) with key.json; keep the key from the arms.")
+    key_file = args.key or out.with_name(out.name + "-key.json")
+    print(f"Cases written to {out} (case-1 to case-3, blinded); the key is {key_file}:  keep it from the arms.")
     return 0
 
 

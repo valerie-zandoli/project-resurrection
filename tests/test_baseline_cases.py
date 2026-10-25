@@ -47,10 +47,18 @@ def inputs(tmp_path):
     )
 
 
-def build(inputs, tmp_path, **changes):
-    args = dict(row7="age_min", row8="density", extra_source="report", new_origin="report_as_own")
+def build(inputs, tmp_path, name="out", **changes):
+    args = dict(row7="age_min", row8="density", extra_source="report", new_origin="report_as_own", blind_seed=1)
     args.update(changes)
-    return cases.build(inputs["parameters"], inputs["sources"], inputs["evidence"], tmp_path / "out", **args)
+    return cases.build(inputs["parameters"], inputs["sources"], inputs["evidence"], tmp_path / name, **args)
+
+
+def key_of(out):
+    return json.loads(out.with_name(out.name + "-key.json").read_text())
+
+
+def folder_of(out, case):
+    return out / key_of(out)["folders"][case]
 
 
 def folder_errors(folder):
@@ -63,38 +71,38 @@ def table(folder, name):
 
 def test_the_valid_case_and_both_flawed_cases_pass_the_structural_validator(inputs, tmp_path):
     out = build(inputs, tmp_path)
-    for folder in ("valid", "flaw7", "flaw8"):
-        assert folder_errors(out / folder) == [], folder
+    for case in ("valid", "flaw7", "flaw8"):
+        assert folder_errors(folder_of(out, case)) == [], case
 
 
 def test_flaw7_changes_only_the_contradiction_and_clears_the_pointer(inputs, tmp_path):
     out = build(inputs, tmp_path)
-    valid, flawed = table(out / "valid", "evidence.csv"), table(out / "flaw7", "evidence.csv")
+    valid, flawed = table(folder_of(out, "valid"), "evidence.csv"), table(folder_of(out, "flaw7"), "evidence.csv")
     assert flawed[0]["contradicts"] == "none_identified" and flawed[0]["draft_note"] == ""
     assert {k: v for k, v in flawed[0].items() if k not in ("contradicts", "draft_note")} == \
         {k: v for k, v in valid[0].items() if k not in ("contradicts", "draft_note")}
     assert flawed[1] == valid[1]
-    assert (out / "flaw7" / "parameters.csv").read_bytes() == inputs["parameters"].read_bytes()
-    assert (out / "flaw7" / "sources.csv").read_bytes() == inputs["sources"].read_bytes()
-    key = json.loads((out / "key.json").read_text())["flaw7"]
+    assert (folder_of(out, "flaw7") / "parameters.csv").read_bytes() == inputs["parameters"].read_bytes()
+    assert (folder_of(out, "flaw7") / "sources.csv").read_bytes() == inputs["sources"].read_bytes()
+    key = key_of(out)["flaw7"]
     assert key["parameter"] == "age_min" and key["dropped_contradictions"] == ["source:study_a~source:summary"]
 
 
 def test_flaw8_counts_a_repeating_source_as_a_new_origin(inputs, tmp_path):
     out = build(inputs, tmp_path)
-    parameters, sources, evidence = (table(out / "flaw8", n) for n in ("parameters.csv", "sources.csv", "evidence.csv"))
+    parameters, sources, evidence = (table(folder_of(out, "flaw8"), n) for n in ("parameters.csv", "sources.csv", "evidence.csv"))
     assert parameters[1]["source"] == "study_b;report"
     assert {row["key"]: row["origin"] for row in sources}["report"] == "report_as_own"
     assert evidence[1]["origin"] == "study_b;report_as_own" and evidence[1]["confidence"] == "high"
-    assert table(out / "flaw8", "parameters.csv")[0] == table(out / "valid", "parameters.csv")[0]
-    key = json.loads((out / "key.json").read_text())["flaw8"]
+    assert table(folder_of(out, "flaw8"), "parameters.csv")[0] == table(folder_of(out, "valid"), "parameters.csv")[0]
+    key = key_of(out)["flaw8"]
     assert key["really_repeats"] == ["study_b"] and key["before"]["source_origin"] == "study_b;census"
 
 
 def test_the_valid_case_is_a_byte_copy_of_the_inputs(inputs, tmp_path):
     out = build(inputs, tmp_path)
     for name, file in (("parameters.csv", "parameters"), ("sources.csv", "sources"), ("evidence.csv", "evidence")):
-        assert (out / "valid" / name).read_bytes() == inputs[file].read_bytes()
+        assert (folder_of(out, "valid") / name).read_bytes() == inputs[file].read_bytes()
 
 
 def test_flaw7_needs_a_named_contradiction(inputs, tmp_path):
@@ -116,7 +124,7 @@ def test_flaw8_refuses_a_plant_that_would_not_be_a_real_repeat(inputs, tmp_path,
 def test_nothing_is_written_when_a_case_cannot_be_built_and_nothing_is_overwritten(inputs, tmp_path):
     with pytest.raises(ValueError):
         build(inputs, tmp_path, row7="density")
-    assert not (tmp_path / "out").exists()
+    assert not (tmp_path / "out").exists() and not (tmp_path / "out-key.json").exists()
     build(inputs, tmp_path)
     with pytest.raises(ValueError, match="already exists"):
         build(inputs, tmp_path)
@@ -126,5 +134,30 @@ def test_the_command_reports_errors_in_one_line_and_returns_nonzero(inputs, tmp_
     args = ["--parameters", str(inputs["parameters"]), "--sources", str(inputs["sources"]),
             "--evidence", str(inputs["evidence"]), "--output", str(tmp_path / "out"),
             "--row7", "age_min", "--row8", "density", "--extra-source", "report", "--new-origin", "report_as_own"]
-    assert cases.main(args) == 0 and "key.json" in capsys.readouterr().out
+    assert cases.main(args) == 0 and "the key is" in capsys.readouterr().out
     assert cases.main(args) == 1 and "already exists" in capsys.readouterr().out
+
+
+def test_folder_names_do_not_reveal_which_case_is_which(inputs, tmp_path):
+    out = build(inputs, tmp_path)
+    assert sorted(path.name for path in out.iterdir()) == ["case-1", "case-2", "case-3"]
+    assert sorted(key_of(out)["folders"].values()) == ["case-1", "case-2", "case-3"]
+    assert set(key_of(out)["folders"]) == {"valid", "flaw7", "flaw8"}
+
+
+def test_one_blind_seed_gives_one_order_and_the_key_lies_outside_the_cases(inputs, tmp_path):
+    one, two = build(inputs, tmp_path, name="one", blind_seed=5), build(inputs, tmp_path, name="two", blind_seed=5)
+    assert key_of(one)["folders"] == key_of(two)["folders"] and key_of(one)["blind_seed"] == 5
+    assert not list(one.rglob("*key*"))
+
+
+def test_other_blind_seeds_give_other_orders(inputs, tmp_path):
+    orders = {tuple(key_of(build(inputs, tmp_path, name=f"o{seed}", blind_seed=seed))["folders"].values())
+              for seed in range(12)}
+    assert len(orders) > 1
+
+
+def test_a_key_inside_the_case_folder_is_refused(inputs, tmp_path):
+    with pytest.raises(ValueError, match="inside"):
+        build(inputs, tmp_path, key_path=tmp_path / "out" / "key.json")
+    assert not (tmp_path / "out").exists()
