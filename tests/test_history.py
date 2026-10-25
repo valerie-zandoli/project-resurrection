@@ -1,6 +1,7 @@
 """History test code:  the start, the seed rule, the tolerances, and the one-way protocol."""
 
 import csv
+import dataclasses
 import json
 import random
 import statistics
@@ -37,13 +38,15 @@ def census(population, year, definition):
 def test_constants_match_the_census_file_and_the_accepted_tolerances():
     assert history.START_TOTAL == census('Andujar-Cardena', 2002, 'individuals') == 53
     assert history.START_ADULTS == census('Andujar-Cardena', 2002, 'adults') == 25
-    assert history.HELDOUT_COUNT == census('Andujar-Cardena', 2011, 'all lynx') == 214
+    assert history.BESIDE_COUNT == census('Andujar-Cardena', 2011, 'all lynx') == 214
+    assert history.HELDOUT_COUNT == 202  # its row reaches counts.csv with #57; read it here after that merges
     observed = (census('Andujar-Cardena', 2010, 'individuals') / 53) ** (1 / 8)
     assert observed == pytest.approx(1.173, abs=0.001)
     assert GROWTH_BOUNDS == (pytest.approx(history.OBSERVED_GROWTH - 0.05), pytest.approx(history.OBSERVED_GROWTH + 0.05))
     assert GROWTH_BOUNDS == (1.12, 1.22)
-    assert COUNT_BOUNDS == (pytest.approx(214 * 0.9), pytest.approx(214 * 1.1))
-    assert COUNT_BOUNDS == (192.6, 235.4)
+    assert COUNT_BOUNDS == (pytest.approx(202 * 0.9), pytest.approx(202 * 1.1))
+    assert COUNT_BOUNDS == (181.8, 222.2)
+    assert history.BESIDE_BOUNDS == (pytest.approx(214 * 0.9), pytest.approx(214 * 1.1))
     assert (CALIBRATION_MONTHS, HELDOUT_MONTHS) == (96, 108)
 
 
@@ -118,9 +121,9 @@ def test_growth_is_the_annual_rate_from_month_0_to_month_96():
 
 
 @pytest.mark.parametrize('median_growth, median_count, expected', [
-    (1.12, 192.6, 'pass'), (1.22, 235.4, 'pass'), (1.17, 214, 'pass'),
-    (1.1199, 214, 'fail'), (1.2201, 214, 'fail'),
-    (1.17, 192.59, 'fail'), (1.17, 235.41, 'fail'),
+    (1.12, 181.8, 'pass'), (1.22, 222.2, 'pass'), (1.17, 202, 'pass'),
+    (1.1199, 202, 'fail'), (1.2201, 202, 'fail'),
+    (1.17, 181.79, 'fail'), (1.17, 222.21, 'fail'),
 ])
 def test_verdict_bounds_are_inclusive_and_both_must_hold(median_growth, median_count, expected):
     assert verdict(median_growth, median_count)['result'] == expected
@@ -136,6 +139,18 @@ def test_percentile_interpolates():
     assert percentile([1, 2, 3, 4, 5], 0.5) == 3
     assert percentile([1, 2, 3, 4, 5], 0.1) == pytest.approx(1.4)
     assert percentile([1, 2, 3, 4, 5], 0.9) == pytest.approx(4.6)
+
+
+def test_median_growth_falls_as_mortality_rises_on_the_real_model(params, config):
+    # The calibration assumes this.  A development check only:  months 0 to 96, a run seed that no real run uses,
+    # and no 2011 count is computed or printed (docs/history-preregistration.md, "What counts as looking").
+    def median_growth(mortality):
+        trial_p = dataclasses.replace(params, annual_mortality=mortality)
+        return statistics.median(
+            growth(run_trial(trial_p, config, trial_seed(987654, f'dev-m{mortality}', t), CALIBRATION_MONTHS))
+            for t in range(20))
+
+    assert median_growth(0.15) > median_growth(0.35) > median_growth(0.50)
 
 
 def test_calibration_never_simulates_past_month_96(params, config, monkeypatch):
@@ -193,7 +208,7 @@ def test_heldout_uses_the_frozen_mortality_and_only_heldout_seeds(params, config
     assert [s for _, s, _ in seen] == [trial_seed(9, 'heldout', t) for t in range(7)]
 
 
-def test_real_trial_is_deterministic_and_respects_capacity(params, config):
+def test_real_trial_is_deterministic_and_has_one_population_per_month(params, config):
     first = run_trial(params, config, 123, HELDOUT_MONTHS)
     assert first == run_trial(params, config, 123, HELDOUT_MONTHS)
     assert len(first) == 109 and first[0] == 53
@@ -215,8 +230,11 @@ def test_protocol_runs_end_to_end_and_writes_a_complete_report(tmp_path):
     # The verdict comes from the main run only.
     assert saved['verdict'] == verdict(main_run['heldout']['growth']['median'],
                                        main_run['heldout']['count_2011']['median'])
-    assert saved['bounds'] == {'growth': [1.12, 1.22], 'count_2011': [192.6, 235.4]}
-    assert len(saved['must_say']) == 5
+    assert saved['bounds'] == {'growth': [1.12, 1.22], 'count_2011': [181.8, 222.2]}
+    assert len(saved['must_say']) == 7
+    beside = saved['reported_beside']
+    assert beside['count_2011'] == 214 and beside['used_for_verdict'] is False
+    assert beside['bounds'] == [192.6, 235.4]
     assert len(saved['parameters_sha256']) == 64
 
 

@@ -20,11 +20,13 @@ from simulation.model import Lynx, REPO, advance, check_states, load_parameters,
 START_TOTAL = 53        # 2002, individuals
 START_ADULTS = 25       # 2002, adults
 OBSERVED_GROWTH = 1.17  # (190 / 53) ^ (1 / 8) = 1.173 from 2002 to 2010
-HELDOUT_COUNT = 214     # 2011, all lynx; never used in calibration
+HELDOUT_COUNT = 202     # 2011, individuals (official series, the issuer's 2011 and 2016 reports); never used in calibration
+BESIDE_COUNT = 214      # 2011, Cat Specialist Group page; reported beside the verdict, never used for pass or fail
 
 # Tolerances, set before any run and never changed after the 2011 result.
 GROWTH_BOUNDS = (1.12, 1.22)    # median growth within 0.05 of 1.17
-COUNT_BOUNDS = (192.6, 235.4)   # median 2011 count within 10% of 214
+COUNT_BOUNDS = (181.8, 222.2)   # median 2011 count within 10% of 202 (Valerie, 2026-10-25, source quality)
+BESIDE_BOUNDS = (192.6, 235.4)  # within 10% of 214; reported only
 
 CALIBRATION_MONTHS = 96  # month 0 = 2002 census, month 96 = 2010 census
 HELDOUT_MONTHS = 108     # month 108 = 2011 census
@@ -157,6 +159,9 @@ REPORT_MUST_SAY = [
     'adult ages 36 to 108 months, non-adult ages 0 to 35 months, cub sex ratio of the table.',
     'The census date is assumed to be the end of the year (month 0 is a December).',
     'The usable area is an assumption (750 km2 for the main run); the verdict uses the main run only.',
+    "The 2011 target of 202 is the issuer's own figure (its 2011 and 2016 reports); 214 (Cat Specialist Group) "
+    'is reported beside it and never used for pass or fail.',
+    'The 2011 count adds one year at the calibrated rate; it is not independent of the calibration.',
 ]
 
 
@@ -176,9 +181,12 @@ def run_protocol(output, run_seed, areas=AREAS, calibration_trials=CALIBRATION_T
         results.append(dict(total_area_km2=area, main_run=area == areas[0],
                             calibration=calibration, heldout=batch))
     main = results[0]['heldout']
+    beside = dict(count_2011=BESIDE_COUNT, bounds=BESIDE_BOUNDS, used_for_verdict=False,
+                  median_within_bounds=BESIDE_BOUNDS[0] <= main['count_2011']['median'] <= BESIDE_BOUNDS[1])
     report = dict(run_seed=run_seed, bounds=dict(growth=GROWTH_BOUNDS, count_2011=COUNT_BOUNDS),
                   parameters_sha256=first['parameters_sha256'], sources_sha256=first['sources_sha256'],
                   verdict=verdict(main['growth']['median'], main['count_2011']['median']),
+                  reported_beside=beside,
                   main_area_km2=areas[0], areas=results, must_say=REPORT_MUST_SAY,
                   historical_validation='weak evidence only; see must_say')
     output.mkdir(parents=True)
