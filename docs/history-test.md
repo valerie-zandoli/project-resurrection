@@ -12,7 +12,6 @@ Does the model, run with the Donana parameters, grow a population from the 2002 
 - 2010:  190 individuals, of which 44 adult females.
 - 2011:  214 individuals, of which 90 adults (held out).
 - Observed growth:  (190 / 53) ^ (1 / 8) = 1.173 per year from 2002 to 2010;  (214 / 53) ^ (1 / 9) = 1.168 per year to 2011.
-- Vintage:  the 2010 report gave 60 for 2002 and 172 for 2010 (growth (172 / 60) ^ (1 / 8) = 1.14); later releases revised these to 53 and 190.  Use one vintage for both ends.  The tolerance of 1.12 to 1.22 covers both, and the territorial-female series (18 in 2002, 43 in 2010, 51 in 2011) did not change between vintages (`docs/research-notes.md`, item 10).
 
 ## What is compared
 
