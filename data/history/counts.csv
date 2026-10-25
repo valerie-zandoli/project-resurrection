@@ -99,3 +99,5 @@ Andujar-Cardena,2008,224,occupied area in km2 (official series),iberlince_censo2
 Andujar-Cardena,2009,236,occupied area in km2 (official series),iberlince_censo2016,
 Andujar-Cardena,2010,264,occupied area in km2 (official series),iberlince_censo2016,
 Andujar-Cardena,2011,282,occupied area in km2 (official series),iberlince_censo2016,
+Andujar-Cardena,2002,60,individuals (2010 report vintage),official_census_2010,First-reported figure; the later series gives 53 for 2002.  Growth to 2010 on this vintage is (172 / 60) ^ (1 / 8) = 1.14.
+Andujar-Cardena,2010,172,individuals (2010 report vintage),official_census_2010,First-reported figure; the later series gives 190.  Territorial females (43) did not change between vintages.
