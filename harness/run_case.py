@@ -10,6 +10,7 @@ at every handoff, counts the revision rounds (at most 3), and writes the trace.
 """
 
 import json
+import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -83,6 +84,7 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
         state["hashes"] = make_snapshot(source_root, snapshot_root)
     except OSError as exc:
         trace.add("harness", "research files could not be copied", validator=str(exc))
+        shutil.rmtree(snapshot_root, ignore_errors=True)  # no half-made snapshot is left to read
         return finish("rejected", f"research files could not be read: {exc}", [])
     trace.input_hashes = state["hashes"]
     trace.add("harness", "read-only snapshot of the research files made", validator="ok")
@@ -93,6 +95,7 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
     errors = validate_parameters(*paths)
     if errors:
         trace.add("harness", "research files failed validation", validator=errors)
+        shutil.rmtree(snapshot_root, ignore_errors=True)  # nothing that failed validation is left for an agent to read
         return finish("rejected", "research files failed validation: " + "; ".join(errors[:3]), [])
     trace.add("harness", "research files passed validation", validator="ok")
 

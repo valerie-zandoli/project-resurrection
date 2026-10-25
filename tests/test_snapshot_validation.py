@@ -27,3 +27,16 @@ def test_a_missing_research_file_rejects_the_case_instead_of_crashing(tmp_path):
     result = run_case(tmp_path / "case", options=OPTIONS, source_root=source)
     assert result.status == "rejected" and "research files" in result.reason
     assert (tmp_path / "case" / "case.json").exists()
+
+
+def test_a_snapshot_that_failed_validation_is_removed_and_its_hashes_stay_in_the_case_file(tmp_path):
+    import json
+    import shutil
+    source = tmp_path / "source"
+    shutil.copytree(run_case_module.REPO / "data", source / "data")
+    table = source / "data/parameters/iberian_lynx_baseline.csv"
+    table.write_text(table.read_text().replace(",breeding_age_min,", ",breeding_age_min_x,", 1) + "bad row without commas\n")
+    result = run_case(tmp_path / "case", options=OPTIONS, source_root=source)
+    assert result.status == "rejected"
+    assert not (tmp_path / "case" / "snapshot").exists()
+    assert json.loads((tmp_path / "case" / "case.json").read_text())["research_sha256"]
