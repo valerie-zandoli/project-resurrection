@@ -4,6 +4,7 @@ Owner: Anastasiya. Run from the repository root with Python 3.12:
 
 ```bash
 python -m validators.parameters data/parameters/iberian_lynx_baseline.csv data/parameters/sources.csv
+python -m validators.parameters data/parameters/iberian_lynx_baseline.csv data/parameters/sources.csv --evidence data/parameters/evidence_columns_DRAFT.csv
 python -m pytest
 ```
 
@@ -15,6 +16,23 @@ the source registry's `key` column; registry keys must be nonempty and unique.
 Standard quoted CSV text, decimals, and a UTF-8 BOM are supported.
 Failures report file, line, and parameter when available; the command exits 1.
 Success exits 0. No AI credentials or third-party runtime dependencies are needed.
+
+The optional `--evidence` file is a separate handoff; it does not change the
+eight-column parameter table. It must contain exactly these columns:
+`name,confidence,confidence_reason,contradicts,origin,draft_note`. It must have
+one row for every parameter and no additional parameter names. Confidence is
+`low`, `medium`, or `high`; the reason must be nonempty. The `origin` values are
+semicolon-separated IDs that must appear in the registry origins of sources
+cited for that parameter. The literal `unknown` is valid when the registry says
+the source origin is unknown; it never establishes independent support.
+
+`contradicts` accepts `none_identified`, `not_checked`, `source:<key>~source:<key>`,
+and `parameter:<name>` entries separated by semicolons. The two sentinels stand
+alone. Source keys and parameter names must exist. The optional `draft_note` is
+review context and is not interpreted. These checks validate structure and
+references only: they do not determine whether a confidence label is justified,
+whether a source supports a claim, or whether a `not_checked` row blocks a
+particular run stage.
 
 These are structural checks, not proof that a source supports a claim. Evaluators
 must review biological plausibility, units, evidence quality, and assumptions.
