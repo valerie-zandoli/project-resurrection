@@ -4,6 +4,7 @@ The code, not the model, decides which tools a role may call, how many steps it 
 the harness accepts.  The model's text is advice; the output of a tool is the record.
 """
 
+import inspect
 from pathlib import Path
 
 from harness.trace import scrub
@@ -54,10 +55,11 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
                     trace.add(role, content, tool=name, tool_args=arguments, prompt_version=version)
             else:
                 try:
-                    output = tools[name](**arguments)
+                    inspect.signature(tools[name]).bind(**arguments)
                 except TypeError as exc:  # arguments that do not fit the tool are refused, not retried
                     output = f"refused:  bad arguments for {name}: {exc}"
                 else:
+                    output = tools[name](**arguments)  # an error inside the tool is a defect and propagates
                     results[name] = output  # only a successful call is a result; a refusal is never the record
                 content, _ = scrub(output if isinstance(output, str) else repr(output), limit=2000)
                 if name in UNTRUSTED_TOOLS:
