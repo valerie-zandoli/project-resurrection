@@ -1,6 +1,6 @@
 # History test: what is compared, how, and when (PROPOSED)
 
-Drafted 2026-10-22 by Valerie with Claude Code. Valerie owns the history test. The test choices below are proposals unless the text records agreement. Valerie accepted the two tolerances on 2026-10-22; Anastasiya has not yet confirmed them. The area plan below incorporates Valerie's 2026-10-24 clarification and Anastasiya's requested comparison update. Its area and home-range values are modeling assumptions, not measurements of usable habitat.
+Drafted 2026-10-22 by Valerie with Claude Code. Valerie owns the history test. The 202 target and area plan below are agreed by Anastasiya and Valerie; other choices remain proposals or assumptions unless marked otherwise. Area and home-range values are modeling assumptions, not measurements of usable habitat.
 
 ## The question
 
@@ -10,8 +10,8 @@ Does the model, run with the Donana parameters, grow a population from the 2002 
 
 - 2002: 53 individuals, of which 25 adults.
 - 2010: 190 individuals, of which 44 adult females.
-- 2011: 214 individuals, of which 90 adults (held out).
-- Observed growth: (190 / 53) ^ (1 / 8) = 1.173 per year from 2002 to 2010; (214 / 53) ^ (1 / 9) = 1.168 per year to 2011.
+- 2011: 202 individuals in the official series (held out); 214 is also reported by the Cat Specialist Group and will be shown for comparison only.
+- Observed growth: (190 / 53) ^ (1 / 8) = 1.173 per year from 2002 to 2010. The held-out target is 202.
 
 ## What is compared
 
@@ -23,7 +23,7 @@ Does the model, run with the Donana parameters, grow a population from the 2002 
 ## The tolerances (set before any run, never changed after the 2011 result)
 
 - Median growth within 0.05 of 1.17, that is 1.12 to 1.22.
-- Median 2011 count within 10% of 214, that is 192.6 to 235.4.
+- Median 2011 count within 10% of 202, that is 181.8 to 222.2. The 214 figure is reported beside the verdict only; it does not affect pass or fail.
 
 ## The starting population (assumption, except the two counts)
 
@@ -32,7 +32,7 @@ Does the model, run with the Donana parameters, grow a population from the 2002 
 - Non-adults: whole-month ages drawn uniformly from 0 to 35 months; the cub sex ratio of the table (1.03 females per male).
 - All draws use the run seed. The synthetic 20-lynx start is a separate experiment and is never reused here.
 
-## Proposed area plan: primary boundary and occupied-area comparisons (2026-10-24)
+## Agreed area plan: primary boundary and occupied-area comparisons (2026-10-24)
 
 Valerie clarified that 750 km2 is a stand-in for the boundary of the Sierra de Andujar Natural Park (about 749 km2), not a measurement of usable lynx habitat. The usable area of the Andujar-Cardena nucleus itself is not sourced. This plan keeps 750 km2 as the primary model-boundary assumption and compares it with the historical occupied area using two home-range assumptions.
 

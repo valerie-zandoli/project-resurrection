@@ -94,7 +94,8 @@ def parse_arm(text):
         values = (float(area), float(home_range) if home_range else None)
     except ValueError:
         raise ValueError(f'cannot read the arm {text!r}; use AREA or AREA:HOME_RANGE') from None
-    if values[0] <= 0 or (values[1] is not None and values[1] <= 0):
+    if (not math.isfinite(values[0]) or values[0] <= 0
+            or (values[1] is not None and (not math.isfinite(values[1]) or values[1] <= 0))):
         raise ValueError(f'the arm {text!r} needs a positive area and home range')
     return values
 
@@ -119,7 +120,13 @@ def growth(populations):
 
 def mortality_grid(step=0.01):
     low, high = MORTALITY_RANGE
-    return [round(low + i * step, 6) for i in range(int(round((high - low) / step)) + 1)]
+    if not math.isfinite(step) or step <= 0 or step > high - low:
+        raise ValueError(f'mortality step must be greater than 0 and no larger than {high - low}')
+    intervals = (high - low) / step
+    nearest = round(intervals)
+    if not math.isclose(intervals, nearest, rel_tol=0, abs_tol=1e-9):
+        raise ValueError('mortality step must divide the mortality range evenly')
+    return [round(low + i * step, 6) for i in range(nearest + 1)]
 
 
 def percentile(values, share):
@@ -141,8 +148,13 @@ def calibrate(p, config, run_seed, trials=CALIBRATION_TRIALS, grid=None):
     Chooses the mortality whose median growth is closest to 1.17 (ties go to the lower one).
     The run stops at month 96, so the 2011 count is never computed here.
     """
+    if trials <= 0:
+        raise ValueError('calibration trials must be greater than 0')
+    mortality_values = list(grid if grid is not None else mortality_grid())
+    if not mortality_values:
+        raise ValueError('mortality grid must contain at least one value')
     rows = []
-    for mortality in (grid if grid is not None else mortality_grid()):
+    for mortality in mortality_values:
         trial_p = dataclasses.replace(p, annual_mortality=mortality)
         cell = f'calibration-m{mortality:.4f}'
         values = [growth(run_trial(trial_p, config, trial_seed(run_seed, cell, t), CALIBRATION_MONTHS))
@@ -156,6 +168,8 @@ def calibrate(p, config, run_seed, trials=CALIBRATION_TRIALS, grid=None):
 
 def heldout(p, config, run_seed, mortality, trials=HELDOUT_TRIALS):
     """One frozen batch through month 108 at the calibrated mortality; nothing is retuned."""
+    if trials <= 0:
+        raise ValueError('held-out trials must be greater than 0')
     frozen = dataclasses.replace(p, annual_mortality=mortality)
     runs = [run_trial(frozen, config, trial_seed(run_seed, HELDOUT_CELL, t), HELDOUT_MONTHS)
             for t in range(trials)]
@@ -193,6 +207,17 @@ def run_protocol(output, run_seed, arms=ARMS, calibration_trials=CALIBRATION_TRI
     output = Path(output)
     if output.exists():
         raise ValueError('Output directory already exists; use a new directory')
+    if not arms:
+        raise ValueError('at least one run arm is required')
+    if arms[0] != (750, None):
+        raise ValueError('the first arm must be the agreed 750 km2 primary run')
+    if calibration_trials <= 0 or heldout_trials <= 0:
+        raise ValueError('calibration and held-out trial counts must be greater than 0')
+    mortality_grid(step)  # validate the grid before beginning a potentially long run
+    for area, home_range in arms:
+        if (not math.isfinite(area) or area <= 0
+                or (home_range is not None and (not math.isfinite(home_range) or home_range <= 0))):
+            raise ValueError('every run arm needs a finite positive area and, when provided, home range')
     first = history_config(arms[0][0], root)
     table = load_parameters(first, root)
     results = []

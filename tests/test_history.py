@@ -72,7 +72,7 @@ def test_territories_follow_the_area_and_the_home_range(params):
 def test_an_arm_is_an_area_with_or_without_a_home_range():
     assert history.parse_arm('750') == (750.0, None)
     assert history.parse_arm('264:6.1') == (264.0, 6.1)
-    for bad in ('', 'x', '264:', '264:y', '0', '-5', '264:0'):
+    for bad in ('', 'x', '264:', '264:y', '0', '-5', '264:0', 'nan', 'inf', '264:nan'):
         with pytest.raises(ValueError):
             history.parse_arm(bad)
 
@@ -148,6 +148,12 @@ def test_mortality_grid_covers_0_10_to_0_50():
     grid = mortality_grid()
     assert grid[0] == 0.10 and grid[-1] == 0.50 and len(grid) == 41
     assert mortality_grid(0.2) == [0.1, 0.3, 0.5]
+
+
+@pytest.mark.parametrize('step', [0, -0.01, float('nan'), float('inf'), 0.6, 0.03])
+def test_mortality_grid_rejects_steps_that_cannot_cover_the_declared_range(step):
+    with pytest.raises(ValueError):
+        mortality_grid(step)
 
 
 def test_percentile_interpolates():
@@ -260,6 +266,20 @@ def test_protocol_never_overwrites_an_old_report(tmp_path):
     run_protocol(out, 1, arms=((750, None),), calibration_trials=1, heldout_trials=1, step=0.4)
     with pytest.raises(ValueError, match='already exists'):
         run_protocol(out, 1, arms=((750, None),), calibration_trials=1, heldout_trials=1, step=0.4)
+
+
+@pytest.mark.parametrize('arms', [(), ((264, 6.1), (750, None)), ((float('inf'), None),)])
+def test_protocol_rejects_missing_or_invalid_primary_arms(tmp_path, arms):
+    with pytest.raises(ValueError):
+        run_protocol(tmp_path / 'bad-run', 1, arms=arms, calibration_trials=1,
+                     heldout_trials=1, step=0.4)
+
+
+@pytest.mark.parametrize('calibration_trials, heldout_trials', [(0, 1), (1, 0), (-1, 1)])
+def test_protocol_rejects_nonpositive_trial_counts(tmp_path, calibration_trials, heldout_trials):
+    with pytest.raises(ValueError):
+        run_protocol(tmp_path / 'bad-run', 1, arms=((750, None),),
+                     calibration_trials=calibration_trials, heldout_trials=heldout_trials, step=0.4)
 
 
 def test_command_line_runs_and_refuses_an_existing_directory(tmp_path, capsys):
