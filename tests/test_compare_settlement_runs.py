@@ -8,35 +8,43 @@ DEFAULT_SETTLEMENT_RULE = comparison.DEFAULT_SETTLEMENT_RULE
 SETTLEMENT_RULES = comparison.SETTLEMENT_RULES
 
 
-def make_batches(tmp_path):
+def make_batches(tmp_path, trial_seeds=(1001,)):
+    """Three batches, one per settlement rule; each cell has one trial per seed in `trial_seeds`."""
     paths = {}
     for rule in SETTLEMENT_RULES:
         folder = tmp_path / rule
-        trial_dir = folder / "food-4.6_area-50" / "trial-000000"
-        trial_dir.mkdir(parents=True)
-        run_id = f"preview-{rule}-food-4.6_area-50-000000"
-        run_input = {
-            "schema_version": "2.1", "run_id": run_id, "seed": 1001,
-            "purpose": "synthetic_experiment", "duration_months": 12,
-            "food_rabbits_per_ha": 4.6, "settlement_rule": rule,
-            "patches": [
-                {"id": "A", "area_km2": 50, "habitat_quality": 1.0},
-                {"id": "B", "area_km2": 50, "habitat_quality": 1.0},
-            ],
-        }
-        trial_summary = {
-            "run_id": run_id, "persisted": True, "final_population": 20,
-            "extinction_month": None, "births_final_12_months": 0,
-            "historical_validation": "not_assessed",
-            "model_conventions": "proposed-2026-10-22",
-        }
-        write_json(trial_dir / "input.json", run_input)
-        write_json(trial_dir / "results.json", {
-            "run_id": run_id, "seed": 1001, "config": run_input,
-        })
-        write_json(trial_dir / "summary.json", trial_summary)
+        records = []
+        for index, trial_seed in enumerate(trial_seeds):
+            artifacts = f"food-4.6_area-50/trial-{index:06d}"
+            trial_dir = folder / artifacts
+            trial_dir.mkdir(parents=True)
+            run_id = f"preview-{rule}-food-4.6_area-50-{index:06d}"
+            run_input = {
+                "schema_version": "2.1", "run_id": run_id, "seed": trial_seed,
+                "purpose": "synthetic_experiment", "duration_months": 12,
+                "food_rabbits_per_ha": 4.6, "settlement_rule": rule,
+                "patches": [
+                    {"id": "A", "area_km2": 50, "habitat_quality": 1.0},
+                    {"id": "B", "area_km2": 50, "habitat_quality": 1.0},
+                ],
+            }
+            trial_summary = {
+                "run_id": run_id, "persisted": True, "final_population": 20,
+                "extinction_month": None, "births_final_12_months": 0,
+                "historical_validation": "not_assessed",
+                "model_conventions": "proposed-2026-10-22",
+            }
+            write_json(trial_dir / "input.json", run_input)
+            write_json(trial_dir / "results.json", {
+                "run_id": run_id, "seed": trial_seed, "config": run_input,
+            })
+            write_json(trial_dir / "summary.json", trial_summary)
+            records.append({
+                "trial": index, "seed": trial_seed, "run_id": run_id,
+                "artifacts": artifacts, "status": "completed", **trial_summary,
+            })
         statistics = {
-            "trials": 1, "persistence_share": 1.0,
+            "trials": len(trial_seeds), "persistence_share": 1.0,
             "persistence_wilson_95": [0.2065, 1.0],
             "final_population_median": 20, "final_population_p10": 20,
             "final_population_p90": 20, "extinction_share": 0.0,
@@ -45,7 +53,7 @@ def make_batches(tmp_path):
         batch = {
             "format_version": "preview-batch-1", "purpose": "synthetic_preview",
             "historical_validation": "not_assessed", "settlement_rule": rule,
-            "seed": 13, "seed_rule": "fixed-test-seed-rule", "trials_per_cell": 1,
+            "seed": 13, "seed_rule": "fixed-test-seed-rule", "trials_per_cell": len(trial_seeds),
             "duration_months": 12, "python_version": "3.12.test",
             "code_sha256": {"model": "same"},
             "model_conventions": "proposed-2026-10-22",
@@ -53,13 +61,9 @@ def make_batches(tmp_path):
             "status": "completed",
             "cells": [{
                 "name": "food-4.6_area-50", "food_rabbits_per_ha": 4.6,
-                "area_km2_per_patch": 50, "planned_trials": 1,
+                "area_km2_per_patch": 50, "planned_trials": len(trial_seeds),
                 "status": "completed", "statistics": statistics,
-                "trials": [{
-                    "trial": 0, "seed": 1001, "run_id": run_id,
-                    "artifacts": "food-4.6_area-50/trial-000000",
-                    "status": "completed", **trial_summary,
-                }],
+                "trials": records,
             }],
         }
         paths[rule] = folder / "batch.json"
@@ -140,3 +144,32 @@ def test_report_does_not_overwrite_existing_file(tmp_path):
         comparison.write_report({}, output)
 
     assert output.read_text() == "keep this"
+
+
+def test_comparison_accepts_batches_whose_trials_each_have_their_own_seed(tmp_path):
+    """A real batch gives every trial its own seed; the three batches must still match trial by trial."""
+    paths = make_batches(tmp_path, trial_seeds=(1001, 1002, 1003))
+
+    result = comparison.compare_batches(paths)
+
+    assert result["trials_per_cell"] == 3
+    assert set(result["cells"][0]["rules"]) == set(SETTLEMENT_RULES)
+
+
+def test_comparison_rejects_batches_whose_trial_seeds_differ_between_rules(tmp_path):
+    paths = make_batches(tmp_path, trial_seeds=(1001, 1002))
+    path = paths["one_try_at_dispersal"]
+    batch = json.loads(path.read_text())
+    record = batch["cells"][0]["trials"][1]
+    record["seed"] = 2002
+    folder = path.parent / record["artifacts"]
+    for name in ("input.json", "results.json"):
+        data = json.loads((folder / name).read_text())
+        data["seed"] = 2002
+        if name == "results.json":
+            data["config"]["seed"] = 2002
+        write_json(folder / name, data)
+    write_json(path, batch)
+
+    with pytest.raises(ValueError, match="matching trial seeds"):
+        comparison.compare_batches(paths)
