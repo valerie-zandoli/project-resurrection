@@ -30,9 +30,9 @@ EVIDENCE = [
 ]
 
 
-def write(path, fields, rows):
-    with path.open("w", newline="") as handle:
-        writer = csv.writer(handle)
+def write(path, fields, rows, line_end="\r\n", bom=False):
+    with path.open("w", newline="", encoding="utf-8-sig" if bom else "utf-8") as handle:
+        writer = csv.writer(handle, lineterminator=line_end)
         writer.writerow(fields)
         writer.writerows(rows)
     return path
@@ -40,10 +40,11 @@ def write(path, fields, rows):
 
 @pytest.fixture
 def inputs(tmp_path):
+    # Mixed formats on purpose, as in the repository:  two files end lines with CRLF, the evidence file with LF and a BOM.
     return dict(
         parameters=write(tmp_path / "p.csv", COLUMNS, PARAMETERS),
         sources=write(tmp_path / "s.csv", ["key", "citation", "origin"], SOURCES),
-        evidence=write(tmp_path / "e.csv", EVIDENCE_COLUMNS, EVIDENCE),
+        evidence=write(tmp_path / "e.csv", EVIDENCE_COLUMNS, EVIDENCE, line_end="\n", bom=True),
     )
 
 
@@ -82,8 +83,8 @@ def test_flaw7_changes_only_the_contradiction_and_clears_the_pointer(inputs, tmp
     assert {k: v for k, v in flawed[0].items() if k not in ("contradicts", "draft_note")} == \
         {k: v for k, v in valid[0].items() if k not in ("contradicts", "draft_note")}
     assert flawed[1] == valid[1]
-    assert (folder_of(out, "flaw7") / "parameters.csv").read_bytes() == inputs["parameters"].read_bytes()
-    assert (folder_of(out, "flaw7") / "sources.csv").read_bytes() == inputs["sources"].read_bytes()
+    for name in ("parameters.csv", "sources.csv"):
+        assert (folder_of(out, "flaw7") / name).read_bytes() == (folder_of(out, "valid") / name).read_bytes()
     key = key_of(out)["flaw7"]
     assert key["parameter"] == "age_min" and key["dropped_contradictions"] == ["source:study_a~source:summary"]
 
@@ -99,10 +100,24 @@ def test_flaw8_counts_a_repeating_source_as_a_new_origin(inputs, tmp_path):
     assert key["really_repeats"] == ["study_b"] and key["before"]["source_origin"] == "study_b;census"
 
 
-def test_the_valid_case_is_a_byte_copy_of_the_inputs(inputs, tmp_path):
+def test_the_valid_case_holds_the_same_tables_as_the_inputs(inputs, tmp_path):
     out = build(inputs, tmp_path)
     for name, file in (("parameters.csv", "parameters"), ("sources.csv", "sources"), ("evidence.csv", "evidence")):
-        assert (folder_of(out, "valid") / name).read_bytes() == inputs[file].read_bytes()
+        assert cases.read_table(folder_of(out, "valid") / name) == cases.read_table(inputs[file])
+
+
+def file_format(path):
+    """What a reader can see in a file without reading its values:  a BOM, the line ending, the final newline."""
+    data = path.read_bytes()
+    return dict(bom=data.startswith(b"\xef\xbb\xbf"), crlf=b"\r\n" in data, lf_only=b"\n" in data.replace(b"\r\n", b""),
+                final_newline=data.endswith(b"\n"))
+
+
+def test_the_folders_cannot_be_told_apart_by_how_their_files_are_written(inputs, tmp_path):
+    out = build(inputs, tmp_path)
+    for name in ("parameters.csv", "sources.csv", "evidence.csv"):
+        formats = {case: file_format(folder_of(out, case) / name) for case in ("valid", "flaw7", "flaw8")}
+        assert formats["valid"] == formats["flaw7"] == formats["flaw8"], (name, formats)
 
 
 def test_flaw7_needs_a_named_contradiction(inputs, tmp_path):

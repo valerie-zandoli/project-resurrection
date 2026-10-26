@@ -15,7 +15,6 @@ import csv
 import json
 import random
 import secrets
-import shutil
 import sys
 from pathlib import Path
 
@@ -37,8 +36,9 @@ def read_table(path):
 
 
 def write_table(path, fields, rows):
+    """Every case file is written here, in one format (UTF-8, no BOM, LF), so no folder stands out."""
     with Path(path).open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer = csv.DictWriter(handle, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -115,16 +115,13 @@ def build(parameters, sources, evidence, output, row7, row8, extra_source, new_o
                                row8, extra_source, new_origin)
 
     output.mkdir(parents=True)
-    for case, changed in (("valid", ()), ("flaw7", ("evidence",)), ("flaw8", ("parameters", "sources", "evidence"))):
+    # Write every file of every case, even an unchanged one:  a byte copy would keep the input's line endings
+    # and BOM, and the folder with the original bytes would give itself away.
+    for case, case_tables in (("valid", tables), ("flaw7", flaw7), ("flaw8", flaw8)):
         folder = folders[case]
         (output / folder).mkdir()
-        changes = {"flaw7": flaw7, "flaw8": flaw8}.get(case, {})
-        for name, path in files.items():
-            target = output / folder / names[name]
-            if name in changed:
-                write_table(target, *changes[name])
-            else:
-                shutil.copyfile(path, target)
+        for name in files:
+            write_table(output / folder / names[name], *case_tables[name])
     key_path.write_text(json.dumps({"folders": folders, "blind_seed": blind_seed, "flaw7": key7, "flaw8": key8},
                                    indent=2) + "\n", encoding="utf-8")
     return output
