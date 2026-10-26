@@ -258,3 +258,10 @@ def test_a_version_2_0_input_still_fails_identity_if_anything_else_changed():
     results = simulate(old)
     results["config"]["food_rabbits_per_ha"] = 55.0
     assert "run_identity" in failed(evaluate(old, results))
+
+
+def test_the_evaluator_names_the_same_default_settlement_rule_as_the_simulator():
+    # The Evaluator writes the default out so that it does not import the simulator; this keeps the two equal.
+    from simulation.model import DEFAULT_SETTLEMENT_RULE
+    from validators import results_checks
+    assert results_checks.DEFAULT_SETTLEMENT_RULE == DEFAULT_SETTLEMENT_RULE

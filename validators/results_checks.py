@@ -19,6 +19,7 @@ from validators.handoff_hashes import check_files_current, check_handoff_hashes
 ROOT = Path(__file__).resolve().parents[1]
 ZERO_HASH = "0" * 64
 MAX_ROUND = 3
+DEFAULT_SETTLEMENT_RULE = "monthly_current_then_other"  # what a version 2.0 input runs with
 
 
 def _schema(name):
@@ -48,9 +49,19 @@ def _breeding_age(animal, params):
 
 # Each check returns (passed, detail, requested change).  A failed check becomes one issue.
 
+def _as_version_2_1(run_input):
+    """A version 2.0 input as the simulator runs it:  version 2.1 with the default settlement rule.
+
+    Written out here rather than imported, so the Evaluator does not trust the simulator's code.
+    """
+    if run_input.get("schema_version") != "2.0":
+        return run_input
+    return dict(run_input, schema_version="2.1", settlement_rule=DEFAULT_SETTLEMENT_RULE)
+
+
 def check_identity(run_input, results, params):
     wrong = [name for name in ("run_id", "seed") if results[name] != run_input[name]]
-    if results["config"] != run_input:
+    if results["config"] != _as_version_2_1(run_input):
         wrong.append("config")
     if wrong:
         return (False, f"results differ from the input in: {', '.join(wrong)}.",
