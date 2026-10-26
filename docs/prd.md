@@ -307,9 +307,10 @@ extinction summaries. These conventions are not yet agreed. Before experiments:
   comparison runs at 264 km² and female home ranges of 6.1 and 10 km².
 - Settlement retries: Valerie chose on October 24, 2026 that every month each
   unsettled female of at least 18 months retries, her current patch first and
-  then the other, in one seeded random order per month; Anastasiya has not yet
-  confirmed it. Two other rules (own patch only, one try only) run as
-  sensitivity checks, reported apart from the main grid.
+  then the other, in one seeded random order per month; Anastasiya approved and
+  merged it in #49 on October 25, 2026. Two other rules (own patch only, one
+  try only) run as sensitivity checks, reported apart from the main grid; the
+  simulator has no option for them yet.
 - Align crash handling with transient retry rules; define incomplete cells and
   denominators before running.
 - Finalize provider, execution limits/isolation, trace retention, and the shared
