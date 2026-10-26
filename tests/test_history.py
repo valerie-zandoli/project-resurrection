@@ -301,3 +301,64 @@ def test_spread_matches_statistics_median():
     values = [3, 1, 4, 1, 5, 9, 2, 6]
     assert history.spread(values)['median'] == statistics.median(values)
 
+
+# Second observable:  territorial females, report-only (proposed in #62; waits for Anastasiya's agreement).
+
+def test_census_territorial_females_match_the_census_file():
+    in_file = {year: census('Andujar-Cardena', year, 'territorial females (official series)') for year in (2010, 2011)}
+    assert history.CENSUS_TERRITORIAL_FEMALES == in_file == {2010: 43, 2011: 51}
+
+
+def test_a_territorial_female_is_a_living_settled_female_of_breeding_age(params):
+    low, high = params.breeding_min, params.breeding_max
+    animals = [
+        Lynx('a', 'female', low, 'p1', settled=True),                   # counts
+        Lynx('b', 'female', high, 'p1', settled=True),                  # counts
+        Lynx('c', 'female', low, 'p1', settled=False),                  # not settled
+        Lynx('d', 'female', low - 1, 'p1', settled=True),               # too young
+        Lynx('e', 'female', high + 1, 'p1', settled=True),              # too old
+        Lynx('f', 'male', low, 'p1', settled=True),                     # not female
+        Lynx('g', 'female', low, 'p1', alive=False, settled=True),      # dead
+    ]
+    assert settled_breeding_females(animals, params) == 2
+
+
+def test_counting_females_does_not_change_the_run(params, config):
+    # The counts are read after the random draws of each month, so the same seed gives the same populations
+    # whether or not the females are counted.  A development check only:  months 0 to 96, a seed that no real run
+    # uses, and no 2011 count is computed (docs/history-preregistration.md, "What counts as looking").
+    seed = 4321
+    with_counts = run_trial_detail(params, config, seed, CALIBRATION_MONTHS, observe=(CALIBRATION_MONTHS,))
+    without = run_trial_detail(params, config, seed, CALIBRATION_MONTHS, observe=())
+    assert with_counts['populations'] == without['populations'] == run_trial(params, config, seed, CALIBRATION_MONTHS)
+    assert set(with_counts['settled_females']) == {CALIBRATION_MONTHS}
+    assert without['settled_females'] == {}
+    assert with_counts == run_trial_detail(params, config, seed, CALIBRATION_MONTHS, observe=(CALIBRATION_MONTHS,))
+
+
+def test_the_second_observable_is_reported_beside_the_verdict_and_never_scored(tmp_path):
+    report = run_protocol(tmp_path / 'run', 99, arms=((750, None), (264, 10.0)), calibration_trials=2,
+                          heldout_trials=3, step=0.2)
+    second = report['second_observable']
+    assert second['scored'] is False and second['tolerance'] is None
+    assert second['census'] == {'2010': 43, '2011': 51}
+    main_run, small = second['arms']
+    assert main_run['main_run'] and main_run['compared'] and not any(main_run['capacity_limited'].values())
+    assert not small['main_run'] and not small['compared']
+    assert small['territories'] == 26 and all(small['capacity_limited'].values())
+    for arm in second['arms']:
+        assert {'median', 'p10', 'p90'} <= set(arm['model_2010']) and {'median', 'p10', 'p90'} <= set(arm['model_2011'])
+    # The verdict reads the growth and the 2011 count of the main run only.
+    main_batch = report['areas'][0]['heldout']
+    assert report['verdict'] == verdict(main_batch['growth']['median'], main_batch['count_2011']['median'])
+    assert set(report['verdict']) == {'growth_within_bounds', 'count_2011_within_bounds', 'result'}
+    assert any('no tolerance' in sentence and 'no pass or fail' in sentence for sentence in report['must_say'])
+
+
+def test_arms_that_hold_fewer_territories_than_the_census_are_marked_capacity_limited(params):
+    results = [dict(total_area_km2=area, female_home_range_km2=home, territories=territories, main_run=number == 0,
+                    heldout=dict(settled_females_2010=dict(median=0, p10=0, p90=0),
+                                 settled_females_2011=dict(median=0, p10=0, p90=0)))
+               for number, (area, home, territories) in enumerate([(750, 10.0, 74), (264, 6.1, 42), (264, 10.0, 26)])]
+    flags = [arm['capacity_limited'] for arm in history.second_observable(results)['arms']]
+    assert flags == [{'2010': False, '2011': False}, {'2010': True, '2011': True}, {'2010': True, '2011': True}]
