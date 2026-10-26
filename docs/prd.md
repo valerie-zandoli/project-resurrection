@@ -1,7 +1,7 @@
 # Project Resurrection — Product requirements
 
 Owners: Anastasiya Glegg and Valerie Zandoli. Synchronized October 22, 2026; five passages
-updated October 24, 2026 (see the note after the source line).
+updated October 24, 2026 and refreshed October 25, 2026 (see the note after the source line).
 
 Source: [Google PRD](https://docs.google.com/document/d/1Hki-aSMezwRhHNW6Luye2z_ExSv5C_etIIxb4rqSoHc).
 Source revision of the full synchronization: `AHj4eMQFw1S02f_cz2RAmPjNIUGZjdxBgVr9yfwvIUeqjV0182-oekqMJ6pjSt9M9Z1TkZ-PSXMXwy_IPbh2hDLf_BkEqi7xdA9WNESaunU`.
@@ -11,6 +11,11 @@ revision `AHj4eMTnw-BAwiilLc4dSN01v_lda1lYIRWesZM9B--MI7lOvHCY27rcZKAtluzwq2EyoD
 (the usable area of the history run, the settlement retry rule, the status of PR #32, and the
 simulator preview in PR #40).  The other sections were not compared again and are as synchronized
 on October 22.
+
+Refreshed October 25, 2026:  the area passages and the retry-rule passage now record what both owners
+agreed on October 25 (#45 and #49), and the held-out 2011 target now reads 202 (#62).  The Google PRD
+was not read again for this refresh; where it still gives other values, it is out of date, and its
+owner is to update it.
 
 This specification consolidates all four project tabs: **PRD: Net new build**,
 **PRD: New feature**, **Agent PRD: Net new build**, and **Agent PRD: New feature**.
