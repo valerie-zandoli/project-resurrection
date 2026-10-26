@@ -14,6 +14,7 @@ from harness.snapshot import RESEARCH_FILES, make_snapshot
 from harness.trace import Trace, scrub
 from simulation.model import REPO
 from validators.handoff_hashes import file_sha256
+from validators.results_checks import build_evaluation
 
 OPTIONS = dict(seed=3, months=24, food=4.6, area=50)
 
@@ -91,8 +92,10 @@ def test_the_case_stops_after_round_3_and_never_runs_a_fifth_attempt(tmp_path):
 
 def test_the_harness_caps_the_rounds_even_if_the_evaluator_never_says_stop(tmp_path):
     def evaluator(config, results, root, round_number):
-        return dict(status="revise", issues=[dict(code="x", message="m", requested_change="c")],
-                    parameters_sha256=config["parameters_sha256"], sources_sha256=config["sources_sha256"])
+        # A schema-valid evaluation that never says stop:  the harness accepts nothing else as a record.
+        evaluation = build_evaluation(config, results, root, round_number)
+        evaluation.update(status="revise", issues=[dict(code="x", message="m", requested_change="c")])
+        return evaluation
 
     result = run_case(tmp_path / "case", options=OPTIONS, evaluator=evaluator)
     assert (result.status, result.attempts) == ("stop", 4)
