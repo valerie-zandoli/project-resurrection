@@ -12,8 +12,8 @@ from simulation import history
 from simulation.history import (CALIBRATION_MONTHS, COUNT_BOUNDS, GROWTH_BOUNDS, HELDOUT_MONTHS,
                                 calibrate, growth, heldout, history_config, history_start,
                                 main, mortality_grid, percentile, run_protocol, run_trial,
-                                trial_seed, verdict)
-from simulation.model import REPO, load_parameters
+                                run_trial_detail, settled_breeding_females, trial_seed, verdict)
+from simulation.model import Lynx, REPO, load_parameters
 
 
 @pytest.fixture(scope='module')
@@ -219,9 +219,9 @@ def test_heldout_uses_the_frozen_mortality_and_only_heldout_seeds(params, config
 
     def fake(p, cfg, seed, months):
         seen.append((p.annual_mortality, seed, months))
-        return [53] * (months + 1)
+        return dict(populations=[53] * (months + 1), settled_females={96: 20, 108: 22})
 
-    monkeypatch.setattr(history, 'run_trial', fake)
+    monkeypatch.setattr(history, 'run_trial_detail', fake)
     batch = heldout(params, config, 9, 0.2, trials=7)
     assert batch['mortality'] == 0.2
     assert {m for m, _, _ in seen} == {0.2}
@@ -254,7 +254,7 @@ def test_protocol_runs_end_to_end_and_writes_a_complete_report(tmp_path):
     assert saved['verdict'] == verdict(main_run['heldout']['growth']['median'],
                                        main_run['heldout']['count_2011']['median'])
     assert saved['bounds'] == {'growth': [1.12, 1.22], 'count_2011': [181.8, 222.2]}
-    assert len(saved['must_say']) == 7
+    assert len(saved['must_say']) == 8
     beside = saved['reported_beside']
     assert beside['count_2011'] == 214 and beside['used_for_verdict'] is False
     assert beside['bounds'] == [192.6, 235.4]
@@ -300,3 +300,4 @@ def test_the_run_seed_is_required():
 def test_spread_matches_statistics_median():
     values = [3, 1, 4, 1, 5, 9, 2, 6]
     assert history.spread(values)['median'] == statistics.median(values)
+
