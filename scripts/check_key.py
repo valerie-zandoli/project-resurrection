@@ -29,8 +29,8 @@ from pathlib import Path
 API_URL = "https://api.anthropic.com/v1/messages"
 API_VERSION = "2023-06-01"
 KEY_NAME = "ANTHROPIC_API_KEY"
-# The plain API model id.  LiteLLM writes the same model as "anthropic/claude-sonnet-5".
-MODEL = "claude-sonnet-5"
+# The plain API model id.  LiteLLM writes the same model as "anthropic/claude-sonnet-5-5".
+MODEL = "claude-sonnet-5-5"
 DEFAULT_ENV = Path(__file__).resolve().parent.parent / ".env"
 MAX_BODY = 1_000_000  # bytes; a reply to a 32-token request is far smaller
 MAX_DETAIL = 300  # characters of the API's own error message to show

@@ -28,7 +28,7 @@ def test_provider_sends_only_the_role_tools_and_normalizes_tool_calls():
     assert result == {"text": "", "tool_calls": [
         {"id": "call-1", "name": "read_research", "arguments": {"key": "source-a"}}
     ]}
-    assert seen[0]["model"] == "anthropic/claude-sonnet-5"
+    assert seen[0]["model"] == "anthropic/claude-sonnet-5-5"
     assert seen[0]["api_key"] == "secret-test-key"
     assert [tool["function"]["name"] for tool in seen[0]["tools"]] == ["read_research"]
     assert seen[0]["tools"][0]["function"]["parameters"]["required"] == ["key"]

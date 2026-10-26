@@ -10,7 +10,7 @@ from pathlib import Path
 
 from harness.provider import ProviderError
 
-DEFAULT_MODEL = "anthropic/claude-sonnet-5"
+DEFAULT_MODEL = "anthropic/claude-sonnet-5-5"
 DEFAULT_ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
 MAX_TOKENS = 1200
 TIMEOUT_SECONDS = 30
