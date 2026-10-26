@@ -80,7 +80,9 @@ def test_flaw4_passes_every_code_check_so_only_a_reader_can_catch_it(built):
     assert key["flaw4"]["code_checks"] == {"status": "pass", "failed_checks": []}
     config, results = load(out, "flaw4", "input.json"), load(out, "flaw4", "results.json")
     assert 0.1 <= config["parameter_overrides"]["annual_mortality_rate_all_causes"] <= 0.5
-    assert any("road-traffic share" in line for line in results["assumptions"])
+    assert any("Annual mortality 0.43" in line for line in results["assumptions"])
+    # the case must not name the flaw:  the reason for 0.43 is in the key, outside the case folders
+    assert not any("road" in line or "extra cause" in line for line in results["assumptions"])
 
 
 def test_flaw6_is_a_real_run_whose_wrong_endpoint_differs_from_the_agreed_one(built):

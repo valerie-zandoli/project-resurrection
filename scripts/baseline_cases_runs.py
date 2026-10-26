@@ -167,8 +167,8 @@ def _build_cases(output, source_root=REPO, seed=3, months=24, history_report=Non
                         parameter_validator_errors=errors, simulator_refuses_to_run=simulator_refuses)
 
     config, results = run(source_root, seed, months, overrides={MORTALITY: 0.43})
-    results["assumptions"] = results["assumptions"] + [
-        "Annual mortality 0.43 = all-cause 0.37 raised by the road-traffic share (16.7%) as an extra cause."]
+    # No reason is given for 0.43:  an arm must compare it with the table, which says each share is inside 0.37.
+    results["assumptions"] = results["assumptions"] + ["Annual mortality 0.43."]
     cases["flaw4"] = (config, results, source_root)
     key["flaw4"] = dict(flaw=4, what="a cause-specific share is added on top of the all-cause mortality "
                                      "(0.37 to 0.43); the table says each share is already inside the all-cause rate")
