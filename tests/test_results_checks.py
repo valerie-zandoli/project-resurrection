@@ -230,3 +230,31 @@ def test_command_line_writes_an_evaluation_and_reports_the_status(run, tmp_path,
                  "--output", str(tmp_path / "bad-evaluation.json")]) == 1
     assert json.loads((tmp_path / "bad-evaluation.json").read_text())["status"] == "revise"
     assert main(base[:2] + ["--results", str(tmp_path / "missing.json"), "--output", str(tmp_path / "x.json")]) == 2
+
+
+def legacy_input(config):
+    """The same input written as a version 2.0 file, which has no settlement rule."""
+    old = copy.deepcopy(config)
+    old["schema_version"] = "2.0"
+    old.pop("settlement_rule")
+    return old
+
+
+def test_a_version_2_0_input_passes_when_the_simulator_upgraded_it_with_the_default_rule():
+    old = legacy_input(preview_config(seed=3, months=24, food=4.6, area=50))
+    evaluation = evaluate(old, simulate(old))
+    assert evaluation["status"] == "pass", evaluation["issues"]
+
+
+def test_a_version_2_0_input_still_fails_identity_if_the_results_ran_another_settlement_rule():
+    config = preview_config(seed=3, months=24, food=4.6, area=50, settlement_rule="one_try_at_dispersal")
+    results = simulate(config)
+    old = legacy_input(config)
+    assert "run_identity" in failed(evaluate(old, results))
+
+
+def test_a_version_2_0_input_still_fails_identity_if_anything_else_changed():
+    old = legacy_input(preview_config(seed=3, months=24, food=4.6, area=50))
+    results = simulate(old)
+    results["config"]["food_rabbits_per_ha"] = 55.0
+    assert "run_identity" in failed(evaluate(old, results))
