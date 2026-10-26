@@ -18,10 +18,10 @@ Started 2026-10-25 by Valerie with Claude Code.  This file fixes the history tes
 
 | Item | Options | Decision |
 |---|---|---|
-| 2011 target and bounds | 214, bounds 192.6 to 235.4; or 202, bounds 181.8 to 222.2 (plus or minus 10%) | **202, bounds 181.8 to 222.2**, chosen by Valerie on 2026-10-25 on source quality (the issuer's 2011 and 2016 reports give 202; no primary document gives 214); awaiting Anastasiya.  214 (bounds 192.6 to 235.4) is reported beside the verdict and never used for pass or fail. |
-| Main area and sensitivity areas | main 750 km2 (decided 2026-10-24, awaiting Anastasiya); sensitivity 500 and 1,000; proposed 264 km2 with home ranges 10 and 6.1 | TO FILL |
+| 2011 target and bounds | 214, bounds 192.6 to 235.4; or 202, bounds 181.8 to 222.2 (plus or minus 10%) | **202, bounds 181.8 to 222.2**, chosen by Valerie on 2026-10-25 on source quality (the issuer's 2011 and 2016 reports give 202; no primary document gives 214); agreed by Anastasiya on 2026-10-25 (Slack, 20:36 ET, and her comment on #50).  214 (bounds 192.6 to 235.4) is reported beside the verdict and never used for pass or fail. |
+| Main area and sensitivity areas | main 750 km2 (decided 2026-10-24, awaiting Anastasiya); sensitivity 500 and 1,000; proposed 264 km2 with home ranges 10 and 6.1 | **Main run:  750 km2 at the table's female home range of 10 km2** (a stand-in for the park boundary, not measured usable habitat).  **Comparison runs:  264 km2 at female home ranges of 6.1 and of 10 km2.**  The 500 and 1,000 km2 runs are dropped.  The verdict uses the 750 km2 run only, and the code refuses an arm list that starts with another arm.  Territory capacity:  74, 42, and 26 female territories.  Agreed on 2026-10-25:  recorded in #45, which Anastasiya approved and merged. |
 | A second observable (territorial females, 43 in 2010 and 51 in 2011) | add, or leave out | TO FILL |
-| Settlement retry rule | monthly, own patch first (chosen 2026-10-24, awaiting Anastasiya) | TO FILL (agreement) |
+| Settlement retry rule | monthly, own patch first (chosen 2026-10-24, awaiting Anastasiya) | **Every month, each unsettled female of at least 18 months tries again, her current patch first and then the other, in one seeded random order per month.**  Chosen by Valerie on 2026-10-24 and recorded in `docs/model-conventions.md` by #49, which Anastasiya approved and merged on 2026-10-25.  The two sensitivity checks (own patch only, one try only) have no simulator option yet and are not part of this verdict. |
 
 ## TO FILL at the freeze, in the same commit
 
