@@ -23,3 +23,10 @@ Drafted 2026-10-22 by Valerie (Evaluator owner) with Claude Code.  It maps the E
 - The stale-table case needs the content-hash check (pull request 9).  Until it merges, that row cannot pass.
 - Zero food prevents breeding under the agreed food rule; it does not guarantee extinction within 120 months. Test extinction handling separately with a controlled fixture that reaches population zero at a known month. In stochastic runs, report observed outcomes and evaluate persistence against the agreed endpoint definition; do not force persistence false solely because food is zero.
 - Write one row in `docs/regressions.md` for every failure found, with the test or case that now catches it, in the same commit as the fix.
+
+## Where the cases live in code (added 2026-10-25)
+
+- *Tool-use reliability, "10 planted malformed handoff files":*  `tests/test_evaluator_cases.py` holds ten planted malformed inputs (a missing seed, an unknown field, a zero duration, month 13, the wrong purpose, a stale table hash, a path that leaves the repository, one patch, negative food, text for food).  A test fails if the model runs on any of them.  Bar:  10 of 10 rejected before the model runs.  The stale-table case now has the content-hash check it needed.
+- *Edge cases:*  the same file holds the zero-food case (zero births in every month, nonnegative counts, accounting that balances, no invented extinction) and a hand-built extinction at a known month (3), labeled `sample`.
+- *Correctness:*  `tests/test_results_checks.py` plants one defect for each Evaluator check.
+- Still prompt-only or not built:  refusal behavior, and "the same seed reproduces identical results in 3 of 3 reruns" (the harness must run the model again).
