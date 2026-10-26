@@ -152,14 +152,19 @@ The background figure of 62 **mature** lynx species-wide in 2001 is neither a
 local total nor a starting count ([IUCN background](https://iucn.org/news/202407/recovery-iberian-lynx-conservation-success-spain)).
 
 Historical anchors: 53 total individuals in 2002 (25 adults), 190 in 2010
-(44 adult females), and held-out 214 in 2011 (90 adults). Calibrate only
-post-dispersal annual mortality within 0.10–0.50 using 2002–2010.
+(44 adult females), and held-out 202 in 2011 (the issuer's official series;
+the Cat Specialist Group's 214, with 90 adults, is reported beside the verdict
+only). Calibrate only post-dispersal annual mortality within 0.10–0.50 using
+2002–2010.
 
 Both owners accepted these tolerances on October 22, 2026:
 
 - Median annual multiplicative growth of total individuals: 1.12–1.22
   (1.17 ± 0.05).
-- Median held-out 2011 count: 192.6–235.4 (214 ± 10%).
+- Median held-out 2011 count: 181.8–222.2 (202 ± 10%).
+
+The 2011 target changed from 214 to 202 on October 25, 2026, before any run;
+both owners agreed.
 
 Never change tolerances or retune after viewing the holdout. Sparse counts make
 a pass weak evidence. Rough growth arithmetic is not a simulation result.
