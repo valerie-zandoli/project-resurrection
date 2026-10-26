@@ -1,9 +1,8 @@
 """The model interface of the harness, and a scripted fake for tests.
 
 A provider takes a system prompt, the messages so far, and the names of the tools that the role
-may call, and returns text and tool calls.  No real provider is written yet:  the first one will
-call Claude through LiteLLM (`docs/runtime-provider.md`), with the key read from `.env` and never
-printed.  Tests use `FakeProvider`, so no key and no network are needed.
+may call, and returns text and tool calls. `harness.litellm_provider` supplies the Claude adapter.
+Tests use `FakeProvider`, so no key and no network are needed.
 """
 
 from dataclasses import dataclass, field

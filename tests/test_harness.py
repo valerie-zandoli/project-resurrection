@@ -203,10 +203,17 @@ def test_the_trace_file_is_scrubbed_and_never_overwritten(tmp_path):
 def test_the_harness_calls_no_model_and_opens_no_network():
     banned = {"anthropic", "litellm", "openai", "requests", "urllib", "socket", "http", "subprocess"}
     for path in (REPO / "harness").glob("*.py"):
+        if path.name == "litellm_provider.py":
+            continue  # Live model access is isolated in this opt-in adapter; the offline harness stays clean.
         tree = ast.parse(path.read_text())
         imported = {a.name.split(".")[0] for n in ast.walk(tree) if isinstance(n, ast.Import) for a in n.names}
         imported |= {n.module.split(".")[0] for n in ast.walk(tree) if isinstance(n, ast.ImportFrom) and n.module}
         assert not imported & banned, f"{path.name} imports {imported & banned}"
+    adapter = ast.parse((REPO / "harness" / "litellm_provider.py").read_text())
+    adapter_imports = {a.name.split(".")[0] for n in ast.walk(adapter) if isinstance(n, ast.Import) for a in n.names}
+    adapter_imports |= {n.module.split(".")[0] for n in ast.walk(adapter)
+                        if isinstance(n, ast.ImportFrom) and n.module}
+    assert adapter_imports & banned == {"litellm"}
 
 
 def test_command_line_exit_codes(tmp_path, capsys):
