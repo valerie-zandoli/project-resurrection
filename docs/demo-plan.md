@@ -12,8 +12,10 @@ Written 2026-10-24 by Valerie with Claude Code.  Everything here is a proposal u
 | Date | What |
 |---|---|
 | Mon 2026-10-26 | Anastasiya presents the design plan.  Tuesday 09:30 ET:  key check (reminder set). |
-| by Fri 2026-10-30, 18:00 ET | Every run that needs the key is finished and saved:  the history test, the pilot and final grid, one live pass through the three roles, and one hand-back example. |
-| Sat 2026-10-31 | Draft the report from the saved files; freeze the contract and the parameter table (a change after this date means a new run ID). |
+| by Wed 2026-10-28 | The open decisions that change the contract or the parameter table are made (the 2011 target, the area, the retry rule, the thresholds), so the freeze below freezes the final versions. |
+| Thu 2026-10-29 | Freeze the contract and the parameter table (a change after this date means a new run ID and a re-run of every saved result). |
+| by Fri 2026-10-30, 18:00 ET | Every run that needs the key is finished and saved against the frozen version:  the history test, the pilot and final grid, one live pass through the three roles, and one hand-back example. |
+| Sat 2026-10-31 | Draft the report from the saved files. |
 | Sun 2026-11-01, 09:30 ET | Key check (reminder set); full rehearsal with a timer. |
 | Mon 2026-11-02 | The demonstration. |
 
@@ -38,4 +40,4 @@ Follow `docs/history-test.md` ("The report must say") and `docs/model-convention
 
 ## To agree
 
-Who presents which part on 2026-11-02; the length of the slot; whether the demonstration is live, recorded, or both; the contract-freeze date.
+Who presents which part on 2026-11-02; the length of the slot; whether the demonstration is live, recorded, or both; the contract-freeze date (proposed Thu 2026-10-29, so that every saved result matches what we present; Anastasiya's suggestion of 2026-10-26).
