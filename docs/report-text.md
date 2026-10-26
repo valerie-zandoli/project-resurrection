@@ -19,7 +19,7 @@ Three roles prepare and check the work, and ordinary code joins them.
 - **The Evaluator** checks inputs, code, and results, and says pass, revise, or stop.  Its code checks decide the verdict; a model may only explain the issues in words (`docs/role-prompts.md`).
 - **The harness** is ordinary code.  It validates the research files, takes a read-only snapshot with content hashes, compares the hashes at every handoff, limits revisions to three rounds, hands a gap back to the Researcher at most once, and writes one trace line for each step (`docs/harness-skeleton.md`, `docs/handback-path.md`).
 
-The rule that shaped the design is that the prompt asks and the code guarantees.  A rule that only the prompt holds is labeled PROMPT ONLY in `docs/architecture.md`.
+The rule that shaped the design is in `AGENTS.md`:  a prompt asks, and code guarantees.  The design notes say which of the two enforces each rule, and a rule that only a prompt holds carries the tag PROMPT ONLY (the status tags of `docs/harness-skeleton.md`).
 
 **TO FILL at the freeze:**  which parts ran live, which were tested only, and which were only planned, using the status tags of that day.
 
