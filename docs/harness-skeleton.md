@@ -74,8 +74,8 @@ Use a new folder each time.  The exit code is 0 for `pass`, 1 for `stop`, `rejec
 - The sandbox for generated code, which is needed only if the Developer writes code (`docs/execution-sandbox.md`).
 - The history test and the grid inside the loop.
 
-## Decisions for the pairing session
+The fixed `run_model` tool was agreed on 2026-10-25, so it is no longer an open decision.
 
-- Whether the Developer only calls a fixed `run_model` tool (this skeleton) or writes code.
+## Remaining decisions for the pairing session
+
 - Where the trace lives (a `runs/<run_id>/` folder, as here, or a separate log folder) and how long it is kept.
-- Which of these pieces Anastasiya wants to own.
