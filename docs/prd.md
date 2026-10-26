@@ -170,10 +170,11 @@ The procedure from PR #32 (merged):
   execution. Counts of 25 adults and 28 non-adults do not establish ages/sexes;
   proposed draws remain assumptions.
 - Forty-four adult females do not establish 44 occupied territories or a minimum
-  of 440 km². Usable area: the Andújar–Cardeña area is not sourced, so Valerie
-  chose on October 24, 2026 to use 750 km² as a labeled assumption, with
-  sensitivity runs at 500 and 1,000 km² and the verdict on the 750 km² run only;
-  Anastasiya has not yet confirmed this.
+  of 440 km². Usable area: the Andújar–Cardeña area is not sourced, so the
+  primary run uses 750 km² as a stand-in for the park boundary (a labeled
+  assumption, not measured usable habitat), with comparison runs at 264 km²
+  (the 2010 occupied area) at female home ranges of 6.1 and 10 km², and the
+  verdict on the 750 km² run only; both owners agreed on October 25, 2026 (#45).
 - After calibration, freeze settings and evaluate one predefined ensemble
   through 2011. “Once” means one held-out batch, not one stochastic trial.
 - Report medians, 10th–90th percentiles, trial count, extinct share, and the
@@ -301,9 +302,9 @@ extinction summaries. These conventions are not yet agreed. Before experiments:
 - Implement the agreed persistence/settled contract and independent runtime checks.
 - Agree monthly ordering, litter sampling, historical initialization,
   observation/ensemble procedure, seed derivation, and aggregation. The usable
-  area of the history run is the exception: Valerie chose 750 km² as a labeled
-  assumption on October 24, 2026 (sensitivity runs at 500 and 1,000 km²), and
-  Anastasiya has not yet confirmed it.
+  area of the history run is the exception: both owners agreed on October 25,
+  2026 (#45) to use 750 km² as a labeled stand-in for the park boundary, with
+  comparison runs at 264 km² and female home ranges of 6.1 and 10 km².
 - Settlement retries: Valerie chose on October 24, 2026 that every month each
   unsettled female of at least 18 months retries, her current patch first and
   then the other, in one seeded random order per month; Anastasiya has not yet
