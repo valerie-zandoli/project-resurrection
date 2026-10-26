@@ -35,7 +35,7 @@ which the current LiteLLM quickstart documents; set `CLAUDE_MODEL` to override i
 The provider choice and shared model setting remain pending partner agreement.
 
 Run `python scripts/check_litellm_provider.py` for one short live connection check.
-That check has not been run from this checkout because it has no local `.env` key.
+Valerie ran it on 2026-10-26 with litellm 1.106.4 and the model `claude-sonnet-5`, before the shared model was set to `claude-sonnet-5-5` (below); it printed `Claude connection works`.  `litellm` is pinned to that version in `requirements.txt`.
 The regular test suite uses a local stand-in and makes no API calls.
 
 References checked 2026-10-26:
