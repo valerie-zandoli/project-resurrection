@@ -3,7 +3,7 @@
 After reviewing the model, use Python 3.12 from the repository root:
 
 ```bash
-python -m simulation.experiments --preview --seed 42 --trials 100 --months 120 --output /tmp/lynx-batch-42
+python -m simulation.experiments --preview --stage pilot --seed 42 --trials 100 --months 120 --output /tmp/lynx-batch-42
 ```
 
 This runs six cells: food densities 1, 4.6, and 55 rabbits per hectare, each

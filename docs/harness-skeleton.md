@@ -12,7 +12,7 @@ Source: `docs/diagrams/architecture-v3.svg`.  Composed on 2026-10-24 by Claude C
 
 One case, from the research files to `pass`, `stop`, `rejected`, or `failed`:
 
-1. The harness validates the two research files, then runs the evidence gate (`harness/evidence_gate.py`).  A failure rejects the case before anything runs.  In a final run (`--stage final`), a parameter whose contradiction check is `not_checked` is also refused, and so is a missing evidence file; in a pilot run (the default) both only warn.  Every `low` row and every recorded conflict is listed under `evidence` in `case.json`.  The gate checks the form of the labels and reports them; whether a label is justified stays a human judgment.
+1. The harness validates the two research files, then runs the evidence gate (`validators/evidence_gate.py`).  A failure rejects the case before anything runs.  In a final run (`--stage final`), a parameter whose contradiction check is `not_checked` is also refused, and so is a missing evidence file; in a pilot run (the default) both only warn.  Every `low` row and every recorded conflict is listed under `evidence` in `case.json`.  The gate checks the form of the labels and reports them; whether a label is justified stays a human judgment.
 2. The harness copies the files into a read-only snapshot (mode 444) and computes their hashes.
 3. The Developer runs the fixed `run_model` tool (the simulator) on an input built from the snapshot.
 4. The harness compares the hashes and checks that the files are unchanged.
@@ -30,7 +30,7 @@ A Developer or Evaluator that raises an error fails the case with the reason and
 flowchart TD
   SRC[Research files<br/>the Researcher writes] -->|validate| VAL{valid?}
   VAL -- no --> REJ[rejected<br/>notify both owners]
-  VAL -- yes --> GATE{evidence gate<br/>harness/evidence_gate.py}
+  VAL -- yes --> GATE{evidence gate<br/>validators/evidence_gate.py}
   GATE -- refused --> REJ
   GATE -- ok --> SNAP[read-only snapshot + hashes<br/>harness/snapshot.py]
   SNAP -->|STAR: critical handoff| DEV[Developer<br/>run_model, round n]

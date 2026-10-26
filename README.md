@@ -35,10 +35,10 @@ Run every command from the repository root, with the virtual environment active.
 | Check the parameter and source tables | `python -m validators.parameters data/parameters/iberian_lynx_baseline.csv data/parameters/sources.csv` | no |
 | Run one synthetic simulator preview ([details](docs/simulator.md)) | `python -m simulation --preview --months 12 --seed 42 --food 4.6 --area 50 --output /tmp/lynx-preview-42` | no |
 | Test the key in `.env` with one small call | `python scripts/check_key.py` | yes |
-| Trial batches by food level and area ([details](docs/simulator-batches.md)) | `python -m simulation.experiments --preview --seed 20261025 --trials 100 --months 120 --output batch-1` | no |
+| Trial batches by food level and area ([details](docs/simulator-batches.md)) | `python -m simulation.experiments --preview --stage pilot --seed 20261025 --trials 100 --months 120 --output batch-1` | no |
 | Evaluator checks on one results file ([details](docs/evaluator-checks.md)) | `python -m validators.results_checks --input input.json --results results.json --output evaluation.json` | no |
 | Report table and figure from a batch file ([details](docs/report-skeleton.md)) | `python -m report.figures batch-1/batch.json --table table1.md --figure figure1.svg` | no |
-| History test (**run it once, after the freeze**:  it prints the 2011 count; see `docs/history-test-code.md`) | `python -m simulation.history --run-seed 20261101 --output history-run-1` | no |
+| History test (**run it once, after the freeze**:  it prints the 2011 count and always runs the final evidence gate; see `docs/history-test-code.md`) | `python -m simulation.history --run-seed 20261101 --output history-run-1` | no |
 
 **In open pull requests (these work only after the pull request merges)**
 
