@@ -13,6 +13,8 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import jsonschema
+
 from harness.evidence_gate import STAGES, check_evidence
 from harness.handback import OWNERS, Case
 from harness.snapshot import RESEARCH_FILES, make_snapshot
@@ -23,6 +25,7 @@ from validators.parameters import validate_parameters
 from validators.results_checks import build_evaluation
 
 MAX_ROUNDS = 3
+EVALUATION_SCHEMA = json.loads((REPO / "schemas" / "evaluation.schema.json").read_text(encoding="utf-8"))
 
 
 class HarnessError(Exception):
@@ -141,6 +144,8 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
 
         try:
             evaluation = evaluator(config, results, snapshot_root, round_number)
+            # Only a schema-valid evaluation is a record; a refusal, a guess, or nothing fails the case.
+            jsonschema.validate(evaluation, EVALUATION_SCHEMA)
         except Exception as exc:
             reason, _ = scrub(f"evaluator failed with {type(exc).__name__}: {exc}")
             trace.add("evaluator", reason, tool="check_artifacts", revision_round=round_number)

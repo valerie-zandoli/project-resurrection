@@ -47,3 +47,12 @@ The run seed has no default.  Write it down before the first run; every trial se
 - The held-out batch has not been run.  A pass would be weak evidence:  three counts are all we hold.
 - At a home range of 10 km2, 264 km2 holds 26 territories against the 43 territorial females counted in 2010; the 6.1 km2 arm holds 42.  The arms show how far the result depends on that assumption.
 - The code uses the simulator as it stands (settlement retries every month, current patch first).  The sensitivity rules for retries need an option in the simulator first.
+
+## The second observable:  territorial females (proposed; waits for Anastasiya's agreement)
+
+`report.json` has a key `second_observable` for territorial females, the census counts of 43 (2010) and 51 (2011) in `data/history/counts.csv`.  The model's reading of a territorial female is a living female that holds a territory (`settled`) and is of breeding age, counted at months 96 and 108.  For each arm the report gives the median and the 10th and 90th percentiles of the held-out trials.
+
+- It has **no tolerance and no pass or fail**, and the verdict does not read it.  Only the 750 km2 run is compared with the census (`compared` is true); the 264 km2 arms hold 42 and 26 female territories, fewer than the census counts, so they are marked `capacity_limited` and are not compared.
+- Counting the females draws nothing from the random generator, so every run, including calibration, is the same as before.
+- It is not printed on the command line.
+- `docs/history-preregistration.md` (#62) holds the row that proposes it; if Anastasiya has not agreed by Wed 2026-10-28, 12:00 ET, it is left out and this section and the key are removed.
