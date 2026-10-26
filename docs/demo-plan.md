@@ -40,4 +40,4 @@ Follow `docs/history-test.md` ("The report must say") and `docs/model-convention
 
 ## To agree
 
-Who presents which part on 2026-11-02; the length of the slot; whether the demonstration is live, recorded, or both; the contract-freeze date (proposed Thu 2026-10-29, so that every saved result matches what we present; Anastasiya's suggestion of 2026-10-26).
+Who presents which part on 2026-11-02; the length of the slot; whether the demonstration is live, recorded, or both; the contract-freeze date (proposed Thu 2026-10-29, so that every saved result matches what we present; Anastasiya's suggestion of 2026-10-25).
