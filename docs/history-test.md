@@ -10,7 +10,7 @@ Does the model, run with the Donana parameters, grow a population from the 2002 
 
 - 2002: 53 individuals, of which 25 adults.
 - 2010: 190 individuals, of which 44 adult females.
-- 2011: 202 individuals in the official series (held out); 214 is also reported by the Cat Specialist Group and will be shown for comparison only.
+- 2011: 202 individuals in the official series (held out), from the issuer's [2011 census report](https://www.iberlince.eu/files/images/docs/3_informeslife/informe_censo_2011.pdf) and its [2016 census report](https://www.iberlince.eu/files/images/docs/3_informeslife/informe_censo_2016.pdf); 214 is also reported by the Cat Specialist Group and will be shown for comparison only.
 - Observed growth: (190 / 53) ^ (1 / 8) = 1.173 per year from 2002 to 2010. The held-out target is 202.
 
 ## What is compared
@@ -34,12 +34,12 @@ Does the model, run with the Donana parameters, grow a population from the 2002 
 
 ## Agreed area plan: primary boundary and occupied-area comparisons (2026-10-24)
 
-Valerie clarified that 750 km2 is a stand-in for the boundary of the Sierra de Andujar Natural Park (about 749 km2), not a measurement of usable lynx habitat. The usable area of the Andujar-Cardena nucleus itself is not sourced. This plan keeps 750 km2 as the primary model-boundary assumption and compares it with the historical occupied area using two home-range assumptions.
+Valerie clarified that 750 km2 is a stand-in for the boundary of the Sierra de Andujar Natural Park (about 749 km2), not a measurement of usable lynx habitat. The usable area of the Andujar-Cardena nucleus itself is not sourced. This plan keeps 750 km2 as the primary model-boundary assumption and compares it with the historical occupied area using two home-range assumptions. The team agreed to drop the 500 and 1,000 km2 comparison runs.
 
 - **Primary run:** 750 km2 as the model boundary, with the existing 10 km2 female home-range assumption. Label 750 km2 as a park-boundary stand-in, not measured usable habitat.
 - **Comparison runs:** 264 km2 with a 6.1 km2 home-range assumption, and 264 km2 with a 10 km2 home-range assumption. Valerie reported that her exploratory runs at 500, 750, and 1,000 km2 all calibrated to the same mortality (0.16), so those comparisons showed little. She proposed these 264 km2 comparisons instead.
 - **Evidence and limits:** Valerie reported census-chart figures of 264 km2 occupied in 2010 and 282 km2 in 2011, with 43 and 51 territorial females, respectively. The 264 km2 comparison uses the 2010 figure. Cite the issuer's [2010 census report (`informe_censo_2010`)](https://www.iberlince.eu/files/images/docs/3_informeslife/informe_censo_2010%281%29.pdf) alongside the [WWF source chart](https://awsassets.wwf.es/downloads/lince_online_newsletter_2_mayl14_def.pdf); occupied area is not automatically the same as usable habitat.
-- **Territory capacity:** under the simple area-divided-by-home-range calculation, the primary run allows about 75 female territories (750 / 10); the 264 km2 comparisons allow about 43 (264 / 6.1) and 26 (264 / 10). These are model capacity estimates, not observed territory counts. The 6.1 km2 value is a sensitivity assumption for comparison, not a claim that all females have that measured home range.
+- **Territory capacity:** calculate whole territories separately within each of the two equal patches, rounding down in each patch, then add the patch capacities. The 750 km2 run has two 375 km2 patches, so it allows 2 x floor(375 / 10) = 74 female territories. Each 264 km2 comparison has two 132 km2 patches, allowing 2 x floor(132 / 6.1) = 42 territories or 2 x floor(132 / 10) = 26. These are model capacity estimates, not observed territory counts. The 6.1 km2 value is a sensitivity assumption for comparison, not a claim that all females have that measured home range.
 - **Interpretation:** calibrate and report the primary and comparison settings using the same procedure. The pass or fail verdict uses the 750 km2 primary run only. Report the comparison results and calibrated mortality beside it so readers can see how the boundary and home-range assumptions affect the result; comparison runs do not replace the primary verdict.
 
 The tolerances, calibration steps, trial count, and held-out rule below do not change.

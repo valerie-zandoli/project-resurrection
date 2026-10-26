@@ -14,7 +14,7 @@ import random
 import statistics
 from pathlib import Path
 
-from simulation.model import Lynx, REPO, advance, check_states, load_parameters, preview_config
+from simulation.model import Lynx, REPO, advance, breeding_age, check_states, load_parameters, preview_config
 
 # Counts from data/history/counts.csv (Andujar-Cardena).
 START_TOTAL = 53        # 2002, individuals
@@ -27,6 +27,10 @@ BESIDE_COUNT = 214      # 2011, Cat Specialist Group page; reported beside the v
 GROWTH_BOUNDS = (1.12, 1.22)    # median growth within 0.05 of 1.17
 COUNT_BOUNDS = (181.8, 222.2)   # median 2011 count within 10% of 202 (Valerie, 2026-10-25, source quality)
 BESIDE_BOUNDS = (192.6, 235.4)  # within 10% of 214; reported only
+
+# Second observable (proposed in #62):  territorial females, reported beside the verdict for the main run only.
+# It has no tolerance and no pass or fail.  Counts from data/history/counts.csv ("territorial females (official series)").
+CENSUS_TERRITORIAL_FEMALES = {2010: 43, 2011: 51}
 
 CALIBRATION_MONTHS = 96  # month 0 = 2002 census, month 96 = 2010 census
 HELDOUT_MONTHS = 108     # month 108 = 2011 census
@@ -100,17 +104,33 @@ def parse_arm(text):
     return values
 
 
-def run_trial(p, config, seed, months):
-    """Population of every living animal at months 0 to `months`, from one seeded run."""
+def settled_breeding_females(animals, p):
+    """Living females that hold a territory and are of breeding age:  the model's reading of a territorial female."""
+    return sum(1 for a in animals if a.sex == 'female' and a.settled and breeding_age(a, p))
+
+
+def run_trial_detail(p, config, seed, months, observe=(CALIBRATION_MONTHS, HELDOUT_MONTHS)):
+    """One seeded run:  the population at months 0 to `months`, and the settled breeding females at `observe`.
+
+    Counting females draws nothing from the random generator, so the run is the same with or without it.
+    """
     rng = random.Random(seed)
     patch_ids = [patch['id'] for patch in config['patches']]
     capacities = territory_capacities(config, p)
     animals = history_start(rng, p, patch_ids)
     check_states(animals, capacities)
     populations = [len(animals)]
+    settled_females = {}
     for month in range(1, months + 1):
         populations.append(advance(animals, config, p, rng, month, capacities)['population'])
-    return populations
+        if month in observe:
+            settled_females[month] = settled_breeding_females(animals, p)
+    return dict(populations=populations, settled_females=settled_females)
+
+
+def run_trial(p, config, seed, months):
+    """Population of every living animal at months 0 to `months`, from one seeded run."""
+    return run_trial_detail(p, config, seed, months, observe=())['populations']
 
 
 def growth(populations):
@@ -171,12 +191,14 @@ def heldout(p, config, run_seed, mortality, trials=HELDOUT_TRIALS):
     if trials <= 0:
         raise ValueError('held-out trials must be greater than 0')
     frozen = dataclasses.replace(p, annual_mortality=mortality)
-    runs = [run_trial(frozen, config, trial_seed(run_seed, HELDOUT_CELL, t), HELDOUT_MONTHS)
+    runs = [run_trial_detail(frozen, config, trial_seed(run_seed, HELDOUT_CELL, t), HELDOUT_MONTHS)
             for t in range(trials)]
-    counts = [run[HELDOUT_MONTHS] for run in runs]
+    counts = [run['populations'][HELDOUT_MONTHS] for run in runs]
     return dict(trials=trials, mortality=mortality,
-                growth=spread([growth(run) for run in runs]), count_2011=spread(counts),
-                extinct_share=sum(count == 0 for count in counts) / trials)
+                growth=spread([growth(run['populations']) for run in runs]), count_2011=spread(counts),
+                extinct_share=sum(count == 0 for count in counts) / trials,
+                settled_females_2010=spread([run['settled_females'][CALIBRATION_MONTHS] for run in runs]),
+                settled_females_2011=spread([run['settled_females'][HELDOUT_MONTHS] for run in runs]))
 
 
 def verdict(median_growth, median_count):
@@ -198,7 +220,29 @@ REPORT_MUST_SAY = [
     "The 2011 target of 202 is the issuer's own figure (its 2011 and 2016 reports); 214 (Cat Specialist Group) "
     'is reported beside it and never used for pass or fail.',
     'The 2011 count adds one year at the calibrated rate; it is not independent of the calibration.',
+    'Territorial females (43 in 2010 and 51 in 2011) are reported beside the verdict for the 750 km2 run only, as the '
+    'median number of settled females of breeding age with the 10th and 90th percentiles; there is no tolerance and '
+    'no pass or fail, and we do not call it support or failure.  The 264 km2 arms hold fewer territories than the '
+    'census counts, so their numbers are marked capacity-limited and are not compared.',
 ]
+
+
+def second_observable(results):
+    """Territorial females beside the verdict:  report-only; the main run is the only one that is compared."""
+    arms = []
+    for result in results:
+        capacity = result['territories']
+        arms.append(dict(total_area_km2=result['total_area_km2'],
+                         female_home_range_km2=result['female_home_range_km2'],
+                         territories=capacity, main_run=result['main_run'],
+                         compared=result['main_run'],
+                         capacity_limited={str(year): capacity < count
+                                           for year, count in CENSUS_TERRITORIAL_FEMALES.items()},
+                         model_2010=result['heldout']['settled_females_2010'],
+                         model_2011=result['heldout']['settled_females_2011']))
+    return dict(scored=False, tolerance=None,
+                definition='living females that hold a territory and are of breeding age, at the census month',
+                census={str(year): count for year, count in CENSUS_TERRITORIAL_FEMALES.items()}, arms=arms)
 
 
 def run_protocol(output, run_seed, arms=ARMS, calibration_trials=CALIBRATION_TRIALS,
@@ -235,7 +279,7 @@ def run_protocol(output, run_seed, arms=ARMS, calibration_trials=CALIBRATION_TRI
     report = dict(run_seed=run_seed, bounds=dict(growth=GROWTH_BOUNDS, count_2011=COUNT_BOUNDS),
                   parameters_sha256=first['parameters_sha256'], sources_sha256=first['sources_sha256'],
                   verdict=verdict(main['growth']['median'], main['count_2011']['median']),
-                  reported_beside=beside,
+                  reported_beside=beside, second_observable=second_observable(results),
                   main_area_km2=arms[0][0], areas=results, must_say=REPORT_MUST_SAY,
                   historical_validation='weak evidence only; see must_say')
     output.mkdir(parents=True)
