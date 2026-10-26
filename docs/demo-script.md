@@ -36,7 +36,7 @@ This is one saved run.  The input fixes the parameters, the seed, and the file h
 
 **5. The history test (history report)**
 
-We start with the 53 lynx counted in 2002 in Andújar-Cardeña.  We calibrate one number, post-dispersal mortality, on the growth to 2010.  Then we run once, with 500 trials, against the 2011 count that the model never saw.  We fixed the bounds before any run:  growth of 1.12 to 1.22, and a 2011 count of [FILL: 192.6 to 235.4, or 181.8 to 222.2, whichever the team chose].  The result:  [FILL: median growth, median 2011 count, pass or fail, stated as it came out].  We have three counts, so a pass is weak evidence, and a fail does not say which rule is wrong.
+We start with the 53 lynx counted in 2002 in Andújar-Cardeña.  We calibrate one number, post-dispersal mortality, on the growth to 2010.  Then we run once, with 500 trials, against the 2011 count that the model never saw.  We fixed the bounds before any run:  growth of 1.12 to 1.22, and a 2011 count of 181.8 to 222.2, within 10% of 202, the census office's own figure.  The result:  [FILL: median growth, median 2011 count, pass or fail, stated as it came out].  We have three counts, so a pass is weak evidence, and a fail does not say which rule is wrong.
 
 **6. The grid and its limits (Table 1, Figure 1)**
 
@@ -44,7 +44,7 @@ Across food levels and areas, [FILL: persistence share with 95% intervals, from 
 
 **7. What stays open**
 
-Still open:  the 2011 target, 214 or 202; the area assumption; [FILL: any decision still open on the day]; and the sources that we have not read in full (`docs/unread-sources.md`).  Everything is in the repository, with the commands to reproduce it.  Thank you.  We are glad to take questions.
+Still open:  the area assumption; [FILL: any decision still open on the day]; and the sources that we have not read in full (`docs/unread-sources.md`).  Everything is in the repository, with the commands to reproduce it.  Thank you.  We are glad to take questions.
 
 ## Before you start
 
@@ -60,12 +60,12 @@ Still open:  the 2011 target, 214 or 202; the area assumption; [FILL: any decisi
 - Read the script aloud with a timer.  About 130 words a minute is a steady pace; the script is about 450 words, so it runs near 3:30 before pauses, with room for the screen changes.
 - If the run is long, cut in this order:  the second half of beat 3, the hash and snapshot detail in beat 2, then the hand-back sentences in beat 4.  Never cut the limits in beats 5 and 6.
 - If a live call fails, say so and show the saved file from `docs/demo-plan.md` ("The fallback").  Do not retry in front of the audience.
-- No beat depends on the API key; every live call is recorded before 2026-10-30.
+- No beat depends on the API key; every live call is recorded by Fri 2026-10-30, 18:00 ET.
 - Fill every bracket from a saved file, never from memory, and say "not yet run" for anything with no file.
 
 ## To agree
 
-Who speaks which beat; whether the slot is exactly four minutes or has a question period after it; which saved run to show in beat 4; which 2011 target to state in beat 5.
+Who speaks which beat; whether the slot is exactly four minutes or has a question period after it; which saved run to show in beat 4.
 
 ## Facts behind the numbers (for questions)
 
@@ -73,7 +73,7 @@ Who speaks which beat; whether the slot is exactly four minutes or has a questio
 |---|---|
 | Growth bounds 1.12 to 1.22 (1.17 plus or minus 0.05); observed growth (190 / 53) ^ (1 / 8) = 1.173 | `docs/history-test.md` |
 | One held-out batch of 500 trials; calibration changes post-dispersal mortality only | `docs/history-test.md`; `docs/history-preregistration.md` (#62) |
-| 2011 bounds 192.6 to 235.4 (for 214) or 181.8 to 222.2 (for 202), plus or minus 10% | `docs/history-test.md`; the choice is open |
+| 2011 bounds 181.8 to 222.2 (202 plus or minus 10%), agreed 2026-10-25; the Cat Specialist Group's 214 is reported beside the verdict only | `docs/history-test.md`; `docs/history-preregistration.md` (#62) |
 | 53 lynx counted in 2002 in Andujar-Cardena | `data/history/counts.csv` |
 | Food above 4.6 rabbits per hectare gives the same run; the 4.6 cliff is our assumption | `docs/model-conventions.md`; `docs/research-notes.md` (the monograph says 1.0 and 4.6 were enough, not minimums) |
 | Persistence:  a living female of breeding age holding a territory and a living male of breeding age in one patch at month 120 | `docs/agent-handoffs.md` (the `settled` field) |
