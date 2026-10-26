@@ -46,7 +46,20 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
             if trace:
                 trace.add(role, reply["text"], prompt_version=version)
             return dict(text=reply["text"], tool_results=results, steps=step, prompt_version=version)
-        for call in reply["tool_calls"]:
+        calls = reply["tool_calls"]
+        if calls:
+            assistant_call_ids = []
+            serialized_calls = []
+            for index, call in enumerate(calls, start=1):
+                call_id = call.get("id") or f"{role}-{step}-{index}"
+                assistant_call_ids.append(call_id)
+                serialized_calls.append(dict(id=call_id, name=call["name"],
+                                             arguments=call.get("arguments", {})))
+            messages.append(dict(role="assistant", content=reply.get("text", ""),
+                                 tool_calls=serialized_calls))
+        else:
+            assistant_call_ids = []
+        for call, call_id in zip(calls, assistant_call_ids):
             name, arguments = call["name"], call.get("arguments", {})
             if name not in allowed or name not in tools:
                 content = f"refused:  {role} may not call {name}"
@@ -65,7 +78,7 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
                 if trace:
                     trace.add(role, "tool called", tool=name, tool_args=arguments,
                               tool_result=content, prompt_version=version)
-            messages.append(dict(role="tool", name=name, content=content))
+            messages.append(dict(role="tool", name=name, tool_call_id=call_id, content=content))
     raise RoleError(f"{role} gave no final answer in {max_steps} steps")
 
 

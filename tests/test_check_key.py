@@ -71,7 +71,7 @@ def test_success_sends_the_key_and_model_and_never_prints_the_key(tmp_path, caps
     assert FAKE_KEY not in out.out + out.err
     assert seen["headers"]["x-api-key"] == FAKE_KEY
     assert seen["headers"]["anthropic-version"] == check_key.API_VERSION
-    assert seen["body"]["model"] == "claude-sonnet-5-5"
+    assert seen["body"]["model"] == "claude-sonnet-5"
     assert seen["body"]["max_tokens"] <= 64
 
 

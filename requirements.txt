@@ -1,2 +1,3 @@
 # Runtime dependencies.  Add each one when the code that needs it is written.
 jsonschema>=4.18,<5
+litellm>=1.74,<2
