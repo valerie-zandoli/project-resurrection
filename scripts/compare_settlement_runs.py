@@ -65,6 +65,7 @@ def _normalized_input(config):
     """Remove batch-specific identity and the one intended sensitivity axis."""
     normalized = dict(config)
     normalized.pop("run_id", None)
+    normalized.pop("seed", None)  # each trial has its own seed; trial seeds are compared across the batches
     normalized.pop("settlement_rule", None)
     return normalized
 
