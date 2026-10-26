@@ -1,4 +1,4 @@
-# History test pre-registration (DRAFT until the two open decisions are made)
+# History test pre-registration (DRAFT until the second observable is decided and the freeze items are filled)
 
 Started 2026-10-25 by Valerie with Claude Code.  This file fixes the history test before any run, as `docs/history-test.md` requires.  **It is not in force until the blanks marked TO FILL are filled in one commit that says why, and Anastasiya agrees.**  The held-out batch has not been run, and no result has been looked at.  Code:  `simulation/history.py` (#50).
 
@@ -20,10 +20,12 @@ Started 2026-10-25 by Valerie with Claude Code.  This file fixes the history tes
 |---|---|---|
 | 2011 target and bounds | 214, bounds 192.6 to 235.4; or 202, bounds 181.8 to 222.2 (plus or minus 10%) | **202, bounds 181.8 to 222.2**, chosen by Valerie on 2026-10-25 on source quality (the issuer's 2011 and 2016 reports give 202; no primary document gives 214); agreed by Anastasiya on 2026-10-25 (Slack, 20:36 ET, and her comment on #50).  214 (bounds 192.6 to 235.4) is reported beside the verdict and never used for pass or fail. |
 | Main area and sensitivity areas | main 750 km2 (decided 2026-10-24, awaiting Anastasiya); sensitivity 500 and 1,000; proposed 264 km2 with home ranges 10 and 6.1 | **Main run:  750 km2 at the table's female home range of 10 km2** (a stand-in for the park boundary, not measured usable habitat).  **Comparison runs:  264 km2 at female home ranges of 6.1 and of 10 km2.**  The 500 and 1,000 km2 runs are dropped.  The verdict uses the 750 km2 run only, and the code refuses an arm list that starts with another arm.  Territory capacity:  74, 42, and 26 female territories.  Agreed on 2026-10-25:  recorded in #45, which Anastasiya approved and merged. |
-| A second observable (territorial females, 43 in 2010 and 51 in 2011) | add, or leave out | TO FILL |
+| A second observable (territorial females, 43 in 2010 and 51 in 2011) | add, or leave out | **OPEN** (decision 7 of the Meet list; both owners must agree, and a tolerance must be set before any run).  Until it is decided, this run has no second observable, and nothing about territorial females counts toward pass or fail.  Decide by Wed 2026-10-28, because the freeze is Thu 2026-10-29 (#54). |
 | Settlement retry rule | monthly, own patch first (chosen 2026-10-24, awaiting Anastasiya) | **Every month, each unsettled female of at least 18 months tries again, her current patch first and then the other, in one seeded random order per month.**  Chosen by Valerie on 2026-10-24 and recorded in `docs/model-conventions.md` by #49, which Anastasiya approved and merged on 2026-10-25.  The two sensitivity checks (own patch only, one try only) have no simulator option yet and are not part of this verdict. |
 
 ## TO FILL at the freeze, in the same commit
+
+The freeze is Thu 2026-10-29 (#54).  Fill these four items in the commit that freezes the code, and merge this file before the run.  The run happens after the freeze and is finished by Fri 2026-10-30, 18:00 ET.
 
 - The commit of the code that will run (hash):  TO FILL.
 - The hashes of the two research files:  TO FILL (`validators/handoff_hashes.py`).
