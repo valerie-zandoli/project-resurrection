@@ -13,7 +13,8 @@ Written 2026-10-24 by Valerie with Claude Code.  Everything here is a proposal u
 |---|---|
 | Mon 2026-10-26 | Anastasiya presents the design plan.  Tuesday 09:30 ET:  key check (reminder set). |
 | by Wed 2026-10-28 | The open decisions that change the contract or the parameter table are made (the 2011 target, the area, the retry rule, the thresholds), so the freeze below freezes the final versions. |
-| Thu 2026-10-29 | Freeze the contract and the parameter table (a change after this date means a new run ID and a re-run of every saved result). |
+| Thu 2026-10-29, 17:30 to 19:30 ET (proposed) | Shake-down live pass together, not saved as a final run.  A flaw that it exposes in the contract or the parameter table is fixed before the freeze. |
+| Thu 2026-10-29, at the end of the pairing (about 19:30 ET) | Freeze the contract and the parameter table (a change after this date means a new run ID and a re-run of every saved result). |
 | by Fri 2026-10-30, 18:00 ET | Every run that needs the key is finished and saved against the frozen version:  the history test, the pilot and final grid, one live pass through the three roles, and one hand-back example. |
 | Sat 2026-10-31 | Draft the report from the saved files. |
 | Sun 2026-11-01 | Full rehearsal with a timer; key check at 19:00 ET (reminder set). |
@@ -40,4 +41,4 @@ Follow `docs/history-test.md` ("The report must say") and `docs/model-convention
 
 ## To agree
 
-Who presents which part on 2026-11-02; the length of the slot; whether the demonstration is live, recorded, or both; the contract-freeze date (proposed Thu 2026-10-29, so that every saved result matches what we present; Anastasiya's suggestion of 2026-10-25).
+Who presents which part on 2026-11-02; the length of the slot; whether the demonstration is live, recorded, or both; the contract-freeze date and time (proposed Thu 2026-10-29, at the end of the pairing and after a shake-down live pass, so that every saved result matches what we present; the date is Anastasiya's suggestion of 2026-10-25).
