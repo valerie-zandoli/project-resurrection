@@ -23,6 +23,6 @@ An overall assessment instead of the three answers.
 
 These fixes are ours.  They do not show that a new outside reader can answer the three questions; only another cold read can show that.
 
-### Still open
+### Closed
 
-Wil Sheppard has not replied (due Friday 2026-10-23 at 18:00 ET).  The return review of their design is owed once they send a link.
+Wil Sheppard did not reply by the due date (Friday 2026-10-23 at 18:00 ET) or afterwards:  no reply as of 2026-10-24.  Valerie closed the return review of their design on 2026-10-24, so none is owed.  If a link arrives later, Valerie decides then whether to read it.

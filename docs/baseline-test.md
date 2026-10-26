@@ -15,6 +15,12 @@ Eight runs, each a copy of an otherwise valid run with one flaw:
 7. a conflict named in the research notes dropped from the table (no `contradicts` entry);
 8. two sources that repeat one study counted as two origins.
 
+## Case files for flaws 7 and 8
+
+`scripts/baseline_cases.py` builds these two cases from the three research files (the parameter table, `sources.csv`, and the evidence columns file) as three blinded folders, `case-1`, `case-2`, and `case-3` (the order comes from a seed that the key records), plus a key file beside the output folder (`<output>-key.json`) that maps each folder to `valid`, `flaw7`, or `flaw8` and holds the truth.  Flaw 7 sets the `contradicts` cell of one row (default `breeding_age_min`) to `none_identified` and clears the draft note that points at the conflict.  Flaw 8 adds a source that only repeats a study already in the row (default `eu_spain_report2018`, which cites Palomares et al. 2001) to the spring rabbit threshold row, gives it a new origin label, and raises the confidence to high.
+
+Both flawed cases pass `python -m validators.parameters` with `--evidence`; this was checked on the evidence draft files on 2026-10-25.  The validator checks structure, not meaning, so only an arm that reads the sources can catch them.  Keep the key file from the arms until the scoring step; the arms see only the `case-N` folders.  Flaws 1 to 6 act on results and history files, and their case files are not built yet.
+
 ## Arms
 
 - A:  one agent does research, simulation, and evaluation in one session.
