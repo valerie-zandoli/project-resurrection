@@ -14,6 +14,12 @@ from validators.handoff_hashes import check_files_current, file_sha256
 from validators.parameters import validate_parameters
 
 REPO = Path(__file__).resolve().parents[1]
+DEFAULT_SETTLEMENT_RULE = 'monthly_current_then_other'
+SETTLEMENT_RULES = (
+    DEFAULT_SETTLEMENT_RULE,
+    'monthly_own_patch_only',
+    'one_try_at_dispersal',
+)
 
 
 @dataclass
@@ -115,6 +121,8 @@ def load_parameters(config, root):
 
 
 def validate_config(config, p):
+    if config.get('settlement_rule', DEFAULT_SETTLEMENT_RULE) not in SETTLEMENT_RULES:
+        raise ValueError('Unsupported female settlement rule')
     pop = config['initial_population']
     if not (p.dispersal_age <= pop['age_months_min'] <= pop['age_months_max']):
         raise ValueError('Starting age bounds must be ordered and at/above dispersal age')
@@ -127,6 +135,15 @@ def validate_config(config, p):
         raise ValueError('Equal allocation to two patches requires even counts per sex')
     if any(pop['females'] // 2 > math.floor(patch['area_km2'] / p.home_range) for patch in patches):
         raise ValueError('Starting females exceed territory capacity; choose a feasible initialization')
+
+
+def normalize_config(config):
+    """Upgrade legacy v2.0 inputs with the unchanged default settlement rule."""
+    config = copy.deepcopy(config)
+    if config['schema_version'] == '2.0':
+        config['schema_version'] = '2.1'
+        config['settlement_rule'] = DEFAULT_SETTLEMENT_RULE
+    return config
 
 
 def breeding_age(animal, p):
@@ -173,12 +190,20 @@ def advance(animals, config, p, rng, month, capacities):
     patch_ids = list(capacities)
     occupied = {patch: sum(a.alive and a.settled and a.patch_id == patch for a in animals)
                 for patch in patch_ids}
+    settlement_rule = config.get('settlement_rule', DEFAULT_SETTLEMENT_RULE)
+    if settlement_rule not in SETTLEMENT_RULES:
+        raise ValueError('Unsupported female settlement rule')
     candidates = [a for a in animals if a.alive and a.sex == 'female'
-                  and not a.settled and a.age_months >= p.dispersal_age]
+                  and not a.settled
+                  and (a.age_months == p.dispersal_age
+                       if settlement_rule == 'one_try_at_dispersal'
+                       else a.age_months >= p.dispersal_age)]
     rng.shuffle(candidates)
     for animal in candidates:
         other = next(patch for patch in patch_ids if patch != animal.patch_id)
-        for patch in (animal.patch_id, other):
+        patches_to_try = ((animal.patch_id,) if settlement_rule == 'monthly_own_patch_only'
+                          else (animal.patch_id, other))
+        for patch in patches_to_try:
             if occupied[patch] < capacities[patch]:
                 if patch != animal.patch_id:
                     moved.add(animal.id)
@@ -210,6 +235,7 @@ def advance(animals, config, p, rng, month, capacities):
 
 def run_model(config, p):
     """Pure seeded calculation; callers must validate the external input first."""
+    config = normalize_config(config)
     validate_config(config, p)
     rng = random.Random(config['seed'])
     pop = config['initial_population']
@@ -229,14 +255,14 @@ def run_model(config, p):
         if row['population'] != history[-1]['population'] + row['births'] - row['deaths']:
             raise ValueError('Population accounting failed')
         history.append(row)
-    return dict(schema_version='3.0', run_id=config['run_id'], data_kind='simulation',
+    return dict(schema_version='3.1', run_id=config['run_id'], data_kind='simulation',
                 seed=config['seed'], revision_round=0, config=copy.deepcopy(config),
                 history=history, final_animals=[asdict(a) for a in animals],
                 persisted=persisted(animals, p), assumptions=[
                     'Synthetic preview, not historical validation or a live multi-agent workflow.',
                     'Provisional: survival, aging, settlement, male movement, births, recording.',
                     'Provisional: uniform integer litter size across the table range.',
-                    'Provisional: unsettled females try both patches monthly in seeded random order.',
+                    f"Provisional: female settlement rule is {config['settlement_rule']}.",
                     'Mortality transfers older abstract evidence; dispersal at 18 months is assumed.',
                     'Food affects breeding only; density is constant; habitat_quality is 1.0.',
                 ])
@@ -247,6 +273,7 @@ def simulate(config, root=REPO):
     # JSON rejects NaN/infinity before schema numeric comparisons can accept them.
     json.dumps(config, allow_nan=False)
     jsonschema.validate(config, schema('input'))
+    config = normalize_config(config)
     p = load_parameters(config, root)
     result = run_model(config, p)
     errors = check_files_current(config, root)
@@ -265,10 +292,12 @@ def summary(result):
                 historical_validation='not_assessed', model_conventions=result['config']['model_conventions'])
 
 
-def preview_config(seed=42, months=12, food=4.6, area=50, root=REPO):
+def preview_config(seed=42, months=12, food=4.6, area=50, root=REPO,
+                   settlement_rule=DEFAULT_SETTLEMENT_RULE):
     config = json.loads((REPO / 'examples/handoffs/input.json').read_text())
     config.update(run_id=f'preview-{seed}', seed=seed, duration_months=months,
-                  food_rabbits_per_ha=food)
+                  food_rabbits_per_ha=food, settlement_rule=settlement_rule,
+                  schema_version='2.1')
     for patch in config['patches']:
         patch['area_km2'] = area
     for field in ('parameters', 'sources'):

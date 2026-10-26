@@ -9,7 +9,8 @@ import platform
 from pathlib import Path
 from statistics import median
 
-from simulation.model import REPO, preview_config, simulate, summary
+from simulation.model import (DEFAULT_SETTLEMENT_RULE, SETTLEMENT_RULES,
+                              REPO, preview_config, simulate, summary)
 
 CELLS = tuple((f'food-{food:g}_area-{area}', food, area)
               for food in (1.0, 4.6, 55.0) for area in (50, 100))
@@ -61,21 +62,27 @@ def write_json(path, value):
     temporary.replace(path)
 
 
-def run_batch(output, seed=42, trials=100, months=120):
+def run_batch(output, seed=42, trials=100, months=120,
+              settlement_rule=DEFAULT_SETTLEMENT_RULE):
     """Save every attempt, stopping the batch at the first failure without retry."""
     if any(type(value) is not int for value in (seed, trials, months)):
         raise ValueError('Seed, trials, and months must be integers')
     if seed < 0 or trials < 1 or months < 1:
         raise ValueError('Seed must be nonnegative; trials and months must be positive')
+    if settlement_rule not in SETTLEMENT_RULES:
+        raise ValueError('Unsupported female settlement rule')
     # Capture all research identities before the first trial. Later edits fail
     # simulate()'s hash checks rather than becoming a different input mid-batch.
-    configs = {name: preview_config(seed, months, food, area) for name, food, area in CELLS}
+    configs = {name: preview_config(seed, months, food, area,
+                                    settlement_rule=settlement_rule)
+               for name, food, area in CELLS}
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
     report = dict(format_version='preview-batch-1', status='running',
                   purpose='synthetic_preview', historical_validation='not_assessed',
                   model_conventions='proposed-2026-10-22',
                   aggregation_conventions='proposed-model-conventions-section-4',
+                  settlement_rule=settlement_rule,
                   seed=seed, seed_rule=SEED_RULE, trials_per_cell=trials,
                   duration_months=months, python_version=platform.python_version(),
                   code_sha256={name: hashlib.sha256((REPO / name).read_bytes()).hexdigest()
@@ -135,9 +142,13 @@ def main(argv=None):
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--trials', type=int, default=100, help='per cell; preview only, including 500')
     parser.add_argument('--months', type=int, default=120)
+    parser.add_argument('--settlement-rule', choices=SETTLEMENT_RULES,
+                        default=DEFAULT_SETTLEMENT_RULE,
+                        help='provisional settlement rule; run each sensitivity in its own output folder')
     args = parser.parse_args(argv)
     try:
-        report = run_batch(args.output, args.seed, args.trials, args.months)
+        report = run_batch(args.output, args.seed, args.trials, args.months,
+                           args.settlement_rule)
     except (OSError, ValueError) as exc:
         print(f'Batch failed: {exc}')
         return 1

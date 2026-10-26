@@ -98,6 +98,47 @@ def test_settlement_fills_vacancy_but_never_exceeds_capacity(config, params):
     check_states(animals, {'A': 1, 'B': 1})
 
 
+def test_own_patch_only_settlement_does_not_cross_to_an_open_patch(config, params):
+    config['settlement_rule'] = 'monthly_own_patch_only'
+    p = replace(params, annual_mortality=0, breeding_probability=0)
+    female = Lynx('f', 'female', 20, 'A')
+    animals = [female]
+
+    advance(animals, config, p, random.Random(4), 1, {'A': 0, 'B': 1})
+
+    assert not female.settled and female.patch_id == 'A'
+
+
+def test_one_try_settlement_does_not_retry_after_dispersal_month(config, params):
+    config['settlement_rule'] = 'one_try_at_dispersal'
+    p = replace(params, annual_mortality=0, breeding_probability=0)
+    female = Lynx('f', 'female', p.dispersal_age - 1, 'A')
+    animals = [female]
+
+    advance(animals, config, p, random.Random(4), 1, {'A': 0, 'B': 0})
+    assert not female.settled
+    advance(animals, config, p, random.Random(5), 2, {'A': 1, 'B': 1})
+
+    assert female.age_months == p.dispersal_age + 1
+    assert not female.settled and female.patch_id == 'A'
+
+
+def test_old_input_defaults_to_monthly_current_then_other_rule(config):
+    config.pop('settlement_rule')
+    config['schema_version'] = '2.0'
+
+    result = simulate(config)
+
+    assert result['config']['settlement_rule'] == 'monthly_current_then_other'
+    assert result['config']['schema_version'] == '2.1'
+
+
+def test_unsupported_settlement_rule_is_rejected(config):
+    config['settlement_rule'] = 'guess_a_rule'
+    with pytest.raises(jsonschema.ValidationError):
+        simulate(config)
+
+
 def test_male_crossing_uses_no_female_slot(config, params):
     config['male_patch_crossing_probability'] = 1
     animals = [Lynx('f', 'female', 36, 'B', settled=True), Lynx('m', 'male', 36, 'A')]
