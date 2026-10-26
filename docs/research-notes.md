@@ -35,7 +35,7 @@ Drafted 2026-10-20 on branch `dev-valerie` by Valerie with Claude Code.  Nothing
   | 2011 | 214 (catsg) or 202 (official series) | 90 | not found | catsg; iberlince_censo2016 |
 
 - **Growth implied by the anchors (computed by us):**  individuals about 1.17 per year (2002 to 2010, and 2002 to 2011); adults about 1.15 per year (2002 to 2011).
-- **Proposed split of data:**  calibrate on 2002 to 2010 and validate on the 2011 count (214 or 202; the decision is open).  Compare growth rates, not a yearly fit, and set the tolerance before any run.
+- **Agreed split of data:**  calibrate on 2002 to 2010 and validate on the official-series 2011 count of 202 (bounds 181.8 to 222.2).  Retain the Cat Specialist Group's 214 beside the result for comparison only; it does not determine pass or fail.  Compare growth rates, not a yearly fit, and set the tolerance before any run.
 - **Definitions differ across years:**  individuals, adults, and adult females are not interchangeable, so the test must use one definition at a time.
 - **Provisional counts are revised later.**  Andalusia 2010 appears as 253, 279, and 275; 2002 appears as 102 and 94; 2011 appears as 298 (provisional) and 312 (final); Andalusia territorial females for 2010 appear as 66 and, by later arithmetic, 63.
 - **Management helped growth:**  169 agreements covering 180,840 ha for rabbit and lynx habitat (2011), reintroductions at Guadalmellato (2009) and Guarrizas (2010) using lynx from Sierra Morena, and genetic reinforcement of Donana.  The model should be expected to match the trend only roughly.
