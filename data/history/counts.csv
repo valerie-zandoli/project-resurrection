@@ -1,7 +1,7 @@
 population,year,count,definition,source,notes
 Andujar-Cardena,2002,25,adults,catsg,
 Andujar-Cardena,2011,90,adults,catsg,
-Andujar-Cardena,2011,214,all lynx,catsg,Stated as 214 lynx including 90 adults.  Conflicts with 202 in iberlince_censo2016 and in the issuer's own 2011 report (official_census_2011); we found no primary document that gives 214; decision pending.
+Andujar-Cardena,2011,214,all lynx,catsg,Stated as 214 lynx including 90 adults.  Conflicts with 202 in the issuer's own reports; retained for comparison only and not used as the history-test target.
 Andujar-Cardena,2002,53,individuals,eu_spain_report2018,
 Andujar-Cardena,2017,195,individuals,eu_spain_report2018,Neighbouring Guadalmellato (82) and Guarrizas (85) also counted in 2017; connectivity restored.
 Donana-Aljarafe,2002,18,adults,catsg,
@@ -68,7 +68,7 @@ Andujar-Cardena,2007,119,individuals (official series),iberlince_censo2016,
 Andujar-Cardena,2008,160,individuals (official series),iberlince_censo2016,
 Andujar-Cardena,2009,167,individuals (official series),iberlince_censo2016,
 Andujar-Cardena,2010,190,individuals (official series),iberlince_censo2016,Matches efe_2011_01 (190).
-Andujar-Cardena,2011,202,individuals (official series),iberlince_censo2016,Conflicts with 214 from catsg; the issuer's own 2011 report (official_census_2011) also gives 202; decision pending.
+Andujar-Cardena,2011,202,individuals (official series),iberlince_censo2016,Chosen by Anastasiya as the history-test target (bounds 181.8 to 222.2); the issuer's own 2011 report (official_census_2011) also gives 202.  The Cat Specialist Group's 214 is retained for comparison only.
 Andujar-Cardena,2002,18,territorial females (official series),iberlince_censo2016,
 Andujar-Cardena,2003,21,territorial females (official series),iberlince_censo2016,
 Andujar-Cardena,2004,23,territorial females (official series),iberlince_censo2016,
