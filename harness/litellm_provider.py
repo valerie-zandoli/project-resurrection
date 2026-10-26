@@ -39,6 +39,11 @@ def _tool_spec(name):
             "required": ["key"],
             "additionalProperties": False,
         },
+        "run_model": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
         "check_artifacts": {
             "type": "object",
             "properties": {},

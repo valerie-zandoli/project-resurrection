@@ -1,0 +1,38 @@
+{
+  "mode": "live_claude_attempt",
+  "status": "pass",
+  "reason": "every check passed",
+  "models": {
+    "researcher": "anthropic/claude-sonnet-5-5",
+    "developer": "anthropic/claude-sonnet-5-5",
+    "evaluator": "anthropic/claude-sonnet-5-5"
+  },
+  "litellm_version": "1.106.4",
+  "model_calls_attempted": 6,
+  "model_calls_completed": {
+    "researcher": 2,
+    "developer": 2,
+    "evaluator": 2
+  },
+  "max_model_calls": 12,
+  "options": {
+    "seed": 7,
+    "months": 12,
+    "food": 4.6,
+    "area": 50
+  },
+  "all_roles_received_model_replies": true,
+  "historical_validation": "not_assessed",
+  "code_sha256": {
+    "harness/live_case.py": "ccb2bedb481ad652ddc28e4f3808ea094f132104e33f1b6136b2803b2c538670",
+    "harness/roles.py": "0185c9dc3d4af0215421e4870ad1531df2359c34c31d0fe7f14aff978dcc18fe",
+    "harness/litellm_provider.py": "d7fdfe822df22d068b8b9cbfdf1939164b25a9870c3b347d4925d25204f10f77",
+    "harness/three_role_preview.py": "88d9a99fdd343d818bf552f0999119656b8fdce3f4d049974409a7542a29ec35",
+    "harness/run_case.py": "3da0b2a7bbf51ac5884b8668531c9d25a80b34b895026235b7f9610f3a45c103",
+    "simulation/model.py": "020d2ccc1ae546743a6abecd71b727ccc06a7202134d702f2404e36917c1ea88",
+    "validators/results_checks.py": "2bd82d3fd1ff4980270c69f90699006142679ea96f39e2a997f9e44c279120da",
+    "prompts/researcher.md": "e6a85d44f1f276ac3365f95b54648e5299c595dc7918e002a29db594a2dda1eb",
+    "prompts/developer.md": "077111e31fc7c3720e8a04157a62a0849a4f0e9368b1d488b15f6bd96ef16d0f",
+    "prompts/evaluator.md": "bb815f986643af68f2d9860a335af9ae5a27570b8611d8d5f47f47791ec5ba7f"
+  }
+}

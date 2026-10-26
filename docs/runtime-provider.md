@@ -41,3 +41,13 @@ References checked 2026-10-26:
 
 - [LiteLLM Python SDK quickstart](https://docs.litellm.ai/docs/learn/python_sdk_quickstart)
 - [Anthropic model deprecations and current model status](https://docs.anthropic.com/en/docs/about-claude/model-deprecations)
+
+## Anastasiya live integration check, 2026-10-26
+
+Anastasiya's local key passed both a direct greeting and the LiteLLM adapter
+with `claude-sonnet-5-5`. A subsequent 12-month synthetic three-role case
+completed six real requests and passed every code check. See
+`docs/live-workflow.md` and `examples/live_claude_20261026/live.json`.
+Tool-enabled requests need `litellm[mcp]==1.106.4`, now in requirements.
+These are observed connectivity/integration results; they do not resolve the
+shared model decision or establish historical/scientific validation.

@@ -1,0 +1,57 @@
+# First live Claude workflow
+
+This combines the existing adapter (#91/#98) and three-role preview (#94) on
+`resurrection-anastasiya`. Their individual reviews still apply; integration here
+does not merge their pull requests into `develop`.
+
+From the repository root with the Python environment active and your personal
+key in the ignored local `.env` file:
+
+```sh
+python -m harness.live_case --preview --live --seed 7 --months 12 --output /tmp/lynx-live-1
+```
+
+`--live` explicitly selects real Claude calls. The default remains the separately
+available scripted rehearsal. `--env` can point to another private local key file;
+`--model` sets a model override recorded with the run. No key is written to the
+output. `live.json` records the actual model names, installed adapter version,
+code fingerprints, call counts, status, and seed. Partner agreement on the shared
+model remains a separate decision; a successful request proves connectivity only.
+
+The same snapshot, tool restrictions, schemas, and code checks as the scripted
+preview apply. Each role starts a separate conversation. Researcher must inspect
+both existing tables, Developer calls the fixed simulator once per round, and
+Evaluator must call the code checks. Their explanations cannot replace tool
+records or a code verdict. Research text is truncated by the existing role runner;
+this does not demonstrate complete source review or autonomous research.
+
+There are at most four model steps per role and 12 attempted model calls across
+the whole live case. Requests have the adapter's 30-second timeout and no automatic
+retries. The existing harness still limits Developer revisions to rounds 1–3
+after round 0; the total call limit can stop a live case sooner. The fixed tool
+cannot repair generated code, and no generated code executes.
+
+`case.json` and per-round input/results/evaluation files hold the verdict.
+`roles.jsonl` holds tool steps; `model-calls.jsonl` holds scrubbed request/reply
+summaries, with truncation noted. `live-summary.md` is the readable run record.
+The generic `pipeline.json` retains its conservative provider-supplied label;
+`live.json` distinguishes a real Claude attempt from an injected-provider test.
+Keep failed output folders and use a new output folder for a deliberate new run.
+
+Tests inject stand-in providers and make no API calls. A live run is reported only
+after inspecting its saved records. A successful small run is integration evidence,
+not historical validation, final scientific experiments, proof of source accuracy,
+or evidence that these roles outperform a single agent.
+
+## Observed run, 2026-10-26
+
+The saved example in `examples/live_claude_20261026/` passed on the first
+simulation round: 12 synthetic months, seed 7, six completed Claude requests
+(two per role), using `anthropic/claude-sonnet-5-5` and LiteLLM 1.106.4.
+All recorded code checks passed. The artifacts include the validated input
+snapshot, numerical results, role tool records, scrubbed model-call summaries,
+and code fingerprints. This is integration evidence only.
+
+An earlier attempt stopped before a model reply because LiteLLM's tool path
+needed its `mcp` extra. `requirements.txt` now includes that extra. The failed
+attempt was retained locally; the example above is the subsequent deliberate run.
