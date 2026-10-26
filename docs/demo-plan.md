@@ -16,7 +16,7 @@ Written 2026-10-24 by Valerie with Claude Code.  Everything here is a proposal u
 | Thu 2026-10-29 | Freeze the contract and the parameter table (a change after this date means a new run ID and a re-run of every saved result). |
 | by Fri 2026-10-30, 18:00 ET | Every run that needs the key is finished and saved against the frozen version:  the history test, the pilot and final grid, one live pass through the three roles, and one hand-back example. |
 | Sat 2026-10-31 | Draft the report from the saved files. |
-| Sun 2026-11-01, 09:30 ET | Key check (reminder set); full rehearsal with a timer. |
+| Sun 2026-11-01 | Full rehearsal with a timer; key check at 19:00 ET (reminder set). |
 | Mon 2026-11-02 | The demonstration. |
 
 ## The demonstration, in order
