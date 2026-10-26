@@ -46,6 +46,16 @@ Across food levels and areas, [FILL: persistence share with 95% intervals, from 
 
 Still open:  the area assumption; [FILL: any decision still open on the day]; and the sources that we have not read in full (`docs/unread-sources.md`).  Everything is in the repository, with the commands to reproduce it.  Thank you.  We are glad to take questions.
 
+## Video and slide text
+
+The format (told by Valerie on 2026-10-26):  a four-minute maximum, slides and video, in the Sunnyside space, showing improvement over each previous presentation.  The script above is the spoken part for four minutes and has not yet been cut to fit a video; that cut is still to do.
+
+**Caption (required).**  Every screen and slide that shows the three-role preview carries the words **scripted preview; the Researcher inspects existing tables**.  The command (`python -m harness.three_role_preview`) prints them as its first and last line, so a recording of it carries them; say them aloud once in the voice-over.
+
+**Slide text (the preview).**  Title:  "What a scripted run shows".  Lines:  "scripted preview; the Researcher inspects existing tables";  "the code check catches a planted flaw:  revise, with the issue";  "then the clean run passes";  "no live model has run the roles yet" [FILL:  change only if the recorded live pass exists].  Footer:  "Synthetic preview; historical validation not assessed."
+
+**Video (Valerie records it on Friday 2026-10-30 after the freeze).**  (1) The caption line.  (2) The Evaluator's check on the planted flaw 6 case (#69):  `revise`, with the issue.  (3) The unflawed run:  `pass`.  [FILL:  the two commands, from `docs/baseline-test.md`.]  Label step 2 a planted flaw:  the harness cannot yet loop from `revise` to a corrected run by itself.  **Improvement over 26 October:**  that presentation said that nothing was enforced in a live run; the video shows one enforced check on a recorded run.
+
 ## Before you start
 
 1. Close every window that shows `.env` or a key, and turn on Do Not Disturb.
