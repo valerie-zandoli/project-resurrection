@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1050" width="1400" height="1050" font-family="Helvetica, Arial, sans-serif">
+  <title>Project Resurrection: lynx survival workflow, diagram v3</title>
+  <desc>Three agents in a harness, with the untrusted-text points, the critical handoff, the one shared state, and what code enforces.</desc>
+  <defs>
+    <marker id="aK" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222"/></marker>
+    <marker id="aR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker>
+    <marker id="aP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6f42c1"/></marker>
+    <marker id="aB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f6feb"/></marker>
+    <marker id="aG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d6b3c"/></marker>
+  </defs>
+  <rect width="1400" height="1050" fill="#ffffff"/>
+
+  <text x="700" y="40" text-anchor="middle" font-size="28" font-weight="700" fill="#111">Project Resurrection: lynx survival workflow (v3)</text>
+  <text x="700" y="66" text-anchor="middle" font-size="15" fill="#555">Shows where untrusted text enters, the one handoff that must not fail, the one shared state, and what code enforces</text>
+
+  <!-- Source documents -->
+  <rect x="90" y="95" width="300" height="58" rx="8" fill="#fdecea" stroke="#c0392b" stroke-width="2.5"/>
+  <text x="240" y="120" text-anchor="middle" font-size="16" font-weight="700" fill="#7b241c">Source documents</text>
+  <text x="240" y="140" text-anchor="middle" font-size="13" fill="#7b241c">papers, news items, web pages (untrusted)</text>
+  <line x1="240" y1="153" x2="240" y2="268" stroke="#c0392b" stroke-width="3" marker-end="url(#aR)"/>
+  <circle cx="240" cy="172" r="11" fill="#c0392b"/><text x="240" y="177" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">1</text>
+  <text x="258" y="177" font-size="13" fill="#c0392b">source text is data, not orders</text>
+
+  <!-- Harness -->
+  <rect x="40" y="190" width="1320" height="585" rx="14" fill="#eef5ff" stroke="#1f6feb" stroke-width="3"/>
+  <text x="60" y="762" font-size="15" font-weight="700" fill="#1f6feb">HARNESS: the code that runs the agents and passes the files</text>
+
+  <!-- Revision loop -->
+  <path d="M1100,270 V238 H670 V268" fill="none" stroke="#c2397a" stroke-width="2.5" marker-end="url(#aK)"/>
+  <text x="885" y="229" text-anchor="middle" font-size="13" font-style="italic" fill="#a02c64">revise: up to 3 rounds, then stop and report to both owners</text>
+
+  <!-- Hand back to the Researcher -->
+  <path d="M560,270 V250 H340 V268" fill="none" stroke="#1d6b3c" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#aG)"/>
+  <text x="262" y="222" font-size="12" font-style="italic" fill="#1d6b3c">hand back once: Developer or Evaluator files a request</text>
+  <text x="262" y="237" font-size="12" font-style="italic" fill="#1d6b3c">one batched Researcher round per case; else escalate</text>
+
+  <!-- Researcher -->
+  <rect x="90" y="270" width="300" height="130" rx="8" fill="#eaf8ef" stroke="#2e9e5b" stroke-width="2.5"/>
+  <text x="240" y="296" text-anchor="middle" font-size="18" font-weight="700" fill="#1d6b3c">Researcher</text>
+  <text x="240" y="318" text-anchor="middle" font-size="13" fill="#222">tool: read_research [PLANNED]</text>
+  <text x="240" y="346" text-anchor="middle" font-size="13" fill="#b45f06">PROMPT: no invented sources</text>
+  <text x="240" y="366" text-anchor="middle" font-size="13" fill="#1f6feb">CODE: unknown source key rejected</text>
+
+  <!-- Developer -->
+  <rect x="520" y="270" width="300" height="130" rx="8" fill="#fff7df" stroke="#d4a017" stroke-width="2.5"/>
+  <text x="670" y="296" text-anchor="middle" font-size="18" font-weight="700" fill="#7a5b00">Simulation Developer</text>
+  <text x="670" y="318" text-anchor="middle" font-size="13" fill="#222">tool: run_model, a fixed tool [TESTED ONLY]</text>
+  <text x="670" y="346" text-anchor="middle" font-size="13" fill="#b45f06">PROMPT: fix issues, keep the scope</text>
+  <text x="670" y="366" text-anchor="middle" font-size="13" fill="#1f6feb">CODE: sandbox if it writes code [PLANNED]</text>
+
+  <!-- Evaluator -->
+  <rect x="950" y="270" width="300" height="130" rx="8" fill="#fdeaf3" stroke="#c2397a" stroke-width="2.5"/>
+  <text x="1100" y="296" text-anchor="middle" font-size="18" font-weight="700" fill="#8c1f55">Evaluator</text>
+  <text x="1100" y="318" text-anchor="middle" font-size="13" fill="#222">tool: check_artifacts [ON DEVELOP #51]</text>
+  <text x="1100" y="346" text-anchor="middle" font-size="13" fill="#b45f06">PROMPT: pass only if every check passes</text>
+  <text x="1100" y="366" text-anchor="middle" font-size="13" fill="#1f6feb">CODE: round cap of 3 [IN PR #74]</text>
+
+  <!-- Handoffs -->
+  <line x1="392" y1="335" x2="518" y2="335" stroke="#222" stroke-width="3" marker-end="url(#aK)"/>
+  <text x="455" y="312" text-anchor="middle" font-size="26" fill="#d4a017">★</text>
+  <circle cx="455" cy="353" r="10" fill="#c0392b"/><text x="455" y="358" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">2</text>
+  <text x="455" y="378" text-anchor="middle" font-size="12" font-weight="700" fill="#111">CRITICAL HANDOFF</text>
+  <text x="455" y="392" text-anchor="middle" font-size="11" fill="#333">CSV + registry + hashes</text>
+
+  <line x1="822" y1="335" x2="948" y2="335" stroke="#222" stroke-width="3" marker-end="url(#aK)"/>
+  <circle cx="885" cy="353" r="10" fill="#c0392b"/><text x="885" y="358" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">2</text>
+  <text x="885" y="378" text-anchor="middle" font-size="12" fill="#333">results + config</text>
+  <text x="885" y="392" text-anchor="middle" font-size="11" fill="#333">+ hashes</text>
+
+  <!-- Shared state -->
+  <rect x="340" y="500" width="620" height="96" rx="8" fill="#f3edfb" stroke="#6f42c1" stroke-width="2.5"/>
+  <text x="650" y="526" text-anchor="middle" font-size="16" font-weight="700" fill="#4a2a8a">SHARED STATE: the one thing kept in sync</text>
+  <text x="650" y="548" text-anchor="middle" font-size="13" fill="#222">parameter table + source registry, versioned by content hash</text>
+  <text x="650" y="568" text-anchor="middle" font-size="13" fill="#222">Researcher writes; Developer and Evaluator read</text>
+  <text x="650" y="586" text-anchor="middle" font-size="12" fill="#4a2a8a">read-only snapshot with hashes: harness/snapshot.py [IN PR #74]</text>
+  <circle cx="946" cy="514" r="10" fill="#c0392b"/><text x="946" y="519" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">3</text>
+  <line x1="410" y1="500" x2="250" y2="402" stroke="#6f42c1" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#aP)"/>
+  <line x1="640" y1="500" x2="640" y2="402" stroke="#6f42c1" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#aP)"/>
+  <line x1="900" y1="500" x2="1090" y2="402" stroke="#6f42c1" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#aP)"/>
+
+  <!-- Persistence definition -->
+  <rect x="1040" y="446" width="310" height="132" rx="8" fill="#fffdf2" stroke="#8a6d00" stroke-width="2"/>
+  <text x="1054" y="468" font-size="13" font-weight="700" fill="#6b5400">PERSISTENCE (agreed 2026-10-22)</text>
+  <text x="1054" y="488" font-size="12" fill="#222">At month 120: a living female and male of</text>
+  <text x="1054" y="506" font-size="12" fill="#222">breeding age in one patch, and the female</text>
+  <text x="1054" y="524" font-size="12" fill="#222">holds a territory (settled: true).  The field</text>
+  <text x="1054" y="542" font-size="12" fill="#222">is in the results schema (#39, merged).  The</text>
+  <text x="1054" y="560" font-size="12" fill="#222">Evaluator recomputes it: ON DEVELOP (#51).</text>
+
+  <!-- Code checks -->
+  <rect x="90" y="625" width="1170" height="118" rx="8" fill="#ffffff" stroke="#1f6feb" stroke-width="2" stroke-dasharray="8 5"/>
+  <text x="110" y="646" font-size="14" font-weight="700" fill="#1f6feb">Runtime enforcement: evaluator checks are on develop; harness integration remains in open PR #74.</text>
+  <text x="110" y="666" font-size="13" fill="#222">validate files and compare run ID, seed, round [ON DEVELOP #51]  ·  compare hashes and rehash before each round [IN PR #74]</text>
+  <text x="110" y="684" font-size="13" fill="#222">stop after revision round 3 and write a trace [IN PR #74]  ·  hand-back and escalation rules [ON DEVELOP #52]</text>
+  <text x="110" y="702" font-size="13" fill="#222">run generated code under the execution rules [PLANNED, only if the Developer writes code]</text>
+  <text x="110" y="728" font-size="13" font-weight="700" fill="#222">At every handoff:</text>
+  <text x="222" y="728" font-size="13" fill="#222">gap → hand back once (rules ON DEVELOP #52)  ·  gap remains → escalate to a person  ·  fault more evidence cannot fix → fail explicitly, no retry</text>
+
+  <!-- Output and human -->
+  <line x1="350" y1="775" x2="350" y2="806" stroke="#222" stroke-width="3" marker-end="url(#aK)"/>
+  <rect x="90" y="808" width="520" height="66" rx="8" fill="#ffffff" stroke="#222" stroke-width="2.5"/>
+  <text x="350" y="834" text-anchor="middle" font-size="16" font-weight="700" fill="#111">Output: findings, graphs, sources, limitations</text>
+  <text x="350" y="856" text-anchor="middle" font-size="12" fill="#555">samples are labeled sample, never presented as executed runs</text>
+  <line x1="612" y1="841" x2="758" y2="841" stroke="#222" stroke-width="3" marker-end="url(#aK)"/>
+  <rect x="760" y="808" width="500" height="66" rx="8" fill="#fff4e5" stroke="#b45f06" stroke-width="2.5"/>
+  <text x="1010" y="834" text-anchor="middle" font-size="16" font-weight="700" fill="#7a3e00">Human review</text>
+  <text x="1010" y="856" text-anchor="middle" font-size="13" fill="#7a3e00">Valerie and Anastasiya read the findings before anyone interprets them</text>
+
+  <!-- Legend -->
+  <text x="60" y="915" font-size="14" font-weight="700" fill="#111">Legend</text>
+  <rect x="60" y="927" width="64" height="22" rx="4" fill="#eef5ff" stroke="#1f6feb" stroke-width="2"/><text x="92" y="943" text-anchor="middle" font-size="12" font-weight="700" fill="#1f6feb">CODE</text>
+  <text x="134" y="943" font-size="13" fill="#222">the harness enforces it; a prompt cannot talk its way past it</text>
+  <rect x="520" y="927" width="76" height="22" rx="4" fill="#fff4e5" stroke="#b45f06" stroke-width="2"/><text x="558" y="943" text-anchor="middle" font-size="12" font-weight="700" fill="#b45f06">PROMPT</text>
+  <text x="606" y="943" font-size="13" fill="#222">the model is asked; not guaranteed</text>
+  <text x="900" y="945" font-size="22" fill="#d4a017">★</text>
+  <text x="926" y="943" font-size="13" fill="#222">the one handoff whose loss breaks everything</text>
+  <circle cx="71" cy="972" r="10" fill="#c0392b"/><text x="71" y="977" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+  <text x="88" y="977" font-size="13" fill="#222">source documents</text>
+  <circle cx="251" cy="972" r="10" fill="#c0392b"/><text x="251" y="977" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">2</text>
+  <text x="268" y="977" font-size="13" fill="#222">any agent output entering the next step</text>
+  <circle cx="551" cy="972" r="10" fill="#c0392b"/><text x="551" y="977" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">3</text>
+  <text x="568" y="977" font-size="13" fill="#222">the evidence_or_assumption text in the CSV</text>
+  <text x="860" y="977" font-size="13" fill="#c0392b" font-weight="700">Red = text we do not trust (1, 2, 3)</text>
+  <text x="60" y="1001" font-size="12" fill="#222"><tspan font-weight="700">Status tags:</tspan>  ON DEVELOP = merged into develop  ·  IN PR = open PR changes, not merged  ·  TESTED ONLY = tests pass, but no runtime integration yet</text>
+  <text x="60" y="1019" font-size="12" fill="#222">PROMPT = the model is asked, nothing in code holds it  ·  <tspan font-weight="700">Enforced at runtime today: none.</tspan></text>
+  <text x="700" y="1040" text-anchor="middle" font-size="12" fill="#777">Composed 2026-10-24 by Claude Code from docs/architecture.md; statuses checked 2026-10-26.  Check against the paper sketch.  Decided: the harness computes hashes.  Proposed: the Researcher writes shared state and the harness snapshots it.  Notes: docs/architecture.md and docs/harness-skeleton.md</text>
+</svg>
