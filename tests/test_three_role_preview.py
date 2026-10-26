@@ -114,3 +114,37 @@ def test_role_step_limit_is_preserved(tmp_path):
     providers["researcher"] = FakeProvider([call("read_research", key="parameters")] * 5)
     result = pipeline.run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
     assert result.status == "failed" and "no final answer in 4 steps" in result.reason
+
+
+def test_a_second_check_artifacts_call_fails_and_is_not_run_again(tmp_path):
+    providers = pipeline.scripted_providers()
+    providers["evaluator"] = FakeProvider([call("check_artifacts"), call("check_artifacts")])
+    result = pipeline.run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
+    assert result.status == "failed" and "only once" in result.reason
+
+
+def test_the_manifest_says_scripted_only_for_the_scripted_stand_ins(tmp_path):
+    scripted = pipeline.run_three_role_case(tmp_path / "scripted", providers=pipeline.scripted_providers(),
+                                            options=OPTIONS)
+    assert json.loads((scripted.run_dir / "pipeline.json").read_text())["mode"] == "scripted_preview"
+
+    class Supplied:  # not a FakeProvider, so the run must not be called scripted
+        def __init__(self, inner):
+            self.inner = inner
+
+        def complete(self, *args):
+            return self.inner.complete(*args)
+
+    wrapped = {role: Supplied(provider) for role, provider in pipeline.scripted_providers().items()}
+    supplied = pipeline.run_three_role_case(tmp_path / "supplied", providers=wrapped, options=OPTIONS)
+    assert json.loads((supplied.run_dir / "pipeline.json").read_text())["mode"] == "provider_supplied_unverified"
+
+
+def test_a_changed_snapshot_stops_the_case_before_the_simulator_runs(tmp_path, monkeypatch):
+    ran = []
+    monkeypatch.setattr(pipeline, "check_files_current", lambda config, root: ["research file changed"])
+    monkeypatch.setattr(pipeline, "simulator_developer", lambda *args: ran.append(1))
+    result = pipeline.run_three_role_case(tmp_path / "case", providers=pipeline.scripted_providers(),
+                                          options=OPTIONS)
+    assert result.status == "failed" and "snapshot changed" in result.reason
+    assert ran == []
