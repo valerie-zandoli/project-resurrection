@@ -11,6 +11,7 @@ from statistics import median
 
 from simulation.model import (DEFAULT_SETTLEMENT_RULE, SETTLEMENT_RULES,
                               REPO, preview_config, simulate, summary)
+from validators.evidence_gate import STAGES, check_repository
 
 CELLS = tuple((f'food-{food:g}_area-{area}', food, area)
               for food in (1.0, 4.6, 55.0) for area in (50, 100))
@@ -138,6 +139,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--preview', action='store_true', required=True,
                         help='acknowledge proposed model and aggregation conventions')
+    parser.add_argument('--stage', choices=STAGES, required=True,
+                        help='pilot warns about evidence that is not checked; final refuses to run on it')
     parser.add_argument('--output', type=Path, required=True, help='new output directory')
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--trials', type=int, default=100, help='per cell; preview only, including 500')
@@ -146,6 +149,12 @@ def main(argv=None):
                         default=DEFAULT_SETTLEMENT_RULE,
                         help='provisional settlement rule; run each sensitivity in its own output folder')
     args = parser.parse_args(argv)
+    refused, evidence = check_repository(REPO, args.stage)  # the evidence gate, before anything is written
+    if refused:
+        print('Batch refused by the evidence gate: ' + '; '.join(refused))
+        return 2
+    for warning in evidence['warnings']:
+        print(f'Evidence warning:  {warning}')
     try:
         report = run_batch(args.output, args.seed, args.trials, args.months,
                            args.settlement_rule)

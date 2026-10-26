@@ -15,6 +15,7 @@ import statistics
 from pathlib import Path
 
 from simulation.model import Lynx, REPO, advance, breeding_age, check_states, load_parameters, preview_config
+from validators.evidence_gate import check_repository
 
 # Counts from data/history/counts.csv (Andujar-Cardena).
 START_TOTAL = 53        # 2002, individuals
@@ -299,6 +300,11 @@ def main(argv=None):
     parser.add_argument('--mortality-step', type=float, default=0.01)
     parser.add_argument('--output', type=Path, required=True, help='new output directory; never overwritten')
     args = parser.parse_args(argv)
+    # The history test is one held-out run, so it always runs the final gate:  there is no stage option to forget.
+    refused, _ = check_repository(REPO, 'final')
+    if refused:
+        print('History test refused by the evidence gate: ' + '; '.join(refused))
+        return 2
     try:
         arms = ARMS if args.arms is None else tuple(parse_arm(text) for text in args.arms)
         report = run_protocol(args.output, args.run_seed, arms, args.calibration_trials,

@@ -1,4 +1,6 @@
-"""The evidence gate:  a final run is refused on unchecked evidence, and the labels reach case.json."""
+"""The evidence gate:  a final run is refused on unchecked evidence, and the labels reach case.json.
+
+It guards all three ways to start a run:  the harness, the history test, and the trial batches."""
 
 import csv
 import json
@@ -8,10 +10,12 @@ from pathlib import Path
 import pytest
 
 from harness import __main__ as cli
-from harness.evidence_gate import EVIDENCE_FILE, STAGES, check_evidence
 from harness.run_case import CaseResult, HarnessError, run_case
 from harness.snapshot import RESEARCH_FILES
+from simulation import experiments, history
 from simulation.model import REPO
+from validators.evidence_gate import (EVIDENCE_FILE, PARAMETERS_FILE, SOURCES_FILE, STAGES,
+                                      check_evidence, check_repository)
 from validators.handoff_hashes import file_sha256
 
 OPTIONS = dict(seed=3, months=24, food=4.6, area=50)
@@ -142,3 +146,50 @@ def test_the_command_line_takes_a_stage_and_prints_the_warnings(tmp_path, capsys
     assert cli.main(["--preview", "--output", str(tmp_path / "case2")]) == 0 and seen["stage"] == "pilot"
     with pytest.raises(SystemExit):
         cli.main(["--preview", "--stage", "later", "--output", str(tmp_path / "case3")])
+
+
+def test_the_repository_gate_reads_the_same_research_files_as_the_snapshot():
+    assert (PARAMETERS_FILE, SOURCES_FILE) == RESEARCH_FILES
+
+
+def test_the_history_command_always_runs_the_final_gate(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(history, "REPO", make_source(tmp_path, one_not_checked))
+    ran = []
+    monkeypatch.setattr(history, "run_protocol", lambda *args: ran.append(1))
+    code = history.main(["--run-seed", "20261101", "--output", str(tmp_path / "history-run")])
+    assert code == 2 and ran == []
+    assert "refused by the evidence gate" in capsys.readouterr().out
+    assert not (tmp_path / "history-run").exists()
+
+
+def test_the_history_command_starts_when_no_check_is_missing(tmp_path, monkeypatch):
+    monkeypatch.setattr(history, "REPO", make_source(tmp_path, clean))
+    calls = []
+
+    def stop(*args):
+        calls.append(args)
+        raise ValueError("stop here")
+    monkeypatch.setattr(history, "run_protocol", stop)
+    assert history.main(["--run-seed", "20261101", "--output", str(tmp_path / "history-run")]) == 1
+    assert len(calls) == 1
+
+
+def test_the_grid_command_needs_a_stage_and_refuses_a_final_batch_on_unchecked_evidence(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(experiments, "REPO", make_source(tmp_path, one_not_checked))
+    ran = []
+    monkeypatch.setattr(experiments, "run_batch", lambda *args: ran.append(1))
+    base = ["--preview", "--trials", "1", "--output", str(tmp_path / "grid")]
+    with pytest.raises(SystemExit):
+        experiments.main(base)  # no --stage:  the parser refuses, so the stage cannot be forgotten
+    assert experiments.main(base + ["--stage", "final"]) == 2 and ran == []
+    assert "refused by the evidence gate" in capsys.readouterr().out
+    assert not (tmp_path / "grid").exists()
+
+
+def test_a_pilot_batch_runs_on_unchecked_evidence_with_a_warning(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(experiments, "REPO", make_source(tmp_path, one_not_checked))
+    ran = []
+    monkeypatch.setattr(experiments, "run_batch", lambda *args: ran.append(1) or {"status": "completed"})
+    code = experiments.main(["--preview", "--stage", "pilot", "--trials", "1", "--output", str(tmp_path / "grid")])
+    assert code == 0 and ran == [1]
+    assert "Evidence warning:  the contradiction check is not done" in capsys.readouterr().out

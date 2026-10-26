@@ -3,8 +3,8 @@
 import argparse
 from pathlib import Path
 
-from harness.evidence_gate import STAGES
 from harness.run_case import HarnessError, run_case
+from validators.evidence_gate import STAGES
 
 
 def main(argv=None):

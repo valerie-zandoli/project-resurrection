@@ -1,13 +1,17 @@
-"""The evidence gate:  the harness checks the research evidence before any run (docs/failure-taxonomy.md).
+"""The evidence gate:  every run checks the research evidence before it starts (docs/failure-taxonomy.md).
 
 The Researcher writes an evidence file beside the parameter table:  a confidence label, a reason, an
 origin, and a contradicts entry for every parameter.  The gate asks the validator whether the file is
 well formed, then reads the labels:
 
-* a malformed file rejects the case before anything runs;
+* a malformed file stops the run before anything runs;
 * a `not_checked` row blocks a final run and only warns in a pilot run (docs/handoff-decisions.md, item 3);
 * every `low` row and every recorded conflict is listed, so the Evaluator and both owners see them beside
   the verdict.  A `low` row never blocks, because a provisional assumption is allowed.
+
+Three commands call the gate before they start:  `python -m harness` (a stage option), the history test
+(always final, because it is one held-out run), and the trial batches (a required stage option).  The gate
+lives here, beside the validator it wraps, so none of the three has to depend on another.
 
 Whether a label is justified is a human judgment.  The gate checks the form and reports the labels; it
 never decides that a source supports a claim.
@@ -20,7 +24,15 @@ from validators.handoff_hashes import file_sha256
 from validators.parameters import validate_parameters
 
 EVIDENCE_FILE = "data/parameters/evidence_columns_DRAFT.csv"
+PARAMETERS_FILE = "data/parameters/iberian_lynx_baseline.csv"
+SOURCES_FILE = "data/parameters/sources.csv"
 STAGES = ("pilot", "final")
+
+
+def check_repository(root, stage):
+    """The gate for a command that runs outside the harness, on the research files under `root`."""
+    root = Path(root)
+    return check_evidence(root, root / PARAMETERS_FILE, root / SOURCES_FILE, stage)
 
 
 def check_evidence(source_root, parameters, sources, stage):

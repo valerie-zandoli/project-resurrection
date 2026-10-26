@@ -15,11 +15,11 @@ from pathlib import Path
 
 import jsonschema
 
-from harness.evidence_gate import STAGES, check_evidence
 from harness.handback import OWNERS, Case
 from harness.snapshot import RESEARCH_FILES, make_snapshot
 from harness.trace import Trace, scrub
 from simulation.model import REPO, preview_config, simulate
+from validators.evidence_gate import STAGES, check_evidence
 from validators.handoff_hashes import check_files_current, check_handoff_hashes
 from validators.parameters import validate_parameters
 from validators.results_checks import build_evaluation
