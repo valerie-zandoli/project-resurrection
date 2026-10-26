@@ -1,4 +1,4 @@
-# Agent handoffs — results version 3.0
+# Agent handoffs — results version 3.1
 
 For Valerie and Anastasiya to review before simulation integration. JSON Schemas
 in `schemas/` define the shapes; matching examples live in `examples/handoffs/`.
@@ -14,7 +14,7 @@ The local numerical preview is described in [simulator.md](simulator.md).
 
 ## Input
 
-Input version 2.0 records the agreed mixed-age synthetic start: 10 females and
+Input version 2.1 records the agreed mixed-age synthetic start: 10 females and
 10 males, five of each sex per patch, with seeded uniform whole-month ages from
 `age_months_min` (36) to `age_months_max` (96), inclusive. It replaces the old
 single `age_months` field. These are synthetic assumptions, not historical
@@ -27,9 +27,9 @@ litter-sampling, and settlement-choice conventions used by the preview simulator
 It does not mark them agreed. Male crossing probability is explicit in the
 configuration. `parameter_overrides` records only the agreed sensitivity axes:
 post-dispersal annual mortality 0.10–0.50, female home range 4–30 km², and spring
-breeding threshold 3.0–6.0 rabbits/ha. Input and embedded config use version 2.0;
-results use version 3.0 because their embedded input contract changed; evaluation
-stays version 1.0.
+breeding threshold 3.0–6.0 rabbits/ha. Input and embedded config use version 2.1;
+results use version 3.1 to record the settlement rule; evaluation stays version
+1.0. Version 2.0 inputs and version 3.0 results remain readable.
 
 `start_month` is the calendar month at elapsed month 0. `duration_months` counts
 transitions after initialization. Paths are repository-relative. The proposed
@@ -64,10 +64,9 @@ Every entry in `final_animals` requires a boolean `settled`:
   remain in the final list, retaining age and patch at death.
 
 The schema rejects missing/nonboolean `settled` values and rejects `true` for a
-male or dead animal. Results schema **3.0** incorporates the required settlement
-field from version 2.0 and the new embedded input contract, a breaking change
-from 2.0. Input and embedded configuration use version 2.0 for mixed ages;
-evaluation remains version 1.0.
+male or dead animal. Results schema **3.1** records the settlement rule in its
+embedded version 2.1 input contract. It retains support for prior version 3.0
+results and embedded version 2.0 configurations; evaluation remains version 1.0.
 Old results must not be accepted by silently treating missing `settled` as true
 or falling back to the weaker pair-only rule. Regenerate or explicitly migrate
 old artifacts from known territory states; do not infer them from sex alone.

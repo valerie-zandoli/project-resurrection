@@ -140,3 +140,21 @@ def test_unrecorded_parameter_override_is_rejected():
     result["parameter_overrides"]["disease_mortality"] = 0.5
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate(result, load("schema", "input"))
+
+
+def test_settlement_rule_requires_input_contract_2_1():
+    schema = load("schema", "input")
+    example = load("example", "input")
+    jsonschema.validate(example, schema)
+    example["schema_version"] = "2.0"
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(example, schema)
+
+
+def test_results_3_1_requires_recorded_settlement_rule():
+    schema = load("schema", "results")
+    result = load("example", "results")
+    jsonschema.validate(result, schema)
+    del result["config"]["settlement_rule"]
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(result, schema)

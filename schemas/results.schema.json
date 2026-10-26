@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "schema_version": {
-      "const": "3.0"
+      "enum": ["3.0", "3.1"]
     },
     "run_id": {
       "type": "string",
@@ -29,7 +29,7 @@
       "type": "object",
       "properties": {
         "schema_version": {
-          "const": "2.0"
+          "enum": ["2.0", "2.1"]
         },
         "run_id": {
           "type": "string",
@@ -138,6 +138,14 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1
+        },
+        "settlement_rule": {
+          "description": "Provisional female settlement rule used for this run.",
+          "enum": [
+            "monthly_current_then_other",
+            "monthly_own_patch_only",
+            "one_try_at_dispersal"
+          ]
         },
         "parameter_overrides": {
           "type": "object",
@@ -319,6 +327,19 @@
     "final_animals",
     "persisted",
     "assumptions"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {"schema_version": {"const": "3.1"}},
+        "required": ["schema_version"]
+      },
+      "then": {
+        "properties": {
+          "config": {"required": ["settlement_rule"]}
+        }
+      }
+    }
   ],
   "additionalProperties": false
 }

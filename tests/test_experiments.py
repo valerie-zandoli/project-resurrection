@@ -67,6 +67,27 @@ def test_three_replays_keep_all_six_cells_and_single_trial_artifacts(tmp_path):
     assert (tmp_path / '0' / 'batch.json').read_bytes() == before
 
 
+def test_settlement_sensitivity_batch_is_labeled_and_kept_in_its_own_folder(tmp_path):
+    report = experiments.run_batch(tmp_path / 'own-patch', trials=1, months=1,
+                                   settlement_rule='monthly_own_patch_only')
+
+    assert report['settlement_rule'] == 'monthly_own_patch_only'
+    assert all(cell['status'] == 'completed' for cell in report['cells'])
+    for cell in report['cells']:
+        config = json.loads((tmp_path / 'own-patch' / cell['trials'][0]['artifacts']
+                             / 'input.json').read_text())
+        result = json.loads((tmp_path / 'own-patch' / cell['trials'][0]['artifacts']
+                             / 'results.json').read_text())
+        assert config['settlement_rule'] == result['config']['settlement_rule'] == report['settlement_rule']
+
+
+def test_unsupported_settlement_sensitivity_does_not_create_output(tmp_path):
+    output = tmp_path / 'bad'
+    with pytest.raises(ValueError, match='Unsupported female settlement rule'):
+        experiments.run_batch(output, trials=1, settlement_rule='unknown')
+    assert not output.exists()
+
+
 def test_failure_is_preserved_and_stops_without_retry_or_complete_statistics(tmp_path, monkeypatch):
     calls = []
 
@@ -97,7 +118,8 @@ def test_research_edit_mid_batch_stops_instead_of_refreshing_hashes(tmp_path, mo
         relative = f'data/parameters/{filename}'
         (root / relative).write_bytes((REPO / relative).read_bytes())
     monkeypatch.setattr(experiments, 'preview_config',
-                        lambda seed, months, food, area: preview_config(seed, months, food, area, root))
+                        lambda seed, months, food, area, settlement_rule=experiments.DEFAULT_SETTLEMENT_RULE:
+                        preview_config(seed, months, food, area, root, settlement_rule))
     calls = []
 
     def edit_after_first(config):

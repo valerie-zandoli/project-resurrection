@@ -40,13 +40,16 @@ synthetic exploratory results, never observed population history. The summary's
 historical-validation status stays `not_assessed`.
 
 The default input computes actual research-file hashes. `--input path.json`
-instead consumes an existing version 2 input and checks its hashes; CLI seed,
-month, food, and area options apply only when generating a default input.
-Do not pass sample all-zero hashes as real provenance.
+consumes a version 2 input and checks its hashes; older version 2.0 inputs are
+upgraded to version 2.1 with the default settlement rule. CLI seed, month, food,
+and area options apply only when generating a default input. Do not pass sample
+all-zero hashes as real provenance.
 
-Input/config version 2.0 records `age_months_min/max`, the model convention label,
-male crossing probability, and sensitivity overrides. Results use version 3.0
-with required `settled` and the new embedded config; evaluation stays version 1.0.
+Input/config version 2.1 records `age_months_min/max`, the model convention label,
+male crossing probability, sensitivity overrides, and the female settlement rule.
+Results use version 3.1 with required `settled` and the embedded settlement rule;
+evaluation stays version 1.0. The earlier 2.0 input and 3.0 results contracts
+remain readable.
 The eight-column research CSV is unchanged; confidence-column migration is
 separate work.
 
@@ -66,13 +69,34 @@ month. With January initialization, March births are recorded at elapsed month 2
 Newborns are age 0 at birth and face their first survival risk next month.
 
 `random.Random(seed)` is local to each run. Replays require the same Python
-version, configuration, parameter files, and code. The future multi-trial runner
-must define trial-seed derivation (the proposal in `model-conventions.md`, section 4:
-each trial's seed comes from the run seed, the cell name, and the trial number by one
-documented rule); no outcome-based reruns or failed-trial removal are implemented
-here. Errors stop the single run without retry.  Replays are checked on Python 3.12
-only; a different Python version can change the random stream, so the version is
-part of what a replay needs.
+version, configuration, parameter files, and code. The batch runner derives each
+trial seed from the run seed, cell name, and trial number by the documented rule
+in `model-conventions.md`; it does not rerun or drop failed trials. Errors stop a
+single run without retry. Replays are checked on Python 3.12 only; a different
+Python version can change the random stream, so the version is part of what a
+replay needs.
+
+## Settlement sensitivity runs
+
+The main setting is `monthly_current_then_other`: unsettled females aged at least
+18 months retry monthly, checking their current patch and then the other patch.
+The two alternatives are `monthly_own_patch_only` (retry monthly in the current
+patch only) and `one_try_at_dispersal` (check current patch, then the other, once
+when the female first reaches 18 months; never retry if both are full). These are
+model comparisons, not biological claims. Each run records its setting in the
+input and result files.
+
+Run each alternative in a new output folder so its six cells and summaries stay
+separate from the main grid and from the other sensitivity:
+
+```bash
+python -m simulation.experiments --preview --seed 20261025 --trials 100 --months 120 --settlement-rule monthly_own_patch_only --output settlement-own-patch
+python -m simulation.experiments --preview --seed 20261025 --trials 100 --months 120 --settlement-rule one_try_at_dispersal --output settlement-one-try
+```
+
+The same seed is used for both sensitivity batches and the main batch, with each
+cell and trial receiving its documented derived seed. Do not combine these
+statistics with the main grid.
 
 ## Evidence and remaining work
 
