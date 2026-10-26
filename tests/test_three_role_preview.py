@@ -2,6 +2,7 @@
 
 import json
 import shutil
+from pathlib import Path
 
 import pytest
 
@@ -9,6 +10,7 @@ from harness.provider import FakeProvider
 from harness.run_case import HarnessError
 from harness import three_role_preview as pipeline
 from simulation.model import REPO
+from validators.handoff_hashes import file_sha256
 
 OPTIONS = dict(seed=7, months=12, food=4.6, area=50)
 
@@ -34,7 +36,8 @@ def test_one_case_reaches_all_three_roles_and_keeps_real_artifacts(tmp_path):
     assert evaluation["status"] == "pass"
     assert evaluation["historical_validation"] == "not_assessed"
     records = [json.loads(line) for line in (output / "roles.jsonl").read_text().splitlines()]
-    assert [r["role"] for r in records] == ["researcher"] * 3 + ["developer"] * 2 + ["evaluator"] * 2
+    # the Researcher reads the three files in one step (three tool calls), then answers
+    assert [r["role"] for r in records] == ["researcher"] * 4 + ["developer"] * 2 + ["evaluator"] * 2
     assert all(r["input_hashes"] and r["prompt_version"] for r in records)
     for role in providers:
         assert (output / f"round_0/{role}.json").exists()
@@ -96,7 +99,7 @@ def test_misleading_explanations_cannot_override_the_verdict_or_revision_cap(tmp
     result = pipeline.run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
     assert result.status == "stop" and result.attempts == 4 and result.issues
     assert not (tmp_path / "case/round_4").exists()
-    assert len(providers["researcher"].calls) == 3
+    assert len(providers["researcher"].calls) == 2  # one step of reads, one answer, once per case
     task = providers["developer"].calls[2]["messages"][0]["content"]
     assert "Prior code-check issues" in task and "requested_change" in task
 
@@ -148,3 +151,47 @@ def test_a_changed_snapshot_stops_the_case_before_the_simulator_runs(tmp_path, m
                                           options=OPTIONS)
     assert result.status == "failed" and "snapshot changed" in result.reason
     assert ran == []
+
+
+def test_the_researcher_reads_the_evidence_file_and_the_run_records_which_version(tmp_path):
+    providers = pipeline.scripted_providers()
+    output = tmp_path / "case"
+    assert pipeline.run_three_role_case(output, providers=providers, options=OPTIONS).status == "pass"
+    saved = json.loads((output / "round_0/researcher.json").read_text())
+    assert saved["evidence_file"] == pipeline.EVIDENCE_FILE
+    assert saved["evidence_sha256"] == file_sha256(REPO / pipeline.EVIDENCE_FILE)
+    first_label = (REPO / pipeline.EVIDENCE_FILE).read_text().splitlines()[1].split(",")[1]  # a confidence label
+    evidence_result = providers["researcher"].calls[1]["messages"][-1]["content"]
+    assert "UNTRUSTED SOURCE TEXT" in evidence_result and first_label in evidence_result  # data, not instructions
+
+
+def test_a_researcher_that_skips_the_evidence_file_fails(tmp_path):
+    providers = pipeline.scripted_providers()
+    providers["researcher"] = FakeProvider([call("read_research", key="parameters"),
+                                            call("read_research", key="sources"), say("Done.")])
+    result = pipeline.run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
+    assert result.status == "failed" and "evidence file" in result.reason
+    assert providers["developer"].calls == []
+
+
+def test_a_missing_evidence_file_is_reported_to_the_researcher_not_hidden(tmp_path):
+    root = tmp_path / "source"
+    for relative in pipeline.RESEARCH_FILES:
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REPO / relative, target)
+    providers = pipeline.scripted_providers()
+    output = tmp_path / "case"
+    result = pipeline.run_three_role_case(output, providers=providers, options=OPTIONS, source_root=root)
+    assert result.status == "pass"
+    assert "NO EVIDENCE FILE" in providers["researcher"].calls[1]["messages"][-1]["content"]
+    assert json.loads((output / "round_0/researcher.json").read_text())["evidence_sha256"] is None
+
+
+def test_the_command_prints_the_caption_first_and_last_and_the_manifest_carries_it(tmp_path, capsys):
+    output = tmp_path / "case"
+    assert pipeline.main(["--preview", "--seed", "7", "--months", "12", "--output", str(output)]) == 0
+    lines = capsys.readouterr().out.strip().splitlines()
+    caption = "Caption: scripted preview; the Researcher inspects existing tables"
+    assert lines[0] == caption and lines[-1] == caption
+    assert json.loads((output / "pipeline.json").read_text())["caption"] == pipeline.CAPTION
