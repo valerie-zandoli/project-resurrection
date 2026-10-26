@@ -44,6 +44,7 @@ def test_a_clean_case_passes_in_round_0_and_writes_every_file(tmp_path):
         assert (out / "round_0" / name).exists()
     case = json.loads((out / "case.json").read_text())
     assert case["status"] == "pass" and case["notify"] == [] and case["run_ids"] == ["preview-3"]
+    assert case["clarification"] is None
     assert case["research_sha256"].keys() == set(RESEARCH_FILES)
     assert not (out / "round_1").exists()
 
@@ -85,6 +86,7 @@ def test_the_case_stops_after_round_3_and_never_runs_a_fifth_attempt(tmp_path):
     assert not (tmp_path / "case" / "round_4").exists()
     case = json.loads((tmp_path / "case/case.json").read_text())
     assert case["notify"] == ["Valerie", "Anastasiya"]
+    assert case["clarification"] is None
     assert case["issues"] and case["issues"][0]["code"] == "persistence_recomputed"
     assert "round 3" in case["reason"]
 

@@ -70,7 +70,8 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
         trace.add("harness", f"case finished: {status}", validator=reason if status != "pass" else None)
         summary = dict(case_id=case.case_id, status=status, reason=reason, attempts=state["attempts"],
                        run_ids=list(case.run_ids), issues=issues, research_sha256=state["hashes"],
-                       notify=[] if status == "pass" else list(OWNERS), clarification=case.report())
+                       notify=[] if status == "pass" else list(OWNERS),
+                       clarification=case.report() if case.stopped else None)
         _write(output / "case.json", summary)
         return CaseResult(status, reason, state["attempts"], issues, output)
 

@@ -6,7 +6,7 @@ Written 2026-10-24 by Valerie with Claude Code, for the pairing session on 2026-
 
 ![Architecture, version 3](diagrams/architecture-v3.png)
 
-Source: `docs/diagrams/architecture-v3.svg`.  Composed on 2026-10-24 by Claude Code from `docs/architecture.md` and the version 2 source, with the status tags brought up to date (TESTED ONLY, IN REVIEW, PLANNED, PROMPT ONLY).  Valerie's paper sketch has not been compared with it yet; if the sketch differs, the sketch wins and this file changes.  The tags are true on the day of this pull request and go stale as pull requests merge, so update them in the same pull request as the code they describe.
+Source: `docs/diagrams/architecture-v3.svg`.  Composed on 2026-10-24 by Claude Code from `docs/architecture.md` and the version 2 source.  Valerie's paper sketch has not been compared with it yet; if the sketch differs, the sketch wins and this file changes.  Statuses were checked on 2026-10-26: evaluator checks and hand-back rules are on `develop`; the harness integration is in open PR #74.  Refresh the labels when those branch states change.
 
 ## What it does
 
@@ -19,6 +19,8 @@ One case, from the research files to `pass`, `stop`, `rejected`, or `failed`:
 5. The Evaluator runs the code checks (`check_artifacts`, `validators/results_checks.py`).
 6. `pass` ends the case.  `revise` sends the issues back to the Developer, up to revision round 3; then the case stops and names both owners.
 7. Every step is one line of `trace.jsonl`.  The case ends with `case.json`.
+
+The top-level `notify` field lists owners only for a non-passing case.  `clarification` is `null` unless the hand-back case itself has stopped; a normal pass does not create an open clarification report.
 
 A Developer or Evaluator that raises an error fails the case with the reason and is never retried.  A changed research file or a hash mismatch rejects the case with no retry.  Those rules follow `docs/handoff-decisions.md`.
 
