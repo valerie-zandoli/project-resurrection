@@ -60,6 +60,19 @@ def test_linear_rule_still_requires_season_and_local_pair(food, month, male_patc
     assert row['births'] == births
 
 
+def test_a_female_without_a_territory_does_not_breed_under_the_linear_rule():
+    """She settles first if her patch has a free slot (and then breeds); with none she stays unsettled."""
+    config = preview_config(food=2.3, breeding_rule=LINEAR)
+    config['male_patch_crossing_probability'] = 0
+    params = replace(load_parameters(config, REPO), annual_mortality=0, litter_min=2, litter_max=2)
+
+    def births(slots):
+        animals = [Lynx('f', 'female', 36, 'A', settled=False), Lynx('m', 'male', 36, 'A')]
+        return advance(animals, config, params, FixedRandom(), 2, {'A': slots, 'B': slots})['births']
+    assert births(5) == 2  # a free slot: she settles, then breeds
+    assert births(0) == 0  # no slot: she stays unsettled and does not breed
+
+
 def test_linear_12_month_run_replays_and_passes_independent_checks():
     config = preview_config(seed=7, months=12, food=2.3, breeding_rule=LINEAR)
     results = [simulate(config) for _ in range(3)]
