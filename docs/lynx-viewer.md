@@ -20,8 +20,13 @@ The landscape and walking lynx are illustrations. The model currently saves
 monthly population totals and final animal states, not monthly individual
 positions. Symbols do not identify individual animals, and their placement
 does not show actual patch occupancy, dispersal, territory, or geographic tracks.
-Female/male colours represent aggregate counts. Up to 72 symbols are displayed;
-larger populations show an explicit sampling label and exact counts above.
+Female/male colours represent aggregate counts; the honey and sage coats are
+display colours, not biological differences. Rounded faces, ear tufts, spots,
+walking and blinking are decorative. The woodland, stream and stepping stones
+are also decorative, not a map of actual habitats or movement routes.
+Up to 72 symbols are displayed on wider screens, or 24 on narrow screens to
+keep the animals readable. Larger populations show an explicit sampling label
+and exact counts above. On narrow screens the two illustrated patches stack.
 Areas and constant rabbit density are copied from the run configuration.
 
 The exporter checks the results schema, run identity, complete monthly history,
