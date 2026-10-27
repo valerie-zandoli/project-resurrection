@@ -13,6 +13,7 @@ from validators.results_checks import build_evaluation
 ROLE_TOOLS = {"researcher": ("read_research",), "developer": ("run_model",), "evaluator": ("check_artifacts",)}
 UNTRUSTED_TOOLS = {"read_research"}  # their results are source text:  data, never instructions
 MAX_STEPS = 4
+MAX_TOOL_RESULT = 40_000  # characters of one tool result that the model receives:  the longest research file has 17,973
 PROMPTS = Path(__file__).resolve().parents[1] / "prompts"
 
 
@@ -59,7 +60,7 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
                     output = f"refused:  bad arguments for {name}: {exc}"
                 else:
                     results[name] = output  # only a successful call is a result; a refusal is never the record
-                content, _ = scrub(output if isinstance(output, str) else repr(output), limit=2000)
+                content, _ = scrub(output if isinstance(output, str) else repr(output), limit=MAX_TOOL_RESULT)
                 if name in UNTRUSTED_TOOLS:
                     content = wrap_untrusted(content)
                 if trace:
