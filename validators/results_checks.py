@@ -163,15 +163,21 @@ def check_final_counts(run_input, results, params):
 
 def check_birth_timing(run_input, results, params):
     food_enough = run_input["food_rabbits_per_ha"] >= params["food_threshold"]
+    rule = run_input.get("breeding_rule", "spring_threshold")
+    if rule == "linear_food_sensitivity":
+        if params["food_threshold"] != 4.6:
+            return False, "Linear food sensitivity requires the unchanged 4.6 reference.", "Separate threshold sensitivity from linear food sensitivity."
+        food_enough = run_input["food_rabbits_per_ha"] > 0
     for row in results["history"][1:]:
         calendar_month = (run_input["start_month"] - 1 + row["month"]) % 12 + 1
         if row["births"] and calendar_month != params["birth_month"]:
             return (False, f"Month {row['month']} reports births outside the birth month.",
                     "Allow births only in the birth month (March).")
         if row["births"] and not food_enough:
-            return (False, f"Month {row['month']} reports births with food below the spring threshold.",
-                    "Allow no births when the food density is below the spring threshold.")
-    return True, "Births occur only in the birth month and only with enough food.", ""
+            detail = "zero food under the linear rule" if rule == "linear_food_sensitivity" else "food below the spring threshold"
+            return (False, f"Month {row['month']} reports births with {detail}.",
+                    "Allow births only where the recorded breeding rule permits them.")
+    return True, "Birth timing and food agree with the recorded breeding rule; probabilities are not statistically assessed.", ""
 
 
 def check_persistence(run_input, results, params):

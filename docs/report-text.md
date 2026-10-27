@@ -77,7 +77,7 @@ See `docs/report-skeleton.md`, section "What the model cannot tell us".  Rewrite
 
 - Python 3.12 in a fresh virtual environment, then `python -m pytest` (no key).  **TO FILL:**  the exact Python version and the number of tests that passed.
 - The history test:  `python -m simulation.history --run-seed 20261101 --output history-run-1`.
-- The batches:  `python -m simulation.experiments --preview --seed <seed> --trials <100 or 500> --months 120 --output <folder>`.  **TO FILL:**  the seeds.
+- The batches:  `python -m simulation.experiments --preview --stage <pilot or final> --seed <seed> --trials <100 or 500> --months 120 --output <folder>`.  **TO FILL:**  the seeds.
 - The report table and figure:  `python -m report.figures`.
 - The harness:  `python -m harness --preview ...` offline; the live command is **TO FILL** (`docs/live-pass-runbook.md`).
 - **TO FILL at the freeze:**  the commit hash of the code that produced every saved result and the hashes of the two research files (`docs/history-preregistration.md`).

@@ -9,8 +9,10 @@ import platform
 from pathlib import Path
 from statistics import median
 
-from simulation.model import (DEFAULT_SETTLEMENT_RULE, SETTLEMENT_RULES,
+from simulation.model import (BREEDING_RULES, DEFAULT_BREEDING_RULE,
+                              DEFAULT_SETTLEMENT_RULE, SETTLEMENT_RULES,
                               REPO, preview_config, simulate, summary)
+from validators.evidence_gate import STAGES, check_repository
 
 CELLS = tuple((f'food-{food:g}_area-{area}', food, area)
               for food in (1.0, 4.6, 55.0) for area in (50, 100))
@@ -63,7 +65,7 @@ def write_json(path, value):
 
 
 def run_batch(output, seed=42, trials=100, months=120,
-              settlement_rule=DEFAULT_SETTLEMENT_RULE):
+              settlement_rule=DEFAULT_SETTLEMENT_RULE, breeding_rule=DEFAULT_BREEDING_RULE):
     """Save every attempt, stopping the batch at the first failure without retry."""
     if any(type(value) is not int for value in (seed, trials, months)):
         raise ValueError('Seed, trials, and months must be integers')
@@ -71,10 +73,13 @@ def run_batch(output, seed=42, trials=100, months=120,
         raise ValueError('Seed must be nonnegative; trials and months must be positive')
     if settlement_rule not in SETTLEMENT_RULES:
         raise ValueError('Unsupported female settlement rule')
+    if breeding_rule not in BREEDING_RULES:
+        raise ValueError('Unsupported breeding rule')
     # Capture all research identities before the first trial. Later edits fail
     # simulate()'s hash checks rather than becoming a different input mid-batch.
+    extra = {} if breeding_rule == DEFAULT_BREEDING_RULE else dict(breeding_rule=breeding_rule)
     configs = {name: preview_config(seed, months, food, area,
-                                    settlement_rule=settlement_rule)
+                                    settlement_rule=settlement_rule, **extra)
                for name, food, area in CELLS}
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
@@ -83,6 +88,7 @@ def run_batch(output, seed=42, trials=100, months=120,
                   model_conventions='proposed-2026-10-22',
                   aggregation_conventions='proposed-model-conventions-section-4',
                   settlement_rule=settlement_rule,
+                  breeding_rule=breeding_rule,
                   seed=seed, seed_rule=SEED_RULE, trials_per_cell=trials,
                   duration_months=months, python_version=platform.python_version(),
                   code_sha256={name: hashlib.sha256((REPO / name).read_bytes()).hexdigest()
@@ -138,6 +144,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--preview', action='store_true', required=True,
                         help='acknowledge proposed model and aggregation conventions')
+    parser.add_argument('--stage', choices=STAGES, required=True,
+                        help='pilot warns about evidence that is not checked; final refuses to run on it')
     parser.add_argument('--output', type=Path, required=True, help='new output directory')
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--trials', type=int, default=100, help='per cell; preview only, including 500')
@@ -145,10 +153,19 @@ def main(argv=None):
     parser.add_argument('--settlement-rule', choices=SETTLEMENT_RULES,
                         default=DEFAULT_SETTLEMENT_RULE,
                         help='provisional settlement rule; run each sensitivity in its own output folder')
+    parser.add_argument('--breeding-rule', choices=BREEDING_RULES,
+                        default=DEFAULT_BREEDING_RULE,
+                        help='run linear_food_sensitivity separately from the baseline')
     args = parser.parse_args(argv)
+    refused, evidence = check_repository(REPO, args.stage)  # the evidence gate, before anything is written
+    if refused:
+        print('Batch refused by the evidence gate: ' + '; '.join(refused))
+        return 2
+    for warning in evidence['warnings']:
+        print(f'Evidence warning:  {warning}')
     try:
         report = run_batch(args.output, args.seed, args.trials, args.months,
-                           args.settlement_rule)
+                           args.settlement_rule, args.breeding_rule)
     except (OSError, ValueError) as exc:
         print(f'Batch failed: {exc}')
         return 1

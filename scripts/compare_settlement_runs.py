@@ -15,7 +15,12 @@ select or validate a biological rule.
 import argparse
 import json
 import math
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # so the command above finds `simulation`
+
+from simulation.experiments import aggregate  # noqa: E402
 
 DEFAULT_SETTLEMENT_RULE = "monthly_current_then_other"
 SETTLEMENT_RULES = (
@@ -122,6 +127,7 @@ def _load_batch(path, expected_rule):
                      or isinstance(extinction_month, bool) or not math.isfinite(extinction_month)
                      or extinction_month < 0)):
             raise ValueError(f"{path}: cell {name!r} has an invalid extinction month")
+        cell_summaries = []
         for index, record in enumerate(trials):
             if (record.get("status") != "completed" or record.get("trial") != index
                     or not isinstance(record.get("artifacts"), str)):
@@ -155,6 +161,7 @@ def _load_batch(path, expected_rule):
                     or isinstance(summary.get("final_population"), bool)
                     or not math.isfinite(summary["final_population"])):
                 raise ValueError(f"{path}: trial {index} in {name!r} has invalid summary values")
+            cell_summaries.append(summary)
 
             baseline = cells.setdefault(name, {"cell": cell, "trials": []})
             comparable = _normalized_input(run_input)
@@ -163,6 +170,9 @@ def _load_batch(path, expected_rule):
             elif comparable != baseline["input"]:
                 raise ValueError(f"{path}: trial inputs differ within cell {name!r}")
             baseline["trials"].append(record)
+        # The displayed statistics must be the ones that the trials give, not only numbers in range.
+        if cell_stats != aggregate([dict(summary, status="completed") for summary in cell_summaries]):
+            raise ValueError(f"{path}: cell {name!r} statistics differ from its trial results")
 
     return batch, cells
 
@@ -233,8 +243,9 @@ def render_markdown(comparison):
         (f"Seed: {comparison['seed']} · Trials per cell: {comparison['trials_per_cell']} · "
          f"Months: {comparison['duration_months']} · Python: {comparison['python_version']}"),
         "",
-        "Each result lists the persistence share and its 95% Wilson interval, median final population, ",
-        "extinction share, and median extinction month (shown as ‘not extinct’ when no trial went extinct).",
+        "Persistence means that, in the last month, a living breeding-age female holding a territory and a living breeding-age male are in the same patch.",
+        "Each result lists the persistence share and its 95% Wilson interval, median final population, extinction share, and the median extinction month among the extinct trials (shown as ‘not extinct’ when no trial went extinct).",
+        "Intervals describe each persistence share; they are not a statistical test of any difference between rules.",
         "",
         "| Scenario | Monthly: current patch, then other | Monthly: own patch only | One try at dispersal |",
         "|---|---|---|---|",
@@ -253,7 +264,7 @@ def render_markdown(comparison):
                 f"(95% interval {_fmt_pct(low)}–{_fmt_pct(high)})<br>"
                 f"Median final population: {stats['final_population_median']:g}<br>"
                 f"Extinction share: {_fmt_pct(stats['extinction_share'])}<br>"
-                f"Median extinction time: {extinct_at}"
+                f"Median extinction time (extinct trials only): {extinct_at}"
             )
         lines.append(f"| {scenario} | {values[0]} | {values[1]} | {values[2]} |")
     lines.extend(["", "Historical validation: **not assessed**.", ""])

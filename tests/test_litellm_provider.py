@@ -108,3 +108,23 @@ def test_environment_factory_fails_clearly_when_key_is_missing(tmp_path):
 def test_provider_refuses_non_claude_model_names():
     with pytest.raises(ProviderError, match="CLAUDE_MODEL"):
         LiteLLMProvider(api_key="test-key", model="openai/example")
+
+
+def _reply_ending(reason):
+    message = SimpleNamespace(content="sk-ant-partial-text", tool_calls=None)
+    return lambda **request: SimpleNamespace(choices=[SimpleNamespace(finish_reason=reason, message=message)])
+
+
+def test_a_reply_cut_off_at_the_token_limit_fails_loudly_without_its_text():
+    provider = LiteLLMProvider(api_key="test-key", completion=_reply_ending("length"))
+
+    with pytest.raises(ProviderError, match=r"cut off at the 1200-token limit") as error:
+        provider.complete("rules", [], [])
+    assert "sk-ant-partial-text" not in str(error.value)
+
+
+@pytest.mark.parametrize("reason", ["stop", "tool_calls", None])
+def test_a_reply_that_ended_normally_is_accepted(reason):
+    provider = LiteLLMProvider(api_key="test-key", completion=_reply_ending(reason))
+
+    assert provider.complete("rules", [], [])["text"] == "sk-ant-partial-text"

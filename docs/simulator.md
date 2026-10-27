@@ -90,8 +90,8 @@ Run each alternative in a new output folder so its six cells and summaries stay
 separate from the main grid and from the other sensitivity:
 
 ```bash
-python -m simulation.experiments --preview --seed 20261025 --trials 100 --months 120 --settlement-rule monthly_own_patch_only --output settlement-own-patch
-python -m simulation.experiments --preview --seed 20261025 --trials 100 --months 120 --settlement-rule one_try_at_dispersal --output settlement-one-try
+python -m simulation.experiments --preview --stage pilot --seed 20261025 --trials 100 --months 120 --settlement-rule monthly_own_patch_only --output settlement-own-patch
+python -m simulation.experiments --preview --stage pilot --seed 20261025 --trials 100 --months 120 --settlement-rule one_try_at_dispersal --output settlement-one-try
 ```
 
 The same seed is used for both sensitivity batches and the main batch, with each

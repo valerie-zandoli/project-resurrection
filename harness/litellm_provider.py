@@ -126,6 +126,9 @@ class LiteLLMProvider:
             choices = _field(response, "choices", [])
             if not choices:
                 raise ValueError("empty completion")
+            if _field(choices[0], "finish_reason") == "length":
+                # A reply cut off at the limit is half an answer; never hand it on as a whole one.
+                raise ProviderError(f"Claude reply was cut off at the {MAX_TOKENS}-token limit")
             message = _field(choices[0], "message", {})
             content = _field(message, "content", "") or ""
             if isinstance(content, list):

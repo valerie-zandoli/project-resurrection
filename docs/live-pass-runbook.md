@@ -50,8 +50,8 @@ Fill the four items in `docs/history-preregistration.md` under "TO FILL at the f
 
 | Run | Needs the key | Command (README) |
 |---|---|---|
-| History test, once, seed 20261101 | no | `python -m simulation.history --run-seed 20261101 --output history-run-1` |
-| Trial batches, 100 pilot and 500 final trials per cell | no | `python -m simulation.experiments --preview --seed <seed> --trials 100 --months 120 --output batch-1` (500 trials for the final batch) |
+| History test, once, seed 20261101 (it always runs the final evidence gate) | no | `python -m simulation.history --run-seed 20261101 --output history-run-1` |
+| Trial batches, 100 pilot and 500 final trials per cell | no | `python -m simulation.experiments --preview --stage pilot --seed <seed> --trials 100 --months 120 --output batch-1` (for the 500-trial final batch, use `--stage final --trials 500`; `--stage` has no default) |
 | One live pass through the three roles | yes | **TO FILL** (Anastasiya) |
 | One hand-back example | yes | **TO FILL** (Anastasiya) |
 
@@ -59,6 +59,7 @@ Fill the four items in `docs/history-preregistration.md` under "TO FILL at the f
 
 | What you see | What to do |
 |---|---|
+| A command prints "refused by the evidence gate" and exits with code 2 | A parameter is `not_checked`, or the evidence file is missing, and the run is final.  Do not edit the file to get past it:  check the contradiction for that parameter, record the result in the evidence file, and run again.  A pilot run only warns. |
 | `check_key.py` exit 2 with a 401 or 403 | The key was rejected.  Ask LaNice for a new one-time link.  Do not retry in a loop. |
 | `check_key.py` exit 3 | No connection.  Check the network once; if it persists, use the fallback files. |
 | `check_key.py` exit 5 | The `.env` file or the key has a bad character.  Fix the file; never paste the key into a chat or a document. |

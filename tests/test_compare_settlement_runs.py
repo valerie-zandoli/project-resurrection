@@ -3,6 +3,7 @@ import json
 import pytest
 
 from scripts import compare_settlement_runs as comparison
+from simulation.experiments import aggregate
 
 DEFAULT_SETTLEMENT_RULE = comparison.DEFAULT_SETTLEMENT_RULE
 SETTLEMENT_RULES = comparison.SETTLEMENT_RULES
@@ -43,13 +44,7 @@ def make_batches(tmp_path, trial_seeds=(1001,)):
                 "trial": index, "seed": trial_seed, "run_id": run_id,
                 "artifacts": artifacts, "status": "completed", **trial_summary,
             })
-        statistics = {
-            "trials": len(trial_seeds), "persistence_share": 1.0,
-            "persistence_wilson_95": [0.2065, 1.0],
-            "final_population_median": 20, "final_population_p10": 20,
-            "final_population_p90": 20, "extinction_share": 0.0,
-            "extinction_month_median": None,
-        }
+        statistics = aggregate(records)
         batch = {
             "format_version": "preview-batch-1", "purpose": "synthetic_preview",
             "historical_validation": "not_assessed", "settlement_rule": rule,
@@ -173,3 +168,22 @@ def test_comparison_rejects_batches_whose_trial_seeds_differ_between_rules(tmp_p
 
     with pytest.raises(ValueError, match="matching trial seeds"):
         comparison.compare_batches(paths)
+
+
+def test_comparison_rejects_statistics_that_are_in_range_but_not_what_the_trials_give(tmp_path):
+    paths = make_batches(tmp_path)
+    path = paths["one_try_at_dispersal"]
+    batch = json.loads(path.read_text())
+    batch["cells"][0]["statistics"]["final_population_median"] = 5  # a valid number; the trial says 20
+    path.write_text(json.dumps(batch))
+
+    with pytest.raises(ValueError, match="statistics differ from its trial results"):
+        comparison.compare_batches(paths)
+
+
+def test_report_defines_persistence_and_labels_extinction_time_as_extinct_trials_only(tmp_path):
+    markdown = comparison.render_markdown(comparison.compare_batches(make_batches(tmp_path)))
+
+    assert "living breeding-age female holding a territory" in markdown
+    assert "Median extinction time (extinct trials only)" in markdown
+    assert "not a statistical test of any difference between rules" in markdown
