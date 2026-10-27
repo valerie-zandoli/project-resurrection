@@ -41,6 +41,7 @@
 <canvas id="habitat" width="1100" height="440" role="img" aria-label="Illustrative lynx population"></canvas>
 </div>
 <div class="map-note" id="map-note">Illustrated habitat, not a geographic map. Counts are recorded. Walking and positions are illustrative; monthly animal tracks are not saved.</div>
+<div class="map-note" id="rabbit-note"></div>
 </section>
 <div class="controls" aria-label="Playback controls">
 <button class="primary" id="play" type="button">▶ Play</button><button id="reset" type="button">↶ Restart</button>
@@ -176,6 +177,31 @@ function lynx(x,y,sex,phase,size,flip,blink){
   });
   ctx.restore();
 }
+function rabbit(x,y,phase,flip){
+  ctx.save();ctx.translate(x,y);ctx.scale(flip,1);
+  oval(ctx,0,8,13,3,'#5269411a');
+  ctx.translate(0,-Math.max(0,Math.sin(phase))*3);
+  oval(ctx,-1,0,10,7,'#d7c9ac');oval(ctx,-11,-1,4,4,'#fff8e6');
+  oval(ctx,7,-6,6,6.5,'#e7dac1');
+  oval(ctx,5,-17,2.8,9,'#e7dac1',-.12);oval(ctx,10,-16,2.7,8,'#e7dac1',.18);
+  oval(ctx,5,-17,1.1,6,'#c69b8d',-.12);oval(ctx,10,-16,1,5,'#c69b8d',.18);
+  oval(ctx,8,-7,1.7,2.1,'#394a3d');oval(ctx,7.5,-7.8,.55,.7,'#fffdf1');
+  oval(ctx,12,-3,2.3,1.8,'#fff5df');oval(ctx,14,-4,1.2,.9,'#ad7c6b');
+  oval(ctx,-5,6,5,2.5,'#efe3c9');oval(ctx,7,6,4,2,'#efe3c9');
+  ctx.restore();
+}
+function drawRabbits(time){
+  const {w,h,compact}=scene,food=run.config.food_rabbits_per_ha;
+  const total=Math.min(compact?6:12,Math.ceil(2*Math.sqrt(food)));
+  const motion=reduceMotion.matches||!playing?0:time*.001;
+  for(let i=0;i<total;i++){
+    const side=i%2,slot=Math.floor(i/2),count=side?Math.floor(total/2):Math.ceil(total/2);
+    const fraction=(slot+.5)/count;
+    const x=compact?35+fraction*(w-70):w/2+(side?46:-46);
+    const y=compact?h/2+(side?30:-30):85+fraction*(h-155);
+    rabbit(x,y,motion?motion*3+i:0,side?-1:1);
+  }
+}
 function resizeScene(){
   const w=canvas.clientWidth,h=canvas.clientHeight,compact=matchMedia('(max-width:650px)').matches;
   const dpr=Math.min(window.devicePixelRatio||1,2);
@@ -191,6 +217,7 @@ function draw(time=0){
   if(!scene)return;
   const {w,h,compact,patches}=scene,row=rows[index];
   ctx.clearRect(0,0,w,h);ctx.drawImage(backdrop,0,0,w,h);
+  drawRabbits(time);
   // Fewer symbols on phones keep faces readable; exact totals remain above.
   const total=Math.min(compact?24:MAX_ICONS,row.population);
   const femaleIcons=Math.round(total*(row.population?row.females/row.population:0));
@@ -235,6 +262,7 @@ reduceMotion.addEventListener('change',motionChanged);
 $('kind').textContent=run.data_kind==='sample'?'Sample fixture · not a simulation run':'Synthetic simulation · saved run';
 $('run-details').textContent=`Run ${run.run_id} · seed ${run.seed} · ${last} months.`;
 $('food-details').textContent=`Food: ${run.config.food_rabbits_per_ha} rabbits per hectare (constant).`;
+$('rabbit-note').textContent=`Food stays at ${run.config.food_rabbits_per_ha} rabbits per hectare. ${run.config.food_rabbits_per_ha===0?'No rabbit symbols are shown.':'Rabbit symbols illustrate food availability, not a population count.'} Individual hunts are not simulated.`;
 run.config.patches.slice(0,2).forEach((p,i)=>{$(i?'patch-b':'patch-a').textContent=`Patch ${p.id} · ${p.area_km2} km²`});
 $('end-label').textContent=`Month ${last}`;$('scrub').max=last;
 new ResizeObserver(resizeScene).observe(canvas);resizeScene();select(0);motionChanged();

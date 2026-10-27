@@ -28,6 +28,10 @@ Up to 72 symbols are displayed on wider screens, or 24 on narrow screens to
 keep the animals readable. Larger populations show an explicit sampling label
 and exact counts above. On narrow screens the two illustrated patches stack.
 Areas and constant rabbit density are copied from the run configuration.
+Rabbit symbols increase with food density (up to 12 on wider screens or 6 on
+narrow screens); zero food shows none. They illustrate the constant food input,
+not measured rabbit counts, births, deaths or individual hunts. Their hopping
+stops when playback pauses or reduced motion is enabled.
 
 The exporter checks the results schema, run identity, complete monthly history,
 population accounting, and final animal counts before displaying a file. It
