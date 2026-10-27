@@ -14,6 +14,15 @@ from validators.handoff_hashes import check_files_current, file_sha256
 from validators.parameters import validate_parameters
 
 REPO = Path(__file__).resolve().parents[1]
+DEFAULT_BREEDING_RULE = 'spring_threshold'
+BREEDING_RULES = (DEFAULT_BREEDING_RULE, 'linear_food_sensitivity')
+LINEAR_REFERENCE_DENSITY = 4.6
+DEFAULT_SETTLEMENT_RULE = 'monthly_current_then_other'
+SETTLEMENT_RULES = (
+    DEFAULT_SETTLEMENT_RULE,
+    'monthly_own_patch_only',
+    'one_try_at_dispersal',
+)
 
 
 @dataclass
@@ -115,6 +124,13 @@ def load_parameters(config, root):
 
 
 def validate_config(config, p):
+    if config.get('breeding_rule', DEFAULT_BREEDING_RULE) not in BREEDING_RULES:
+        raise ValueError('Unsupported breeding rule')
+    if (config.get('breeding_rule') == 'linear_food_sensitivity'
+            and p.food_threshold != LINEAR_REFERENCE_DENSITY):
+        raise ValueError('Run linear food sensitivity separately from threshold overrides; use 4.6')
+    if config.get('settlement_rule', DEFAULT_SETTLEMENT_RULE) not in SETTLEMENT_RULES:
+        raise ValueError('Unsupported female settlement rule')
     pop = config['initial_population']
     if not (p.dispersal_age <= pop['age_months_min'] <= pop['age_months_max']):
         raise ValueError('Starting age bounds must be ordered and at/above dispersal age')
@@ -129,8 +145,28 @@ def validate_config(config, p):
         raise ValueError('Starting females exceed territory capacity; choose a feasible initialization')
 
 
+def normalize_config(config):
+    """Upgrade legacy v2.0 inputs with the unchanged default settlement rule."""
+    config = copy.deepcopy(config)
+    if config['schema_version'] == '2.0':
+        config['schema_version'] = '2.1'
+        config['settlement_rule'] = DEFAULT_SETTLEMENT_RULE
+    return config
+
+
 def breeding_age(animal, p):
     return animal.alive and p.breeding_min <= animal.age_months <= p.breeding_max
+
+
+def food_breeding_probability(config, p):
+    """Annual March chance for an eligible female; linear rule is an assumption."""
+    food = config['food_rabbits_per_ha']
+    rule = config.get('breeding_rule', DEFAULT_BREEDING_RULE)
+    if rule == 'linear_food_sensitivity':
+        return p.breeding_probability * min(food / LINEAR_REFERENCE_DENSITY, 1.0)
+    if rule != DEFAULT_BREEDING_RULE:
+        raise ValueError('Unsupported breeding rule')
+    return p.breeding_probability if food >= p.food_threshold else 0.0
 
 
 def persisted(animals, p):
@@ -173,12 +209,20 @@ def advance(animals, config, p, rng, month, capacities):
     patch_ids = list(capacities)
     occupied = {patch: sum(a.alive and a.settled and a.patch_id == patch for a in animals)
                 for patch in patch_ids}
+    settlement_rule = config.get('settlement_rule', DEFAULT_SETTLEMENT_RULE)
+    if settlement_rule not in SETTLEMENT_RULES:
+        raise ValueError('Unsupported female settlement rule')
     candidates = [a for a in animals if a.alive and a.sex == 'female'
-                  and not a.settled and a.age_months >= p.dispersal_age]
+                  and not a.settled
+                  and (a.age_months == p.dispersal_age
+                       if settlement_rule == 'one_try_at_dispersal'
+                       else a.age_months >= p.dispersal_age)]
     rng.shuffle(candidates)
     for animal in candidates:
         other = next(patch for patch in patch_ids if patch != animal.patch_id)
-        for patch in (animal.patch_id, other):
+        patches_to_try = ((animal.patch_id,) if settlement_rule == 'monthly_own_patch_only'
+                          else (animal.patch_id, other))
+        for patch in patches_to_try:
             if occupied[patch] < capacities[patch]:
                 if patch != animal.patch_id:
                     moved.add(animal.id)
@@ -194,11 +238,15 @@ def advance(animals, config, p, rng, month, capacities):
 
     births = []
     calendar_month = (config['start_month'] - 1 + month) % 12 + 1
-    if calendar_month == p.birth_month and config['food_rabbits_per_ha'] >= p.food_threshold:
+    chance = food_breeding_probability(config, p)
+    food_permits = (config['food_rabbits_per_ha'] > 0
+                    if config.get('breeding_rule') == 'linear_food_sensitivity'
+                    else config['food_rabbits_per_ha'] >= p.food_threshold)
+    if calendar_month == p.birth_month and food_permits:
         male_patches = {a.patch_id for a in animals if a.sex == 'male' and breeding_age(a, p)}
         for mother in animals:
             if (mother.sex == 'female' and mother.settled and breeding_age(mother, p)
-                    and mother.patch_id in male_patches and rng.random() < p.breeding_probability):
+                    and mother.patch_id in male_patches and rng.random() < chance):
                 for _ in range(rng.randint(p.litter_min, p.litter_max)):
                     births.append(Lynx(f'lynx-{len(animals) + len(births) + 1:06d}',
                                        'female' if rng.random() < p.female_probability else 'male',
@@ -210,6 +258,7 @@ def advance(animals, config, p, rng, month, capacities):
 
 def run_model(config, p):
     """Pure seeded calculation; callers must validate the external input first."""
+    config = normalize_config(config)
     validate_config(config, p)
     rng = random.Random(config['seed'])
     pop = config['initial_population']
@@ -229,17 +278,20 @@ def run_model(config, p):
         if row['population'] != history[-1]['population'] + row['births'] - row['deaths']:
             raise ValueError('Population accounting failed')
         history.append(row)
-    return dict(schema_version='3.0', run_id=config['run_id'], data_kind='simulation',
+    return dict(schema_version='3.2' if config['schema_version'] == '2.2' else '3.1',
+                run_id=config['run_id'], data_kind='simulation',
                 seed=config['seed'], revision_round=0, config=copy.deepcopy(config),
                 history=history, final_animals=[asdict(a) for a in animals],
                 persisted=persisted(animals, p), assumptions=[
                     'Synthetic preview, not historical validation or a live multi-agent workflow.',
                     'Provisional: survival, aging, settlement, male movement, births, recording.',
                     'Provisional: uniform integer litter size across the table range.',
-                    'Provisional: unsettled females try both patches monthly in seeded random order.',
+                    f"Provisional: female settlement rule is {config['settlement_rule']}.",
                     'Mortality transfers older abstract evidence; dispersal at 18 months is assumed.',
                     'Food affects breeding only; density is constant; habitat_quality is 1.0.',
-                ])
+                ] + ([
+                    'ASSUMPTION: linear breeding chance rises from zero at no food to the table annual breeding probability at 4.6 rabbits/ha, then stays capped.',
+                ] if config.get('breeding_rule') == 'linear_food_sensitivity' else []))
 
 
 def simulate(config, root=REPO):
@@ -247,6 +299,7 @@ def simulate(config, root=REPO):
     # JSON rejects NaN/infinity before schema numeric comparisons can accept them.
     json.dumps(config, allow_nan=False)
     jsonschema.validate(config, schema('input'))
+    config = normalize_config(config)
     p = load_parameters(config, root)
     result = run_model(config, p)
     errors = check_files_current(config, root)
@@ -265,10 +318,17 @@ def summary(result):
                 historical_validation='not_assessed', model_conventions=result['config']['model_conventions'])
 
 
-def preview_config(seed=42, months=12, food=4.6, area=50, root=REPO):
+def preview_config(seed=42, months=12, food=4.6, area=50, root=REPO,
+                   settlement_rule=DEFAULT_SETTLEMENT_RULE,
+                   breeding_rule=DEFAULT_BREEDING_RULE):
+    if breeding_rule not in BREEDING_RULES:
+        raise ValueError('Unsupported breeding rule')
     config = json.loads((REPO / 'examples/handoffs/input.json').read_text())
     config.update(run_id=f'preview-{seed}', seed=seed, duration_months=months,
-                  food_rabbits_per_ha=food)
+                  food_rabbits_per_ha=food, settlement_rule=settlement_rule,
+                  schema_version='2.1')
+    if breeding_rule != DEFAULT_BREEDING_RULE:
+        config.update(schema_version='2.2', breeding_rule=breeding_rule)
     for patch in config['patches']:
         patch['area_km2'] = area
     for field in ('parameters', 'sources'):

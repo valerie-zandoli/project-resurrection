@@ -1,9 +1,21 @@
 # Project Resurrection — Product requirements
 
-Owners: Anastasiya Glegg and Valerie Zandoli. Synchronized October 22, 2026.
+Owners: Anastasiya Glegg and Valerie Zandoli. Synchronized October 22, 2026; five passages
+updated October 24, 2026 and refreshed October 25, 2026 (see the note after the source line).
 
 Source: [Google PRD](https://docs.google.com/document/d/1Hki-aSMezwRhHNW6Luye2z_ExSv5C_etIIxb4rqSoHc).
-Source revision: `AHj4eMQFw1S02f_cz2RAmPjNIUGZjdxBgVr9yfwvIUeqjV0182-oekqMJ6pjSt9M9Z1TkZ-PSXMXwy_IPbh2hDLf_BkEqi7xdA9WNESaunU`.
+Source revision of the full synchronization: `AHj4eMQFw1S02f_cz2RAmPjNIUGZjdxBgVr9yfwvIUeqjV0182-oekqMJ6pjSt9M9Z1TkZ-PSXMXwy_IPbh2hDLf_BkEqi7xdA9WNESaunU`.
+
+Targeted update, October 24, 2026:  five passages below were changed to match the Google PRD at
+revision `AHj4eMTnw-BAwiilLc4dSN01v_lda1lYIRWesZM9B--MI7lOvHCY27rcZKAtluzwq2EyoD7TGFX6jIRN8qh02SOCYi_0GGZG7HUMTlEyYKs`
+(the usable area of the history run, the settlement retry rule, the status of PR #32, and the
+simulator preview in PR #40).  The other sections were not compared again and are as synchronized
+on October 22.
+
+Refreshed October 25, 2026:  the area passages and the retry-rule passage now record what both owners
+agreed on October 25 (#45 and #49), and the held-out 2011 target now reads 202 (#62).  The Google PRD
+was not read again for this refresh; where it still gives other values, it is out of date, and its
+owner is to update it.
 
 This specification consolidates all four project tabs: **PRD: Net new build**,
 **PRD: New feature**, **Agent PRD: Net new build**, and **Agent PRD: New feature**.
@@ -140,26 +152,34 @@ The background figure of 62 **mature** lynx species-wide in 2001 is neither a
 local total nor a starting count ([IUCN background](https://iucn.org/news/202407/recovery-iberian-lynx-conservation-success-spain)).
 
 Historical anchors: 53 total individuals in 2002 (25 adults), 190 in 2010
-(44 adult females), and held-out 214 in 2011 (90 adults). Calibrate only
-post-dispersal annual mortality within 0.10–0.50 using 2002–2010.
+(44 adult females), and held-out 202 in 2011 (the issuer's official series;
+the Cat Specialist Group's 214, with 90 adults, is reported beside the verdict
+only). Calibrate only post-dispersal annual mortality within 0.10–0.50 using
+2002–2010.
 
 Both owners accepted these tolerances on October 22, 2026:
 
 - Median annual multiplicative growth of total individuals: 1.12–1.22
   (1.17 ± 0.05).
-- Median held-out 2011 count: 192.6–235.4 (214 ± 10%).
+- Median held-out 2011 count: 181.8–222.2 (202 ± 10%).
+
+The 2011 target changed from 214 to 202 on October 25, 2026, before any run;
+both owners agreed.
 
 Never change tolerances or retune after viewing the holdout. Sparse counts make
 a pass weak evidence. Rough growth arithmetic is not a simulation result.
 
-The procedure remains under review in PR #32:
+The procedure from PR #32 (merged):
 
 - Fix census month, starting age/sex structure, trial count, and seeds before
   execution. Counts of 25 adults and 28 non-adults do not establish ages/sexes;
   proposed draws remain assumptions.
 - Forty-four adult females do not establish 44 occupied territories or a minimum
-  of 440 km². Source usable area or label the chosen area and its influence as
-  assumptions.
+  of 440 km². Usable area: the Andújar–Cardeña area is not sourced, so the
+  primary run uses 750 km² as a stand-in for the park boundary (a labeled
+  assumption, not measured usable habitat), with comparison runs at 264 km²
+  (the 2010 occupied area) at female home ranges of 6.1 and 10 km², and the
+  verdict on the 750 km² run only; both owners agreed on October 25, 2026 (#45).
 - After calibration, freeze settings and evaluate one predefined ensemble
   through 2011. “Once” means one held-out batch, not one stochastic trial.
 - Report medians, 10th–90th percentiles, trial count, extinct share, and the
@@ -266,7 +286,8 @@ tools must not contact people, publish, merge, or take conservation actions.
 Preserve sources and redact secrets from logs.
 
 Parameter validation, schemas/examples, content-hash helpers, and automated
-checks exist. Numerical simulation, the complete harness, runtime role agents,
+checks exist. Numerical simulation (a first synthetic preview was merged in PR #40
+on October 24, 2026; no experiment has been run), the complete harness, runtime role agents,
 and end-to-end enforcement remain pending at synchronization. Test passes are
 not runtime results. Claude through LiteLLM with personal locally stored keys is
 the provider proposal; a direct-provider key check does not prove full integration.
@@ -284,11 +305,17 @@ recording; uniform litter sizes 2–4; and Wilson intervals plus population and
 extinction summaries. These conventions are not yet agreed. Before experiments:
 
 - Implement the agreed persistence/settled contract and independent runtime checks.
-- Agree monthly ordering, litter sampling, historical initialization/usable
-  area, observation/ensemble procedure, seed derivation, and aggregation.
-- Specify monthly settlement attempts after vacancies open, patch choices,
-  and seeded competition ordering. Current-patch-then-other-patch settlement is
-  a proposed female-movement assumption, not an approved rule.
+- Agree monthly ordering, litter sampling, historical initialization,
+  observation/ensemble procedure, seed derivation, and aggregation. The usable
+  area of the history run is the exception: both owners agreed on October 25,
+  2026 (#45) to use 750 km² as a labeled stand-in for the park boundary, with
+  comparison runs at 264 km² and female home ranges of 6.1 and 10 km².
+- Settlement retries: Valerie chose on October 24, 2026 that every month each
+  unsettled female of at least 18 months retries, her current patch first and
+  then the other, in one seeded random order per month; Anastasiya approved and
+  merged it in #49 on October 25, 2026. Two other rules (own patch only, one
+  try only) run as sensitivity checks, reported apart from the main grid; the
+  simulator has no option for them yet.
 - Align crash handling with transient retry rules; define incomplete cells and
   denominators before running.
 - Finalize provider, execution limits/isolation, trace retention, and the shared

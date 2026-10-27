@@ -1,7 +1,7 @@
 population,year,count,definition,source,notes
 Andujar-Cardena,2002,25,adults,catsg,
 Andujar-Cardena,2011,90,adults,catsg,
-Andujar-Cardena,2011,214,all lynx,catsg,Stated as 214 lynx including 90 adults.
+Andujar-Cardena,2011,214,all lynx,catsg,Stated as 214 lynx including 90 adults.  Conflicts with 202 in the issuer's own reports; retained for comparison only and not used as the history-test target.
 Andujar-Cardena,2002,53,individuals,eu_spain_report2018,
 Andujar-Cardena,2017,195,individuals,eu_spain_report2018,Neighbouring Guadalmellato (82) and Guarrizas (85) also counted in 2017; connectivity restored.
 Donana-Aljarafe,2002,18,adults,catsg,
@@ -59,3 +59,45 @@ Eastern Sierra Morena nuclei (Jaen and Cordoba),2025,613,individuals,mite_census
 Sierra Morena connection areas,2024,53,individuals,mite_census2024,
 Sierra Morena connection areas,2025,61,individuals,mite_census2025,"42 adults and subadults, 9 breeding females, 19 cubs."
 Donana-Aljarafe,2025,133,individuals,mite_census2025,"92 adults and subadults (50 males, 35 females, 7 unknown), 32 breeding females, 41 cubs."
+Andujar-Cardena,2002,53,individuals (official series),iberlince_censo2016,Matches eu_spain_report2018 (53).
+Andujar-Cardena,2003,60,individuals (official series),iberlince_censo2016,
+Andujar-Cardena,2004,79,individuals (official series),iberlince_censo2016,
+Andujar-Cardena,2005,89,individuals (official series),iberlince_censo2016,
+Andujar-Cardena,2006,134,individuals (official series),iberlince_censo2016,
+Andujar-Cardena,2007,119,individuals (official series),iberlince_censo2016,
+Andujar-Cardena,2008,160,individuals (official series),iberlince_censo2016,
+Andujar-Cardena,2009,167,individuals (official series),iberlince_censo2016,
+Andujar-Cardena,2010,190,individuals (official series),iberlince_censo2016,Matches efe_2011_01 (190).
+Andujar-Cardena,2011,202,individuals (official series),iberlince_censo2016,Chosen by Anastasiya as the history-test target (bounds 181.8 to 222.2); the issuer's own 2011 report (official_census_2011) also gives 202.  The Cat Specialist Group's 214 is retained for comparison only.
+Andujar-Cardena,2002,18,territorial females (official series),iberlince_censo2016,
+Andujar-Cardena,2003,21,territorial females (official series),iberlince_censo2016,
+Andujar-Cardena,2004,23,territorial females (official series),iberlince_censo2016,
+Andujar-Cardena,2005,28,territorial females (official series),iberlince_censo2016,
+Andujar-Cardena,2006,30,territorial females (official series),iberlince_censo2016,
+Andujar-Cardena,2007,30,territorial females (official series),iberlince_censo2016,
+Andujar-Cardena,2008,40,territorial females (official series),iberlince_censo2016,
+Andujar-Cardena,2009,40,territorial females (official series),iberlince_censo2016,
+Andujar-Cardena,2010,43,territorial females (official series),iberlince_censo2016,
+Andujar-Cardena,2011,51,territorial females (official series),iberlince_censo2016,
+Andujar-Cardena,2002,16,cubs (official series),iberlince_censo2016,
+Andujar-Cardena,2003,11,cubs (official series),iberlince_censo2016,
+Andujar-Cardena,2004,29,cubs (official series),iberlince_censo2016,
+Andujar-Cardena,2005,23,cubs (official series),iberlince_censo2016,
+Andujar-Cardena,2006,54,cubs (official series),iberlince_censo2016,
+Andujar-Cardena,2007,22,cubs (official series),iberlince_censo2016,
+Andujar-Cardena,2008,59,cubs (official series),iberlince_censo2016,
+Andujar-Cardena,2009,49,cubs (official series),iberlince_censo2016,
+Andujar-Cardena,2010,61,cubs (official series),iberlince_censo2016,
+Andujar-Cardena,2011,59,cubs (official series),iberlince_censo2016,
+Andujar-Cardena,2002,125,occupied area in km2 (official series),iberlince_censo2016,
+Andujar-Cardena,2003,135,occupied area in km2 (official series),iberlince_censo2016,
+Andujar-Cardena,2004,153,occupied area in km2 (official series),iberlince_censo2016,
+Andujar-Cardena,2005,204,occupied area in km2 (official series),iberlince_censo2016,
+Andujar-Cardena,2006,203,occupied area in km2 (official series),iberlince_censo2016,
+Andujar-Cardena,2007,221,occupied area in km2 (official series),iberlince_censo2016,
+Andujar-Cardena,2008,224,occupied area in km2 (official series),iberlince_censo2016,
+Andujar-Cardena,2009,236,occupied area in km2 (official series),iberlince_censo2016,
+Andujar-Cardena,2010,264,occupied area in km2 (official series),iberlince_censo2016,
+Andujar-Cardena,2011,282,occupied area in km2 (official series),iberlince_censo2016,
+Andujar-Cardena,2002,60,individuals (2010 report vintage),official_census_2010,First-reported figure; the later series gives 53 for 2002.  Growth to 2010 on this vintage is (172 / 60) ^ (1 / 8) = 1.14.
+Andujar-Cardena,2010,172,individuals (2010 report vintage),official_census_2010,First-reported figure; the later series gives 190.  Territorial females (43) did not change between vintages.

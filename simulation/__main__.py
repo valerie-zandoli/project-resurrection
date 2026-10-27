@@ -7,7 +7,8 @@ from pathlib import Path
 
 import jsonschema
 
-from simulation.model import preview_config, simulate, summary
+from simulation.model import (BREEDING_RULES, SETTLEMENT_RULES, normalize_config,
+                              preview_config, simulate, summary)
 
 
 def main(argv=None):
@@ -19,6 +20,10 @@ def main(argv=None):
     parser.add_argument('--months', type=int, default=12)
     parser.add_argument('--food', type=float, default=4.6, help='rabbits per hectare')
     parser.add_argument('--area', type=float, default=50, help='usable square kilometres per patch')
+    parser.add_argument('--settlement-rule', choices=SETTLEMENT_RULES,
+                        help='provisional female settlement rule; defaults to monthly current patch then other patch')
+    parser.add_argument('--breeding-rule', choices=BREEDING_RULES,
+                        help='optional linear food sensitivity; default remains spring_threshold')
     parser.add_argument('--output', type=Path, required=True, help='new output directory; never overwritten')
     args = parser.parse_args(argv)
     try:
@@ -28,6 +33,11 @@ def main(argv=None):
             config = json.loads(args.input.read_text())
         else:
             config = preview_config(args.seed, args.months, args.food, args.area)
+        config = normalize_config(config)
+        if args.settlement_rule is not None:
+            config['settlement_rule'] = args.settlement_rule
+        if args.breeding_rule is not None:
+            config.update(schema_version='2.2', breeding_rule=args.breeding_rule)
         result = simulate(config)
         report = summary(result)
         args.output.mkdir(parents=True, exist_ok=False)

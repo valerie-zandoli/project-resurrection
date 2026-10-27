@@ -1,11 +1,11 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "3.1",
   "run_id": "sample-001",
   "data_kind": "sample",
   "seed": 42,
   "revision_round": 0,
   "config": {
-    "schema_version": "2.0",
+    "schema_version": "2.1",
     "run_id": "sample-001",
     "purpose": "synthetic_experiment",
     "seed": 42,
@@ -37,6 +37,7 @@
     "persistence_rule": "settled_breeding_pair_same_patch_at_end",
     "model_conventions": "proposed-2026-10-22",
     "male_patch_crossing_probability": 0.1,
+    "settlement_rule": "monthly_current_then_other",
     "parameter_overrides": {}
   },
   "history": [

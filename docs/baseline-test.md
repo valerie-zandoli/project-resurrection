@@ -15,6 +15,12 @@ Eight runs, each a copy of an otherwise valid run with one flaw:
 7. a conflict named in the research notes dropped from the table (no `contradicts` entry);
 8. two sources that repeat one study counted as two origins.
 
+## Case files for flaws 7 and 8
+
+`scripts/baseline_cases.py` builds these two cases from the three research files (the parameter table, `sources.csv`, and the evidence columns file) as three blinded folders, `case-1`, `case-2`, and `case-3` (the order comes from a seed that the key records), plus a key file beside the output folder (`<output>-key.json`) that maps each folder to `valid`, `flaw7`, or `flaw8` and holds the truth.  Flaw 7 sets the `contradicts` cell of one row (default `breeding_age_min`) to `none_identified` and clears the draft note that points at the conflict.  Flaw 8 adds a source that only repeats a study already in the row (default `eu_spain_report2018`, which cites Palomares et al. 2001) to the spring rabbit threshold row, gives it a new origin label, and raises the confidence to high.
+
+Both flawed cases pass `python -m validators.parameters` with `--evidence`; this was checked on the evidence draft files on 2026-10-25.  The validator checks structure, not meaning, so only an arm that reads the sources can catch them.  Keep the key file from the arms until the scoring step; the arms see only the `case-N` folders.  Every file in every folder is written in one format (UTF-8, no BOM, LF line endings), so a folder cannot be told from the others by how its files are written; a test checks this.  Do not give the arms the repository's own research files either:  comparing a case with them shows at once which folder is unchanged and what each flaw changed, without reading a source.  Flaws 1 to 6 act on results and history files; their case files are built by `scripts/baseline_cases_runs.py` (#69, below).
+
 ## Arms
 
 - A:  one agent does research, simulation, and evaluation in one session.
@@ -39,3 +45,22 @@ Report the counts plainly, including any case where one agent matched or beat th
 ## Limits
 
 Eight cases times five runs (40 per arm) is a small sample.  Report counts, not significance claims.  A trace that reports zero missed contradictions does not show that none were missed; only the planted flaws and the audit test for that.
+
+## Case files for flaws 1 to 6
+
+`scripts/baseline_cases_runs.py` plants flaws 1 to 6 in copies of one valid, real simulator run and writes one blinded folder per case (`case-1` to `case-N` in a seeded random order; the key file maps each to `valid` or `flaw1` to `flaw6`), each with an `input.json`, a `results.json` (not for flaws 2 and 3, which stop before any run), and a `root/` folder with the research files, plus a key file beside the output folder (`<output>-key.json`, never inside it) with the truth; keep it from the arms until the scoring step.  Flaw 5 needs a history report from a real run (`--history-report`); without one it is marked "not built".  Flaws 7 and 8 live in the research files and are built by `scripts/baseline_cases.py`.
+
+What the code reported when the cases were built (seed 3, 24 months, food 4.6, area 50):
+
+| Flaw | Plant | What the code reports |
+|---|---|---|
+| 1 | one month reports one extra death | `population_accounting` and `final_counts` fail; status `revise` |
+| 2 | input overrides mortality to 0.80 (published range 0.10 to 0.50) | the input schema rejects it and the simulator refuses to run |
+| 3 | a table row cites the unknown source `no_such_source` | `validators.parameters` rejects it before any run, and the simulator refuses; the hashes are current, so the hash check is not what stops it |
+| 4 | mortality 0.43 = all-cause 0.37 plus the road-traffic share (the table says shares are already inside the all-cause rate) | all 12 checks pass |
+| 5 | a history report that says it calibrated on 108 months and the 2011 count | nothing reads a history report yet |
+| 6 | `persisted` is True from the pair-only endpoint in a run where the agreed endpoint is False | `persistence_recomputed` fails; status `revise` |
+
+So code catches four of the six (1, 2, 3, 6), and each is caught at the stage the harness plan expects.  Flaws 4 and 5 pass every code check:  only an arm that reads the table's notes (flaw 4) or the report's calibration section (flaw 5) can catch them, with flaws 7 and 8.  Those four are where the three-role split can earn its cost over one agent, so the arm comparison should report them apart from the four that code catches.  A check that reads a history report (calibration months, calibration target, one held-out run) would close flaw 5 in code; it is not built.
+
+Limits:  the plants are synthetic and small; the flaw 6 run comes from a search over seeds for a run where the two endpoints differ (seed 6, 24 months, food 1.0 on the current simulator), so a simulator change can change the case; the history report in a case folder is a smoke-test report (3 trials), never a result.
