@@ -4,7 +4,11 @@
   "type": "object",
   "properties": {
     "schema_version": {
-      "enum": ["2.0", "2.1"]
+      "enum": [
+        "2.0",
+        "2.1",
+        "2.2"
+      ]
     },
     "run_id": {
       "type": "string",
@@ -142,6 +146,13 @@
         }
       },
       "additionalProperties": false
+    },
+    "breeding_rule": {
+      "description": "Optional breeding shape sensitivity. Linear is an assumed ramp capped at the table annual breeding probability at 4.6 rabbits/ha.",
+      "enum": [
+        "spring_threshold",
+        "linear_food_sensitivity"
+      ]
     }
   },
   "required": [
@@ -166,17 +177,66 @@
   "allOf": [
     {
       "if": {
-        "properties": {"schema_version": {"const": "2.0"}},
-        "required": ["schema_version"]
+        "properties": {
+          "schema_version": {
+            "const": "2.0"
+          }
+        },
+        "required": [
+          "schema_version"
+        ]
       },
-      "then": {"not": {"required": ["settlement_rule"]}}
+      "then": {
+        "not": {
+          "required": [
+            "settlement_rule"
+          ]
+        }
+      }
     },
     {
       "if": {
-        "properties": {"schema_version": {"const": "2.1"}},
-        "required": ["schema_version"]
+        "properties": {
+          "schema_version": {
+            "enum": [
+              "2.1",
+              "2.2"
+            ]
+          }
+        },
+        "required": [
+          "schema_version"
+        ]
       },
-      "then": {"required": ["settlement_rule"]}
+      "then": {
+        "required": [
+          "settlement_rule"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "2.2"
+          }
+        },
+        "required": [
+          "schema_version"
+        ]
+      },
+      "then": {
+        "required": [
+          "breeding_rule"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "breeding_rule"
+          ]
+        }
+      }
     }
   ],
   "additionalProperties": false
