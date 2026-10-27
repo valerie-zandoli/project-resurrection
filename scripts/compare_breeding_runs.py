@@ -38,7 +38,9 @@ def _load(path, rule, root):
             or batch['purpose'] != 'synthetic_preview'
             or batch['historical_validation'] != 'not_assessed'):
         raise ValueError('Expected a completed synthetic preview batch, with history not assessed')
-    if batch.get('breeding_rule') != rule:
+    if 'breeding_rule' not in batch:
+        raise ValueError('This batch records no breeding rule; it was made before the breeding option existed, so run it again')
+    if batch['breeding_rule'] != rule:
         raise ValueError(f'Wrong breeding rule: expected {rule}')
     planned = batch['trials_per_cell']
     if type(planned) is not int or planned < 1:
@@ -112,7 +114,8 @@ def compare_batches(threshold_path, linear_path, *, root=REPO):
             raise ValueError(f'Inputs or trial seeds differ beyond breeding rule in {name}')
         cells.append(dict(name=name, food=a['food'], area=a['area'],
                           threshold=a['statistics'], linear=b['statistics']))
-    return dict(seed=threshold['seed'], trials_per_cell=threshold['trials_per_cell'],
+    return dict(seed=threshold['seed'], settlement_rule=threshold['settlement_rule'],
+                trials_per_cell=threshold['trials_per_cell'],
                 duration_months=threshold['duration_months'],
                 historical_validation='not_assessed', cells=cells)
 
@@ -129,8 +132,12 @@ def render_markdown(comparison):
     lines = ['# Breeding rule comparison', '',
              'Synthetic preview comparison of two assumed breeding rules. Historical validation: **not assessed**.',
              'These results do not establish which rule describes real lynx.', '',
-             f"Seed: {comparison['seed']}; trials per cell: {comparison['trials_per_cell']}; months: {comparison['duration_months']}.", '',
-             'Persistence means a settled breeding-age female and eligible male share a patch at the endpoint.',
+             f"Seed: {comparison['seed']}; trials per cell: {comparison['trials_per_cell']}; months: {comparison['duration_months']}; "
+             f"settlement rule (the same in both batches): `{comparison['settlement_rule']}`.", '',
+             '**Sudden cutoff** (`spring_threshold`): no breeding below 4.6 rabbits per hectare; at or above it, the table\'s breeding chance.',
+             '**Gradual rise** (`linear_food_sensitivity`): the breeding chance rises in proportion to food, from zero at no food to the table\'s chance at 4.6 rabbits per hectare, and stays there above it.',
+             'At 4.6 rabbits per hectare and above the two rules are the same rule, so those rows are identical by construction.', '',
+             'Persistence means that, in the last month, a living breeding-age female holding a territory and a living breeding-age male are in the same patch.',
              'Intervals describe each persistence share; they are not a statistical test of the difference.', '',
              '| Food (rabbits/ha), area per patch | Sudden cutoff | Gradual rise | Difference in persistence |',
              '|---|---|---|---|']

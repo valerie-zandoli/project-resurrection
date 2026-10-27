@@ -16,7 +16,11 @@ the difference in persistence in percentage points, median final population,
 extinction share, and median extinction time among extinct trials. With no
 extinctions it says “no extinctions observed.” Individual-share intervals are not
 a test of the difference; no statistical significance or biological preference
-is inferred.
+is inferred.  The report names the settlement rule (the same in both batches),
+defines the two breeding rules and persistence, and says that rows at 4.6 rabbits
+per hectare and above are identical by construction.  A batch saved before the
+breeding option existed records no breeding rule and is refused with a message
+that says so.
 
 Before comparing, the command checks complete batches, all trial artifacts,
 the saved research hashes against the supplied research root, and the existing

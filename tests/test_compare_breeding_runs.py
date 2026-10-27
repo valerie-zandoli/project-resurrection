@@ -95,3 +95,38 @@ def test_cli_writes_report_then_refuses_overwrite(batches, tmp_path):
     content = output.read_text()
     assert content.startswith('# Breeding rule comparison')
     assert main(args) == 1 and output.read_text() == content
+
+
+def stats(share):
+    return dict(persistence_share=share, persistence_wilson_95=[share / 2, min(1, share + .1)],
+                final_population_median=10, extinction_share=0.0, extinction_month_median=None)
+
+
+def test_report_puts_each_rule_in_its_own_column_and_the_difference_is_gradual_minus_cutoff():
+    comparison = dict(seed=1, settlement_rule='monthly_current_then_other', trials_per_cell=10,
+                      duration_months=12, historical_validation='not_assessed',
+                      cells=[dict(name='c', food=2.3, area=50, threshold=stats(.2), linear=stats(.7))])
+    row = next(line for line in render_markdown(comparison).splitlines() if line.startswith('| 2.3, 50'))
+    columns = [part.strip() for part in row.strip('|').split('|')]
+    assert columns[1].startswith('20.0%')   # sudden cutoff
+    assert columns[2].startswith('70.0%')   # gradual rise
+    assert columns[3].startswith('+50.0 percentage points (gradual minus cutoff)')
+
+
+def test_report_from_real_batches_keeps_each_rules_numbers_and_states_the_settings(batches):
+    report = compare_batches(*batches)
+    step, linear = (json.loads(path.read_text()) for path in batches)
+    for cell, step_cell, linear_cell in zip(report['cells'], step['cells'], linear['cells']):
+        assert cell['threshold'] == step_cell['statistics'] and cell['linear'] == linear_cell['statistics']
+    assert any(cell['threshold'] != cell['linear'] for cell in report['cells'])  # so a swap would show
+    text = render_markdown(report)
+    assert '`monthly_current_then_other`' in text and 'the same in both batches' in text
+    assert '`spring_threshold`' in text and '`linear_food_sensitivity`' in text
+    assert 'identical by construction' in text
+    assert 'living breeding-age female holding a territory' in text and 'eligible male' not in text
+
+
+def test_a_batch_made_before_the_breeding_option_is_refused_with_a_clear_message(batches):
+    edit(batches[0], lambda b: b.pop('breeding_rule'))
+    with pytest.raises(ValueError, match='records no breeding rule'):
+        compare_batches(*batches)
