@@ -36,10 +36,20 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 <div class="saved"><label for="saved-runs">Saved experiments in this session<select id="saved-runs"></select></label>
 <div class="links"><a id="open-viewer" target="_blank" rel="noopener">Open saved viewer</a><a id="download-results" download="results.json">Download results</a><a id="download-input" download="input.json">Download settings</a></div></div>
 <details id="evidence"><summary id="evidence-title">Research notes</summary><div id="evidence-notes"></div></details>
+<section aria-label="Evaluator review">
+<button id="evaluate" type="button">Send to Evaluator</button>
+<p class="explanation">This sends the saved run's automatic artifact checks to the Claude Evaluator using your local key. It can take up to two minutes. The check verdict is recorded separately from Claude's explanation. Historical accuracy is not assessed.</p>
+<p id="evaluation-status" role="status" aria-live="polite">This experiment has not been sent for evaluation.</p>
+<div id="evaluation-report" hidden>
+<p><strong id="evaluation-verdict"></strong></p><p class="explanation">Claude's explanation</p><p id="evaluation-explanation"></p>
+<ul id="evaluation-issues"></ul>
+<details><summary>See every check</summary><ul id="evaluation-checks"></ul></details>
+<a id="download-evaluation" download="evaluation-report.json">Download evaluation report</a>
+</div></section>
 </section>
 <div class="empty" id="empty"><strong>Your little world starts here.</strong><p>Choose your settings above and press “Run my experiment.”</p></div>
 <iframe id="viewer" title="Your saved lynx simulation" hidden></iframe>
-<p class="footer">One synthetic preview explores what happens under this model's assumptions. It is not a final experiment batch, a live agent run, or a validated wildlife forecast. Animals, rabbit symbols and locations in the viewer are illustrations.</p>
+<p class="footer">One synthetic preview explores what happens under this model's assumptions. It is not a final experiment batch or a validated wildlife forecast. The numerical simulator produces the run; the Evaluator reviews it separately when requested. Animals, rabbit symbols and locations in the viewer are illustrations.</p>
 </main><script>
 'use strict';
 const token='__SESSION_TOKEN__',$=id=>document.getElementById(id),saved=new Map();
@@ -67,8 +77,35 @@ function show(result){
   if(!lines.length)lines.push('No evidence warnings were recorded. This does not establish scientific validity.');
   lines.forEach(text=>{const p=document.createElement('p');p.textContent=text;$('evidence-notes').append(p)});
   $('evidence').open=evidence.warnings.length>0;
+  showReview(result.review);
   changed();
 }
+function showReview(review){
+  $('evaluation-report').hidden=!review;
+  $('evaluate').disabled=Boolean(review);
+  $('evaluate').textContent=review?'Evaluation saved':'Send to Evaluator';
+  $('evaluation-status').textContent=review?'Review complete for this saved experiment.':'This experiment has not been sent for evaluation.';
+  if(!review)return;
+  const evaluation=review.evaluation;
+  $('evaluation-verdict').textContent={pass:'Checks passed',revise:'Changes requested',stop:'Review stopped'}[evaluation.status];
+  $('evaluation-explanation').textContent=review.explanation;
+  $('evaluation-issues').replaceChildren();$('evaluation-checks').replaceChildren();
+  evaluation.issues.forEach(issue=>{const li=document.createElement('li');li.textContent=issue.message+' Requested fix: '+issue.requested_change;$('evaluation-issues').append(li)});
+  evaluation.checks.forEach(check=>{const li=document.createElement('li');li.textContent=(check.passed?'Passed: ':'Failed: ')+check.name.replaceAll('_',' ')+'. '+check.detail;$('evaluation-checks').append(li)});
+  $('download-evaluation').href=review.report_url;
+}
+$('evaluate').addEventListener('click',async()=>{
+  if(!active)return;
+  const selected=active;
+  $('evaluate').disabled=true;$('settings').disabled=true;$('saved-runs').disabled=true;
+  $('evaluation-status').textContent='The Evaluator is checking this saved experiment…';
+  try{
+    const response=await fetch(`/api/runs/${selected.run_id}/evaluate`,{method:'POST',headers:{'Content-Type':'application/json','X-Experiment-Token':token},body:'{}'});
+    const result=await response.json();if(!response.ok)throw new Error(result.error||'Evaluation did not complete.');
+    selected.review=result;showReview(result);
+  }catch(error){$('evaluation-status').textContent=error.message;$('evaluate').disabled=false}
+  finally{$('settings').disabled=false;$('saved-runs').disabled=false}
+});
 $('experiment').addEventListener('input',changed);
 $('saved-runs').addEventListener('change',()=>{
   const result=saved.get($('saved-runs').value);
@@ -81,7 +118,7 @@ $('viewer').addEventListener('load',()=>{
 });
 $('experiment').addEventListener('submit',async event=>{
   event.preventDefault();const settings=values();$('error').hidden=true;
-  $('settings').disabled=true;$('run').textContent='Running…';$('status').textContent='Calculating and saving your new experiment…';
+  $('settings').disabled=true;$('evaluate').disabled=true;$('saved-runs').disabled=true;$('run').textContent='Running…';$('status').textContent='Calculating and saving your new experiment…';
   try{
     const response=await fetch('/api/runs',{method:'POST',headers:{'Content-Type':'application/json','X-Experiment-Token':token},body:JSON.stringify(settings)});
     const result=await response.json();if(!response.ok)throw new Error(result.error||'The experiment could not finish.');
@@ -91,6 +128,6 @@ $('experiment').addEventListener('submit',async event=>{
     $('saved-runs').prepend(option);show(result);
     $('status').textContent=`Saved. ${result.summary.final_population} lynx remain at month ${settings.months}. Press Play below to watch.`;
   }catch(error){$('error').textContent=error.message;$('error').hidden=false;$('status').textContent=active?'The previous saved experiment is still below.':'No result was created. Adjust the settings or try again.'}
-  finally{$('settings').disabled=false;$('run').textContent='Run my experiment'}
+  finally{$('settings').disabled=false;$('saved-runs').disabled=false;$('evaluate').disabled=Boolean(active?.review);$('run').textContent='Run my experiment'}
 });
 </script></body></html>

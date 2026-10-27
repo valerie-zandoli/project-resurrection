@@ -9,7 +9,7 @@ python -m report.experiment_controls --output /tmp/lynx-experiments --port 8767
 Open the printed local address. Choose rabbit food density, land per patch,
 starting population, duration and random seed, then select **Run my experiment**.
 The page runs the existing numerical simulator and embeds its saved viewer.
-It makes no AI calls. Changing a field does not change the displayed saved run
+The simulation itself makes no AI calls. Changing a field does not change the displayed saved run
 until a new run succeeds. Previous experiments can be selected during the session.
 
 Each experiment gets a unique folder containing input.json, results.json,
@@ -32,3 +32,36 @@ simulated. Animal positions and movement are illustrative.
 The server binds only to 127.0.0.1, checks the request host, origin and session
 token, limits request sizes, and runs one experiment at a time. It serves only
 the named artifacts of runs completed during its lifetime, not arbitrary files.
+
+## Send a saved experiment to the Evaluator
+
+After a run finishes, select **Send to Evaluator**. This calls the existing Claude
+Evaluator role through the bounded harness, using a fresh conversation. It must
+call `check_artifacts`; the tool's verdict is the record, and Claude supplies a
+separate explanation. The page shows pass, requested revisions, or stop, plus
+every check and requested fix. A failed call is shown as incomplete, never pass.
+
+Configure the ignored local `.env` with the project's existing provider settings.
+If the key file lives in another checkout, pass its path without copying it:
+
+```sh
+python -m report.experiment_controls --output /tmp/lynx-experiments --env-file /path/to/project/.env
+```
+
+Only pressing the evaluation button makes paid Claude calls. The existing role
+limits apply: at most four steps, with a 30-second timeout per provider request
+and no automatic provider retries. There are at most three manually triggered
+failed evaluation attempts per saved run in a server session. A completed review
+is reused; clicking again does not pay for another review.
+
+The Evaluator checks the saved input and results against their research snapshot.
+It does not rerun the simulation or alter research, inputs or results. Snapshot
+hashes are checked before sending; saved artifact hashes are checked again after
+review. Each attempt gets a separate `reviews/review-.../` folder with a trace.
+A completed attempt also saves `report.json` with the evaluation, explanation,
+input hashes and model name. No credential is copied into these files. Earlier
+failed attempts remain as diagnostics. The report can be downloaded from the page.
+
+This connection uses the current artifact-checking Evaluator; it does not add a
+full code audit, statistical review, historical validation or an automatic
+Developer revision loop. A requested revision is shown for the owner to address.
