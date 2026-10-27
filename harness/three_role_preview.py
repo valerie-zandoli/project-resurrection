@@ -16,6 +16,7 @@ from harness.run_case import HarnessError, run_case, simulator_developer
 from harness.snapshot import RESEARCH_FILES
 from harness.trace import Trace, scrub
 from simulation.model import REPO
+from validators.evidence_gate import check_evidence
 from validators.handoff_hashes import check_files_current
 from validators.results_checks import build_evaluation
 
@@ -24,8 +25,66 @@ CAPTION = "scripted preview; the Researcher inspects existing tables"
 # The same file as the evidence gate (#86); import it from validators.evidence_gate once #86 has merged.
 EVIDENCE_FILE = "data/parameters/evidence_columns_DRAFT.csv"
 
+# The Researcher answers briefly and ends with two lines that code can grade against the evidence file.
+# (Asked to report every label, a Researcher that sees the whole files writes a reply that is cut off
+# even at 4,000 tokens; the live case of 2026-10-27 failed that way.)
+RESEARCHER_TASK = (
+    "Inspect the existing validated snapshot and the evidence file using read_research "
+    "with the keys parameters, sources, and evidence. Then answer in at most 150 words of plain text: "
+    "what the evidence file states about confidence and recorded conflicts, and the main limits of the tables. "
+    "End with exactly two lines:\n"
+    "LOW: the name of every parameter whose confidence label is low, separated by commas\n"
+    "CONFLICTS: the name of every parameter with a recorded conflict, separated by commas, or none\n"
+    "Do not invent evidence or change a table or a label. This is a synthetic workflow preview.")
 
-def scripted_providers():
+
+def _listed(text, prefix):
+    """The names on the last line that starts with `prefix`, or None when there is no such line."""
+    found = None
+    for line in text.splitlines():
+        cleaned = line.strip().lstrip("*-> `").strip()
+        if cleaned.upper().startswith(prefix):
+            found = cleaned[len(prefix):].lstrip("*` ").strip()
+    if found is None:
+        return None
+    names = {name.strip(" `*'\".") for name in found.split(",")}
+    names.discard("")
+    names.discard("none")
+    return names
+
+
+def grade_evidence_answer(text, report):
+    """Compare the Researcher's LOW and CONFLICTS lines with the evidence file, by code.
+
+    `report` is the evidence gate's report (`validators.evidence_gate.check_evidence`).  The result is
+    recorded beside the verdict; the Researcher's text is advice, so a wrong answer never changes the verdict.
+    """
+    check = dict(answered=True)
+    for label, prefix, expected in (("low", "LOW:", set(report["low"])),
+                                    ("conflicts", "CONFLICTS:", set(report["conflicts"]))):
+        reported = _listed(text, prefix)
+        if reported is None:
+            check["answered"] = False
+            reported = set()
+        check[label] = dict(expected=sorted(expected), reported=sorted(reported),
+                            missing=sorted(expected - reported), invented=sorted(reported - expected))
+    check["pass"] = check["answered"] and all(
+        not check[label]["missing"] and not check[label]["invented"] for label in ("low", "conflicts"))
+    return check
+
+
+def _scripted_answer(source_root):
+    """The stand-in answers from the file in code, so a scripted pass shows only that the grader works."""
+    errors, report = check_evidence(source_root, *(Path(source_root) / name for name in RESEARCH_FILES), "pilot")
+    if errors:
+        return "Scripted preview: the evidence file could not be read."
+    return ("Scripted preview: existing research tables and the evidence file inspected; "
+            "evidence quality not assessed.\n"
+            f"LOW: {', '.join(report['low']) or 'none'}\n"
+            f"CONFLICTS: {', '.join(report['conflicts']) or 'none'}")
+
+
+def scripted_providers(source_root=REPO):
     """Local stand-ins that exercise tools, not model reasoning or evidence quality."""
     def call(name, **arguments):
         return dict(text="", tool_calls=[dict(name=name, arguments=arguments)])
@@ -37,8 +96,7 @@ def scripted_providers():
         "researcher": FakeProvider([
             dict(text="", tool_calls=[dict(name="read_research", arguments=dict(key=key))
                                       for key in ("parameters", "sources", "evidence")]),
-            say("Scripted preview: existing research tables and the evidence file inspected; "
-                "evidence quality not assessed."),
+            say(_scripted_answer(source_root)),
         ]),
         "developer": FakeProvider([
             reply for _ in range(4) for reply in (
@@ -65,6 +123,7 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
         raise HarnessError(f"output folder already exists; use a new one: {output}")
     trace = Trace(output / "roles.jsonl")
     research = None
+    graded = None
 
     def record(role, outcome, round_number, **extra):
         text, removed = scrub(outcome["text"], limit=2000)
@@ -76,7 +135,7 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
                                        tools_used=list(outcome["tool_results"]), **extra), indent=2) + "\n")
 
     def developer(config, round_number, issues, root):
-        nonlocal research
+        nonlocal research, graded
         trace.input_hashes = {path: config[key] for path, key in zip(
             RESEARCH_FILES, ("parameters_sha256", "sources_sha256"))}
         if research is None:
@@ -99,15 +158,12 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
                 read.add(key)
                 return (Path(root) / files[key]).read_text(encoding="utf-8")
 
-            research = run_role(
-                "researcher", providers["researcher"],
-                "Inspect the existing validated snapshot and the evidence file using read_research "
-                "with the keys parameters, sources, and evidence. Summarize assumptions and limits, "
-                "and report the confidence labels and recorded conflicts as the file states them. "
-                "Do not invent evidence or change a table or a label. This is a synthetic workflow preview.",
-                {"read_research": read_research}, trace=trace)
+            research = run_role("researcher", providers["researcher"], RESEARCHER_TASK,
+                                {"read_research": read_research}, trace=trace)
+            errors, report = check_evidence(source_root, *(Path(root) / name for name in RESEARCH_FILES), "pilot")
+            graded = None if errors else grade_evidence_answer(research["text"], report)
             record("researcher", research, round_number, evidence_file=EVIDENCE_FILE,
-                   evidence_sha256=evidence_sha256)
+                   evidence_sha256=evidence_sha256, evidence_check=graded)
             if read != {"parameters", "sources", "evidence"}:
                 raise RoleError("the Researcher must read both snapshot tables and the evidence file")
 
@@ -161,7 +217,7 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
         mode="scripted_preview" if all(isinstance(p, FakeProvider) for p in providers.values())
         else "provider_supplied_unverified",
         status=result.status, reason=result.reason, attempts=result.attempts,
-        historical_validation="not_assessed", caption=CAPTION,
+        historical_validation="not_assessed", caption=CAPTION, evidence_read_check=graded,
         limits=["Researcher inspects existing tables and the evidence file; does not create or verify evidence.",
                 "Developer uses fixed simulator; cannot repair or execute generated code.",
                 "Scripted success does not evaluate real model behavior."],
