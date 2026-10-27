@@ -1,6 +1,6 @@
 # Live-pass runbook (PROPOSED)
 
-Written 2026-10-25 by Valerie with Claude Code, for the shake-down live pass on Thu 2026-10-29 (17:30 to 19:30 ET) and the final recorded live pass by Fri 2026-10-30, 18:00 ET (`docs/demo-plan.md`, #54).  Nothing here is agreed until Anastasiya says yes.  Items marked **TO FILL** wait for code that Anastasiya owns (the live provider and the Developer wiring, decision 8); no command for them is invented here.
+Written 2026-10-25 by Valerie with Claude Code, for the shake-down live pass on Thu 2026-10-29 (17:30 to 19:30 ET, Valerie alone), the freeze on Fri 2026-10-30 at midday, and the final recorded live pass by Fri 2026-10-30, 18:00 ET (`docs/demo-plan.md`, #54).  Nothing here is agreed until Anastasiya says yes.  Items marked **TO FILL** wait for code that Anastasiya owns (the live provider and the Developer wiring, decision 8); no command for them is invented here.
 
 ## What a live pass is
 
@@ -20,6 +20,7 @@ Every box must be checked by the person named.  A box that cannot be checked mea
 | The Developer wiring exists:  the fixed `run_model` tool reached through the role loop | Anastasiya | [ ] |
 | `python scripts/check_key.py` prints `OK: HTTP 200 from claude-sonnet-5-5` on the day | whoever holds the key | [ ] |
 | The LiteLLM path is tested once (Tue 2026-10-27, 09:30 ET) | Valerie | [ ] |
+| The installed packages match `requirements.txt`:  run `pip install -r requirements.txt` again after every pull or merge that changes that file (once #100 merges, tool calls need `litellm[mcp]`, and a plain `litellm` fails before any reply) | whoever runs the pass | [ ] |
 | The two research files pass the parameter validator | either | [ ] |
 | The working tree is clean and `develop` is at the commit that both owners name | either | [ ] |
 
@@ -42,7 +43,7 @@ Every box must be checked by the person named.  A box that cannot be checked mea
 9. Copy the case folders into the fallback folder with a note of the commit, the seed, the date, and the time (`docs/demo-plan.md`, "The fallback").  Commit them in a small pull request; never add `.env`.
 10. Ask one question before the freeze:  did any step show a flaw in the contract (the schemas) or in the parameter table?  If yes, fix it in a commit that says why, run the tests, and repeat steps 4 to 8.  If no, freeze.
 
-## The freeze (end of the pairing, about 19:30 ET)
+## The freeze (Friday 2026-10-30, midday)
 
 Fill the four items in `docs/history-preregistration.md` under "TO FILL at the freeze":  the commit hash of the code that will run; the hashes of the two research files (`python -c "from validators.handoff_hashes import file_sha256; print(file_sha256('data/parameters/iberian_lynx_baseline.csv')); print(file_sha256('data/parameters/sources.csv'))"`); the Python version (`python --version`); and the date and the name of the person who runs the history test.  Commit them in one commit that says why, and merge it before the run.  A change to the contract or the table after this commit means a new run ID and a re-run of every saved result.
 
@@ -73,6 +74,6 @@ Fill the four items in `docs/history-preregistration.md` under "TO FILL at the f
 
 ## Not decided yet
 
-- The time limit of the shake-down if it is not clean at 19:30 ET:  freeze with the known flaw recorded as a limit, or extend by agreement.  Valerie's hours end at 17:00 ET on Thursday, so the extension is short.
+- The time limit of the shake-down if it is not clean at 19:30 ET on Thursday:  fix what it found on Friday before the midday freeze, or freeze with the known flaw recorded as a limit.
 - Who runs the final live pass if only one of us is free on Friday.
 - Whether the demonstration shows a live call at all (`docs/demo-plan.md`, "To agree").
