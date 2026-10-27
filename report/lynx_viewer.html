@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lynx on the move · Project Resurrection</title>
+<style>
+:root{color-scheme:light;--ink:#243e35;--muted:#576b61;--paper:#f6f5ed;--green:#234d3b;--orange:#d06c33}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,-apple-system,sans-serif}main{max-width:1180px;margin:auto;padding:30px 28px 40px}header{display:flex;justify-content:space-between;align-items:center;gap:20px}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:800;color:var(--muted)}h1{font:500 clamp(30px,4vw,48px)/1.15 Georgia,serif;margin:9px 0}p{margin:6px 0}.subtitle{color:var(--muted)}.badge{border:1px solid #cbd7c6;border-radius:30px;padding:8px 15px;font-size:12px;white-space:nowrap}.stats{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:12px;margin:24px 0 16px}.stat{background:#fffdf8;border:1px solid #e2e5d9;border-radius:17px;padding:14px 20px}.stat strong{font-size:clamp(22px,3vw,31px);white-space:nowrap;line-height:1.2;display:block;font-weight:600}.stat span{color:var(--muted);font-size:13px}.stat:first-child{background:var(--green);color:white}.stat:first-child span{color:#d6e3d8}.stage{position:relative;border-radius:24px;overflow:hidden;background:#e6edda;border:1px solid #d5dfca}canvas{display:block;width:100%;height:auto}.map-top{position:absolute;top:17px;left:20px;right:20px;display:flex;justify-content:space-between;gap:10px;pointer-events:none}.map-top span{background:#ffffffe0;border-radius:20px;padding:6px 12px;font-size:12px}.map-note{background:#f0f3e7;padding:10px 20px;font-size:12px;color:#455c50;border-top:1px solid #d5dfca}.controls{display:flex;align-items:center;gap:12px;margin-top:18px}button,select{font:inherit;border:1px solid #c8d2c1;border-radius:12px;background:#fffdf8;color:var(--ink);padding:10px 16px;cursor:pointer}button.primary{background:var(--green);color:white;border-color:var(--green);min-width:112px}button:disabled{opacity:.4;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #da7e47;outline-offset:3px}.timeline{flex:1}input[type=range]{width:100%;accent-color:var(--green);cursor:pointer}.range-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}.bottom{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-top:25px}.panel{background:#fffdf8;border:1px solid #e2e5d9;border-radius:17px;padding:18px 20px}.panel h2{font-size:15px;margin:0 0 10px}#chart{width:100%;height:95px;display:block}.details{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.legend{display:flex;gap:18px;font-size:12px;color:var(--muted);margin-top:8px}.dot{display:inline-block;width:9px;height:9px;border-radius:100%;margin-right:6px;background:#bc7648}.dot.male{background:#7e8b91}.footer{font-size:12px;color:var(--muted);margin-top:20px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}@media(max-width:650px){main{padding:20px 14px}header{display:block}.badge{display:inline-block;margin-top:10px}.stats{grid-template-columns:repeat(2,1fr);gap:8px}.stat{padding:12px}.controls{flex-wrap:wrap}.timeline{flex-basis:100%;order:5}.bottom{grid-template-columns:1fr;gap:12px}.map-top{top:8px;left:8px;right:8px}.map-top span{font-size:10px;padding:4px 8px}.map-top span:nth-child(2){display:none}}
+/* Keep the habitat legible at phone sizes as well as on a presentation screen. */
+.stage{background:#eaf0db;border-color:#d2ddc2;box-shadow:0 12px 35px #3d56380a}
+.habitat-scene{position:relative}
+#habitat{width:100%;height:520px}
+.map-top{inset:0;display:block}
+.map-top span{position:absolute;top:18px;max-width:42%;background:#fffdf2ed;border:1px solid #d2ddc2;font-size:13px;overflow-wrap:anywhere}
+#patch-a{left:18px}#patch-b{right:18px}
+.map-top .scene-label{left:50%;transform:translateX(-50%);top:auto;bottom:14px;max-width:90%;white-space:nowrap;font-size:12px}
+.map-note{line-height:1.6;background:#f3f5e9}
+.dot{background:#c88b52}.dot.male{background:#9caa91}
+@media(max-width:650px){
+  #habitat{height:590px}
+  .map-top span{top:14px;max-width:calc(100% - 32px);font-size:12px}
+  #patch-a{left:14px}#patch-b{left:14px;right:auto;top:calc(50% + 14px)}
+  .map-top span.scene-label{display:block;white-space:normal;text-align:center;font-size:11px;bottom:6px;width:max-content}
+  .controls{gap:8px}button,select{min-height:44px;padding:9px 12px}
+  .legend{flex-wrap:wrap;gap:6px 16px}
+}
+</style>
+</head>
+<body><main>
+<header><div><div class="eyebrow">Project Resurrection / field notes</div><h1>A little room to roam.</h1><p class="subtitle">Meet the lynx in our simulated world. Watch one month at a time.</p></div><span class="badge" id="kind">Synthetic model</span></header>
+<section class="stats" aria-label="Recorded monthly counts">
+<div class="stat"><strong id="population">—</strong><span>living lynx</span></div>
+<div class="stat"><strong id="month">—</strong><span id="calendar">simulation month</span></div>
+<div class="stat"><strong id="births">—</strong><span>births this month</span></div>
+<div class="stat"><strong id="deaths">—</strong><span>deaths this month</span></div>
+</section>
+<section class="stage" aria-label="Illustrated habitat">
+<div class="habitat-scene">
+<div class="map-top"><span id="patch-a"></span><span class="scene-label" id="scene-count"></span><span id="patch-b"></span></div>
+<canvas id="habitat" width="1100" height="440" role="img" aria-label="Illustrative lynx population"></canvas>
+</div>
+<div class="map-note" id="map-note">Illustrated habitat, not a geographic map. Counts are recorded. Walking and positions are illustrative; monthly animal tracks are not saved.</div>
+<div class="map-note" id="rabbit-note"></div>
+</section>
+<div class="controls" aria-label="Playback controls">
+<button class="primary" id="play" type="button">▶ Play</button><button id="reset" type="button">↶ Restart</button>
+<button id="previous" type="button" aria-label="Previous month">←</button><button id="next" type="button" aria-label="Next month">→</button>
+<div class="timeline"><label class="sr-only" for="scrub">Simulation month</label><input id="scrub" type="range" min="0" value="0" step="1"><div class="range-labels"><span>Starting population</span><span id="end-label"></span></div></div>
+<label class="sr-only" for="speed">Playback speed</label><select id="speed"><option value="1800">Relaxed</option><option value="900">Brisk</option><option value="3000">Take it slow</option></select>
+</div>
+<div class="bottom"><section class="panel"><h2>The population story</h2><svg id="chart" viewBox="0 0 700 95" role="img" aria-label="Recorded population over the entire run"></svg><div class="legend"><span><i class="dot"></i><span id="female-count"></span> females</span><span><i class="dot male"></i><span id="male-count"></span> males</span><span id="movements"></span></div></section>
+<section class="panel"><h2>Behind this little world</h2><p class="details" id="run-details"></p><p class="details" id="food-details"></p><p class="details">Playback reads a saved run. It makes no new predictions and uses no AI calls.</p></section></div>
+<p class="footer">An exploratory synthetic simulation, not a wildlife forecast. The landscape is decorative. Full-run population curve is shown below; the marker follows the selected month.</p>
+<p class="sr-only" aria-live="polite" id="announcement"></p>
+</main>
+<script type="application/json" id="run-data">__RUN_DATA__</script>
+<script>
+'use strict';
+const run=JSON.parse(document.getElementById('run-data').textContent);
+const $=id=>document.getElementById(id), rows=run.history, last=rows.length-1;
+const canvas=$('habitat'),ctx=canvas.getContext('2d'),reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
+let index=0,playing=false,timer=null,frame=0,lastPaint=0;
+const MAX_ICONS=72;
+const populationPeak=Math.max(1,...rows.map(row=>row.population));
+function populationSymbols(row,compact){
+  const perSymbol=Math.max(1,Math.ceil(populationPeak/(compact?24:MAX_ICONS)));
+  const capacity=Math.ceil(populationPeak/perSymbol);
+  const total=row.population?Math.max(1,Math.round(row.population/perSymbol)):0;
+  const females=Math.round(total*(row.population?row.females/row.population:0));
+  return {perSymbol,capacity,total,females};
+}
+function random(n){const v=Math.sin(n*127.1+run.seed*.013)*43758.5453;return v-Math.floor(v)}
+// The scene illustrates totals only; these symbols are not tracked animals.
+let scene=null;
+const backdrop=document.createElement('canvas');
+function oval(g,x,y,rx,ry,fill,angle=0){
+  g.fillStyle=fill;g.beginPath();g.ellipse(x,y,rx,ry,angle,0,Math.PI*2);g.fill();
+}
+function tree(g,x,y,size){
+  oval(g,x+4,y+size*.65,size*.8,size*.2,'#55744b16');
+  g.strokeStyle='#958165';g.lineWidth=size*.16;g.lineCap='round';
+  g.beginPath();g.moveTo(x,y+size*.75);g.lineTo(x,y-size*.1);g.stroke();
+  oval(g,x-size*.3,y,size*.67,size*.52,'#819b62');
+  oval(g,x+size*.35,y-size*.12,size*.7,size*.57,'#91a96c');
+  oval(g,x,y-size*.45,size*.63,size*.55,'#a4b77c');
+  oval(g,x-size*.15,y-size*.6,size*.31,size*.18,'#becb93');
+}
+function landscape(g,w,h,compact,patches){
+  g.fillStyle='#e8edda';g.fillRect(0,0,w,h);
+  patches.forEach((p,i)=>{
+    oval(g,p.x+p.w/2,p.y+p.h/2,p.w*.55,p.h*.52,i?'#dce8ce':'#e2eacb',i?.04:-.04);
+    oval(g,p.x+p.w*.34,p.y+p.h*.43,p.w*.33,p.h*.34,i?'#e4ecd5':'#eaf0d7',-.15);
+    // Gentle contours decorate the habitat, without implying real terrain.
+    g.strokeStyle='#b8cba13d';g.lineWidth=1.2;
+    for(let n=0;n<3;n++){
+      g.beginPath();g.ellipse(p.x+p.w*.55,p.y+p.h*.53,p.w*(.39+n*.05),p.h*(.37+n*.05),-.07,.1,3.8);g.stroke();
+    }
+  });
+  // A small stream separates the two illustrated patches.
+  function stream(){
+    g.beginPath();
+    if(compact){g.moveTo(-15,h/2-5);g.bezierCurveTo(w*.33,h/2+26,w*.67,h/2-27,w+15,h/2+6)}
+    else{g.moveTo(w/2-16,-20);g.bezierCurveTo(w/2-68,h*.35,w/2+65,h*.65,w/2+10,h+20)}
+  }
+  g.strokeStyle='#c2d6b5';g.lineWidth=compact?35:49;stream();g.stroke();
+  g.strokeStyle='#b1d3cb';g.lineWidth=compact?23:33;stream();g.stroke();
+  g.strokeStyle='#d1e6db';g.lineWidth=2;stream();g.stroke();
+  // Stepping stones are scenery, not a model of the movement route.
+  for(let i=-2;i<=2;i++){
+    const x=compact?w*.73:w/2+i*10,y=compact?h/2+i*7:h*.5;
+    oval(g,x,y+2,compact?9:7,compact?5:10,'#89a99740');
+    oval(g,x,y,compact?9:7,compact?5:10,'#ddd8bd',i*.09);
+  }
+  patches.forEach((p,side)=>{
+    const margin=compact?16:23;
+    for(let i=0;i<9;i++){
+      const x=p.x+margin+random(i+side*31+40)*(p.w-2*margin);
+      const y=i<4?p.y+13+random(i+60)*20:p.y+p.h-14-random(i+90)*10;
+      tree(g,x,y,(compact?11:16)+random(i+12)*7);
+    }
+    for(let i=0;i<24;i++){
+      const x=p.x+16+random(i+side*80+300)*(p.w-32);
+      const y=p.y+40+random(i+side*80+800)*(p.h-60);
+      g.strokeStyle='#a9bd854d';g.lineWidth=1.2;g.lineCap='round';
+      g.beginPath();g.moveTo(x-3,y);g.lineTo(x-5,y-4);g.moveTo(x,y);g.lineTo(x,y-6);g.moveTo(x+3,y);g.lineTo(x+5,y-3);g.stroke();
+      if(i%5===0){oval(g,x+5,y-4,2,2,'#f9f4d7');oval(g,x+5,y-4,.7,.7,'#d5b36b')}
+    }
+  });
+}
+function lynx(x,y,sex,phase,size,flip,blink){
+  const coat=sex==='female'
+    ?{body:'#c88b52',light:'#e5b77e',leg:'#af7446',spot:'#98643d'}
+    :{body:'#9caa91',light:'#c7cfb4',leg:'#7f9077',spot:'#71816b'};
+  ctx.save();ctx.translate(x,y);ctx.scale(size*flip,size);
+  oval(ctx,0,23,23,4,'#5269411b');
+  ctx.translate(0,-Math.abs(Math.sin(phase))*1.5);
+  // Far paws, a short bobtail, then a soft spotted body.
+  for(const xx of [-12,9]){
+    const step=Math.sin(phase+(xx<0?0:Math.PI))*3;
+    oval(ctx,xx+step,14,4,8,coat.leg);oval(ctx,xx+step+1,21,5,3,coat.leg);
+  }
+  ctx.strokeStyle=coat.body;ctx.lineWidth=7;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(-19,3);ctx.quadraticCurveTo(-28,3,-26,-5);ctx.stroke();
+  ctx.strokeStyle='#485143';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-26,-5);ctx.lineTo(-26,-7);ctx.stroke();
+  oval(ctx,-3,4,21,14,coat.body,-.06);
+  oval(ctx,1,8,16,9,coat.light);
+  [[-17,0],[-10,-5],[-7,3],[1,-4],[-16,8]].forEach(([sx,sy])=>oval(ctx,sx,sy,2,1.6,coat.spot,.3));
+  for(const xx of [-11,12]){
+    const step=Math.sin(phase+(xx<0?Math.PI:0))*3;
+    oval(ctx,xx+step,15,4.5,8,coat.body);oval(ctx,xx+step+1,22,6,3.5,coat.light);
+  }
+  // Tufted ears and generous cheek ruffs keep the round face recognisably lynx.
+  ctx.fillStyle=coat.body;ctx.beginPath();
+  ctx.moveTo(-1,-15);ctx.lineTo(0,-34);ctx.quadraticCurveTo(4,-36,10,-25);
+  ctx.quadraticCurveTo(17,-28,23,-24);ctx.quadraticCurveTo(29,-36,32,-33);
+  ctx.lineTo(33,-14);ctx.quadraticCurveTo(38,-9,33,1);
+  ctx.lineTo(37,4);ctx.lineTo(29,5);ctx.lineTo(31,9);
+  ctx.quadraticCurveTo(16,15,2,6);ctx.lineTo(-4,7);ctx.lineTo(-2,2);
+  ctx.lineTo(-7,1);ctx.quadraticCurveTo(-7,-9,-1,-15);ctx.fill();
+  ctx.fillStyle='#e5c2a4';ctx.beginPath();ctx.moveTo(3,-29);ctx.lineTo(4,-19);ctx.lineTo(10,-22);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(29,-29);ctx.lineTo(23,-21);ctx.lineTo(30,-19);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#394a3d';ctx.lineWidth=1.7;ctx.lineCap='round';
+  [[1,-32,-2,-42],[2,-33,2,-40],[30,-32,34,-42],[30,-33,30,-40]].forEach(a=>{
+    ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(a[2],a[3]);ctx.stroke();
+  });
+  oval(ctx,16,-9,17,16,coat.light);
+  oval(ctx,3,-2,8,8,'#f4e7ca',-.3);oval(ctx,29,-2,8,8,'#f4e7ca',.3);
+  [[10,-23],[17,-24],[23,-22]].forEach(([sx,sy])=>oval(ctx,sx,sy,1.5,2,coat.spot));
+  // Bright eyes blink occasionally only during playback.
+  for(const ex of [9,23]){
+    if(blink){ctx.strokeStyle='#33473b';ctx.lineWidth=2;ctx.beginPath();ctx.arc(ex,-10,3.3,.15,Math.PI-.15);ctx.stroke()}
+    else{
+      oval(ctx,ex,-10,4.3,5.2,'#33473b');
+      oval(ctx,ex-1,-12,1.6,1.8,'#fffdf1');oval(ctx,ex+1.5,-7.5,.65,.65,'#e5d6a9');
+    }
+  }
+  oval(ctx,12,-1,6,4.8,'#fff3d9');oval(ctx,20,-1,6,4.8,'#fff3d9');
+  ctx.fillStyle='#9c6556';ctx.beginPath();ctx.moveTo(13,-5);ctx.quadraticCurveTo(16,-7,19,-5);ctx.lineTo(16,-2);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#765747';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(16,-2);ctx.lineTo(16,0);
+  ctx.quadraticCurveTo(13,3,11,1);ctx.moveTo(16,0);ctx.quadraticCurveTo(19,3,21,1);ctx.stroke();
+  ctx.strokeStyle='#8b826b';ctx.lineWidth=.8;
+  [[4,-1,-5,-3],[4,2,-4,3],[28,-1,37,-3],[28,2,36,4]].forEach(a=>{
+    ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(a[2],a[3]);ctx.stroke();
+  });
+  ctx.restore();
+}
+function rabbit(x,y,phase,flip){
+  ctx.save();ctx.translate(x,y);ctx.scale(flip,1);
+  oval(ctx,0,8,13,3,'#5269411a');
+  ctx.translate(0,-Math.max(0,Math.sin(phase))*3);
+  oval(ctx,-1,0,10,7,'#d7c9ac');oval(ctx,-11,-1,4,4,'#fff8e6');
+  oval(ctx,7,-6,6,6.5,'#e7dac1');
+  oval(ctx,5,-17,2.8,9,'#e7dac1',-.12);oval(ctx,10,-16,2.7,8,'#e7dac1',.18);
+  oval(ctx,5,-17,1.1,6,'#c69b8d',-.12);oval(ctx,10,-16,1,5,'#c69b8d',.18);
+  oval(ctx,8,-7,1.7,2.1,'#394a3d');oval(ctx,7.5,-7.8,.55,.7,'#fffdf1');
+  oval(ctx,12,-3,2.3,1.8,'#fff5df');oval(ctx,14,-4,1.2,.9,'#ad7c6b');
+  oval(ctx,-5,6,5,2.5,'#efe3c9');oval(ctx,7,6,4,2,'#efe3c9');
+  ctx.restore();
+}
+function drawRabbits(time){
+  const {w,h,compact}=scene,food=run.config.food_rabbits_per_ha;
+  const total=Math.min(compact?6:12,Math.ceil(2*Math.sqrt(food)));
+  const motion=reduceMotion.matches||!playing?0:time*.001;
+  for(let i=0;i<total;i++){
+    const side=i%2,slot=Math.floor(i/2),count=side?Math.floor(total/2):Math.ceil(total/2);
+    const fraction=(slot+.5)/count;
+    const x=compact?35+fraction*(w-70):w/2+(side?46:-46);
+    const y=compact?h/2+(side?30:-30):85+fraction*(h-155);
+    rabbit(x,y,motion?motion*3+i:0,side?-1:1);
+  }
+}
+function resizeScene(){
+  const w=canvas.clientWidth,h=canvas.clientHeight,compact=matchMedia('(max-width:650px)').matches;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const patches=compact
+    ?[{x:12,y:44,w:w-24,h:h/2-62},{x:12,y:h/2+44,w:w-24,h:h/2-62}]
+    :[{x:18,y:48,w:w/2-48,h:h-85},{x:w/2+30,y:48,w:w/2-48,h:h-85}];
+  scene={w,h,compact,patches};
+  canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+  backdrop.width=canvas.width;backdrop.height=canvas.height;
+  const g=backdrop.getContext('2d');g.scale(dpr,dpr);landscape(g,w,h,compact,patches);draw();
+}
+function draw(time=0){
+  if(!scene)return;
+  const {w,h,compact,patches}=scene,row=rows[index];
+  ctx.clearRect(0,0,w,h);ctx.drawImage(backdrop,0,0,w,h);
+  drawRabbits(time);
+  // Keep the scale and layout fixed across months so declines remain visible.
+  const {perSymbol,capacity,total,females:femaleIcons}=populationSymbols(row,compact);
+  const motion=reduceMotion.matches||!playing?0:time*.001;
+  for(let i=0;i<total;i++){
+    const side=i%2,slot=Math.floor(i/2),p=patches[side];
+    const count=side?Math.floor(capacity/2):Math.ceil(capacity/2);
+    const innerW=p.w-22,innerH=p.h-44;
+    const cols=Math.max(1,Math.ceil(Math.sqrt(count*innerW/innerH*.8)));
+    const lines=Math.ceil(count/cols),cellW=innerW/cols,cellH=innerH/lines;
+    const inRow=Math.min(cols,count-Math.floor(slot/cols)*cols);
+    const x=p.x+p.w/2+(slot%cols-(inRow-1)/2)*cellW+(random(i+140)-.5)*5;
+    const y=p.y+22+(Math.floor(slot/cols)+.5)*cellH+7;
+    const size=Math.min(compact?1:1.28,cellW/78,cellH/79);
+    const wander=motion?Math.sin(motion*.8+i)*3:0;
+    lynx(x+wander,y,i<femaleIcons?'female':'male',motion?motion*4+i:0,size,
+      random(i+900)>.5?1:-1,Boolean(motion&&Math.sin(motion*1.1+i*2.4)>.996));
+  }
+  const caption=perSymbol>1
+    ?`1 picture ≈ ${perSymbol} lynx · ${total} pictured / ${row.population} living`
+    :`1 picture = 1 lynx · ${total} pictured`;
+  if($('scene-count').textContent!==caption)$('scene-count').textContent=caption;
+  if(!row.population){
+    ctx.fillStyle='#47614b';ctx.font=`${compact?15:20}px Georgia`;ctx.textAlign='center';
+    ctx.fillText('No living lynx in this recorded month.',w/2,compact?h*.25:h*.45);
+  }
+}
+const ns='http://www.w3.org/2000/svg';
+function svg(tag,attrs){const el=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));return el}
+const peak=Math.max(1,...rows.map(r=>r.population)),point=i=>[15+(last?i/last:0)*670,78-rows[i].population/peak*65];
+$('chart').append(svg('line',{x1:15,y1:78,x2:685,y2:78,stroke:'#d5ddce'}));
+$('chart').append(svg('polyline',{points:rows.map((_,i)=>point(i).join(',')).join(' '),fill:'none',stroke:'#46745a','stroke-width':3,'stroke-linejoin':'round'}));
+const marker=svg('circle',{r:5,fill:'#d06c33',stroke:'#fff','stroke-width':2});$('chart').append(marker);
+function pause(){playing=false;clearInterval(timer);timer=null;$('play').textContent='▶ Play';motionChanged()}
+function select(i){index=Math.max(0,Math.min(last,i));const r=rows[index];$('population').textContent=r.population;$('month').textContent=`${r.month} / ${last}`;const monthNumber=((run.config.start_month-1+r.month)%12+12)%12;$('calendar').textContent=`${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][monthNumber]} · simulation month`;$('births').textContent=`+${r.births}`;$('deaths').textContent=r.deaths;$('female-count').textContent=r.females;$('male-count').textContent=r.males;$('movements').textContent=`${r.movements} recorded patch moves`;$('scrub').value=index;$('previous').disabled=index===0;$('next').disabled=index===last;const [cx,cy]=point(index);marker.setAttribute('cx',cx);marker.setAttribute('cy',cy);canvas.setAttribute('aria-label',`Month ${r.month}: ${r.population} living lynx, ${r.births} births, ${r.deaths} deaths. Positions are illustrative.`);$('announcement').textContent=`Month ${r.month}, ${r.population} living lynx.`;draw(performance.now());if(index===last)pause()}
+function start(){if(index===last)select(0);playing=true;$('play').textContent='Ⅱ Pause';timer=setInterval(()=>select(index+1),Number($('speed').value));motionChanged()}
+$('play').onclick=()=>playing?pause():start();$('reset').onclick=()=>{pause();select(0)};$('previous').onclick=()=>{pause();select(index-1)};$('next').onclick=()=>{pause();select(index+1)};$('scrub').oninput=e=>{pause();select(Number(e.target.value))};$('speed').onchange=()=>{if(playing){pause();start()}};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
+function animate(t){if(!playing)return;if(t-lastPaint>65){draw(t);lastPaint=t}frame=requestAnimationFrame(animate)}
+function motionChanged(){cancelAnimationFrame(frame);if(reduceMotion.matches||!playing)draw(0);else frame=requestAnimationFrame(animate)}
+reduceMotion.addEventListener('change',motionChanged);
+$('kind').textContent=run.data_kind==='sample'?'Sample fixture · not a simulation run':'Synthetic simulation · saved run';
+$('run-details').textContent=`Run ${run.run_id} · seed ${run.seed} · ${last} months.`;
+$('food-details').textContent=`Food: ${run.config.food_rabbits_per_ha} rabbits per hectare (constant).`;
+$('rabbit-note').textContent=`Food stays at ${run.config.food_rabbits_per_ha} rabbits per hectare. ${run.config.food_rabbits_per_ha===0?'No rabbit symbols are shown.':'Rabbit symbols illustrate food availability, not a population count.'} Individual hunts are not simulated.`;
+run.config.patches.slice(0,2).forEach((p,i)=>{$(i?'patch-b':'patch-a').textContent=`Patch ${p.id} · ${p.area_km2} km²`});
+$('end-label').textContent=`Month ${last}`;$('scrub').max=last;
+new ResizeObserver(resizeScene).observe(canvas);resizeScene();select(0);motionChanged();
+</script></body></html>
