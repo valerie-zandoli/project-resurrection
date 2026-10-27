@@ -1,8 +1,8 @@
 # First live Claude workflow
 
-This combines the existing adapter (#91/#98) and three-role preview (#94) on
-`resurrection-anastasiya`. Their individual reviews still apply; integration here
-does not merge their pull requests into `develop`.
+This uses the provider and three-role preview already in `develop` to make one
+bounded live Claude run. It records the run and its limits; it does not claim
+historical validation or prove that the roles outperform one agent.
 
 From the repository root with the Python environment active and your personal
 key in the ignored local `.env` file:

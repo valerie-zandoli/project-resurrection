@@ -5,12 +5,14 @@ import json
 import os
 import shutil
 import stat
+from pathlib import Path
 
 import pytest
 
 from harness import __main__ as cli
+import harness.run_case as run_case_module
 from harness.run_case import HarnessError, run_case, simulator_developer
-from harness.snapshot import RESEARCH_FILES, make_snapshot
+from harness.snapshot import EVIDENCE_FILE, RESEARCH_FILES, SNAPSHOT_FILES, make_snapshot
 from harness.trace import Trace, scrub
 from simulation.model import REPO
 from validators.handoff_hashes import file_sha256
@@ -46,18 +48,42 @@ def test_a_clean_case_passes_in_round_0_and_writes_every_file(tmp_path):
     case = json.loads((out / "case.json").read_text())
     assert case["status"] == "pass" and case["notify"] == [] and case["run_ids"] == ["preview-3"]
     assert case["clarification"] is None
-    assert case["research_sha256"].keys() == set(RESEARCH_FILES)
+    assert case["research_sha256"].keys() == set(SNAPSHOT_FILES)
     assert not (out / "round_1").exists()
 
 
 def test_the_snapshot_is_read_only_and_matches_the_source(tmp_path):
     hashes = make_snapshot(REPO, tmp_path / "snap")
-    for relative in RESEARCH_FILES:
+    for relative in SNAPSHOT_FILES:
         copy = tmp_path / "snap" / relative
         assert stat.S_IMODE(copy.stat().st_mode) == 0o444
         assert hashes[relative] == file_sha256(REPO / relative) == file_sha256(copy)
     with pytest.raises(FileExistsError):
         make_snapshot(REPO, tmp_path / "snap")
+
+
+def test_the_evidence_gate_uses_the_same_snapshot_the_researcher_reads(tmp_path, monkeypatch):
+    source = tmp_path / "source"
+    for relative in SNAPSHOT_FILES:
+        target = source / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REPO / relative, target)
+    original = run_case_module.make_snapshot
+
+    def snapshot_then_change_source(source_root, snapshot_root):
+        hashes = original(source_root, snapshot_root)
+        evidence = Path(source_root) / EVIDENCE_FILE
+        evidence.write_text("not,the,validated,evidence\\n", encoding="utf-8")
+        return hashes
+
+    monkeypatch.setattr(run_case_module, "make_snapshot", snapshot_then_change_source)
+    result = run_case(tmp_path / "case", options=OPTIONS, source_root=source)
+    case = json.loads((result.run_dir / "case.json").read_text())
+    snapshot_evidence = result.run_dir / "snapshot" / EVIDENCE_FILE
+    assert result.status == "pass"
+    assert case["evidence"]["sha256"] == file_sha256(snapshot_evidence)
+    assert case["research_sha256"][EVIDENCE_FILE] == file_sha256(snapshot_evidence)
+    assert case["evidence"]["sha256"] != file_sha256(source / EVIDENCE_FILE)
 
 
 def test_the_run_is_built_from_the_snapshot_not_the_source(tmp_path):
@@ -114,6 +140,19 @@ def test_a_changed_research_file_rejects_the_case_without_retry(tmp_path):
     result = run_case(tmp_path / "case", options=OPTIONS, developer=developer)
     assert result.status == "rejected" and "changed since" in result.reason
     assert result.attempts == 1 and not (tmp_path / "case" / "round_1").exists()
+
+
+def test_a_changed_evidence_snapshot_rejects_the_case(tmp_path):
+    def developer(config, round_number, issues, root):
+        evidence = root / EVIDENCE_FILE
+        os.chmod(evidence, 0o644)
+        evidence.write_text("changed after validation\\n", encoding="utf-8")
+        return simulator_developer(config, round_number, issues, root)
+
+    result = run_case(tmp_path / "case", options=OPTIONS, developer=developer)
+    assert result.status == "rejected" and "snapshot changed" in result.reason
+    assert EVIDENCE_FILE in result.reason
+    assert result.attempts == 1
 
 
 def test_a_developer_that_raises_is_reported_and_never_retried(tmp_path):
@@ -182,7 +221,7 @@ def test_the_trace_is_one_numbered_json_line_per_step_in_a_fixed_shape(tmp_path)
     assert {"harness", "developer", "evaluator"} <= set(roles)
     assert roles[0] == "harness" and steps[-1]["message"].startswith("case finished")
     assert [s["evaluator_status"] for s in steps if s["role"] == "evaluator"] == ["revise", "pass"]
-    assert steps[2]["input_hashes"].keys() == set(RESEARCH_FILES)
+    assert steps[2]["input_hashes"].keys() == set(SNAPSHOT_FILES)
 
 
 def test_a_trace_never_holds_a_key_and_shows_what_it_cut():

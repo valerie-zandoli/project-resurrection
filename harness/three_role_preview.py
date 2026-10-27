@@ -16,15 +16,12 @@ from harness.run_case import HarnessError, run_case, simulator_developer
 from harness.snapshot import RESEARCH_FILES
 from harness.trace import Trace, scrub
 from simulation.model import REPO
-from validators.evidence_gate import check_evidence
+from validators.evidence_gate import EVIDENCE_FILE, check_evidence
 from validators.handoff_hashes import check_files_current
 from validators.results_checks import build_evaluation
 
 # The words that every screen and slide about this preview must carry.
 CAPTION = "scripted preview; the Researcher inspects existing tables"
-# The same file as the evidence gate (#86); import it from validators.evidence_gate once #86 has merged.
-EVIDENCE_FILE = "data/parameters/evidence_columns_DRAFT.csv"
-
 # The Researcher answers briefly and ends with two lines that code can grade against the evidence file.
 # (Asked to report every label, a Researcher that sees the whole files writes a reply that is cut off
 # even at 4,000 tokens; the live case of 2026-10-27 failed that way.)
@@ -151,11 +148,11 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
                 files = dict(zip(("parameters", "sources"), RESEARCH_FILES))
                 if key == "evidence":
                     read.add(key)
-                    path = Path(source_root) / EVIDENCE_FILE
+                    path = Path(root) / EVIDENCE_FILE
                     if not path.is_file():
                         return f"NO EVIDENCE FILE at {EVIDENCE_FILE}; say that no evidence labels were available."
                     data = path.read_bytes()
-                    evidence_sha256 = hashlib.sha256(data).hexdigest()  # names the version that was read
+                    evidence_sha256 = hashlib.sha256(data.replace(b"\r\n", b"\n")).hexdigest()
                     return data.decode("utf-8")
                 if key not in files:
                     raise RoleError("unknown research key; use parameters, sources, or evidence")
@@ -164,7 +161,9 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
 
             research = run_role("researcher", providers["researcher"], RESEARCHER_TASK,
                                 {"read_research": read_research}, trace=trace)
-            errors, report = check_evidence(source_root, *(Path(root) / name for name in RESEARCH_FILES), "pilot")
+            errors, report = check_evidence(root, *(Path(root) / name for name in RESEARCH_FILES), "pilot")
+            if "evidence" in read and evidence_sha256 != report["sha256"]:
+                raise RoleError("the evidence file changed after the evidence gate")
             graded = None if errors else grade_evidence_answer(research["text"], report)
             record("researcher", research, round_number, evidence_file=EVIDENCE_FILE,
                    evidence_sha256=evidence_sha256, evidence_check=graded)
