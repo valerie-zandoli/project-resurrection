@@ -1,0 +1,71 @@
+{
+  "role": "researcher",
+  "revision_round": 0,
+  "text": "The evidence file gives each parameter a confidence label, a reason, the origin, and a \"contradicts\" field. No parameter is labelled high. Most are medium, resting on one primary study, mainly palomares2005. Conflicts are recorded for eight parameters. They include source disagreements (catsg, the EU report) and, for home range, disputed food effects.\n\nMain limits:\n- The home-range, diet, and male-range values rest on unnamed summaries.\n- The mortality rate comes from a declining 1983\u201389 population and is a mixture across statuses.\n- The cause shares have an unclear base.\n- The food thresholds are assumptions. The sources say only that these densities were enough, not that they were minimums.\n- Many ranges are ours, chosen for sensitivity.\n- Most data come from one protected Do\u00f1ana area.\n\nLOW: annual_mortality_rate_all_causes, death_share_illegal_trapping, death_share_road_traffic, female_home_range_km2, male_home_range_km2, diet_rabbit_fraction, rabbit_density_spring_min_for_territorial_breeding, rabbit_density_autumn_min_for_territorial_breeding, food_level_low_rabbits_per_ha, food_level_medium_rabbits_per_ha, food_level_high_rabbits_per_ha\nCONFLICTS: breeding_age_min, sex_ratio_female_per_male_at_birth, dispersal_age_months, annual_mortality_rate_all_causes, female_home_range_km2, rabbit_density_spring_min_for_territorial_breeding, rabbit_density_autumn_min_for_territorial_breeding, food_level_medium_rabbits_per_ha",
+  "removed_text": [],
+  "steps": 2,
+  "prompt_version": "2026-10-25-draft-1",
+  "tools_used": [
+    "read_research"
+  ],
+  "evidence_file": "data/parameters/evidence_columns_DRAFT.csv",
+  "evidence_sha256": "f19ef904c735c10162d69268807a1aac6f72f5645e8bb8e942e8d22afa3e11e1",
+  "evidence_check": {
+    "answered": true,
+    "low": {
+      "expected": [
+        "annual_mortality_rate_all_causes",
+        "death_share_illegal_trapping",
+        "death_share_road_traffic",
+        "diet_rabbit_fraction",
+        "female_home_range_km2",
+        "food_level_high_rabbits_per_ha",
+        "food_level_low_rabbits_per_ha",
+        "food_level_medium_rabbits_per_ha",
+        "male_home_range_km2",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding"
+      ],
+      "reported": [
+        "annual_mortality_rate_all_causes",
+        "death_share_illegal_trapping",
+        "death_share_road_traffic",
+        "diet_rabbit_fraction",
+        "female_home_range_km2",
+        "food_level_high_rabbits_per_ha",
+        "food_level_low_rabbits_per_ha",
+        "food_level_medium_rabbits_per_ha",
+        "male_home_range_km2",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding"
+      ],
+      "missing": [],
+      "invented": []
+    },
+    "conflicts": {
+      "expected": [
+        "annual_mortality_rate_all_causes",
+        "breeding_age_min",
+        "dispersal_age_months",
+        "female_home_range_km2",
+        "food_level_medium_rabbits_per_ha",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding",
+        "sex_ratio_female_per_male_at_birth"
+      ],
+      "reported": [
+        "annual_mortality_rate_all_causes",
+        "breeding_age_min",
+        "dispersal_age_months",
+        "female_home_range_km2",
+        "food_level_medium_rabbits_per_ha",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding",
+        "sex_ratio_female_per_male_at_birth"
+      ],
+      "missing": [],
+      "invented": []
+    },
+    "pass": true
+  }
+}
