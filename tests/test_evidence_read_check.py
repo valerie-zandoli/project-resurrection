@@ -120,3 +120,19 @@ def test_the_summary_line_names_what_a_failed_answer_missed_or_invented():
     assert line.startswith("Evidence read check (graded by code): fail")
     assert found["low"][0] in line and "no_such_parameter" in line
     assert "not run" in evidence_read_line(None)
+
+
+@pytest.mark.parametrize("empty", ["none", "None", "NONE", "None."])
+def test_none_is_read_as_no_names_in_any_capitals(empty):
+    # An empty list written as "None" is not a parameter the model invented.
+    check = grade_evidence_answer(f"Short.\nLOW: a, b\nCONFLICTS: {empty}", dict(low=["a", "b"], conflicts={}))
+    assert check["pass"] and check["conflicts"]["invented"] == []
+
+
+def test_a_list_that_ends_with_and_is_read_as_names():
+    # "a, b, and c" is a natural way to write a list; "and c" is not a name the model invented.
+    found = report()
+    low = found["low"]
+    text = f"Short.\nLOW: {', '.join(low[:-1])}, and {low[-1]}\nCONFLICTS: {', '.join(found['conflicts'])}"
+    check = grade_evidence_answer(text, found)
+    assert check["pass"] and check["low"]["invented"] == [] and check["low"]["missing"] == []

@@ -47,9 +47,13 @@ def _listed(text, prefix):
             found = cleaned[len(prefix):].lstrip("*` ").strip()
     if found is None:
         return None
-    names = {name.strip(" `*'\".") for name in found.split(",")}
-    names.discard("")
-    names.discard("none")
+    names = set()
+    for name in found.split(","):
+        name = name.strip(" `*'\".")
+        if name.lower().startswith("and "):  # "a, b, and c" is an ordinary way to end a list
+            name = name[4:].strip(" `*'\".")
+        if name and name.lower() != "none":  # an empty list written as none, None, or NONE
+            names.add(name)
     return names
 
 
