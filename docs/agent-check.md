@@ -17,10 +17,10 @@ Two choices for the owners, not decided here:
 
 | Part | Researcher | Developer | Evaluator |
 |---|---|---|---|
-| 1. Language model (LLM) | Claude through LiteLLM (`harness/litellm_provider.py`):  **CODE**; the first live pass is **IN REVIEW** (#100, #109); tests use a scripted fake | Same adapter; the prompt says to call `run_model` exactly once and explain, so the model adds words, not a decision (`prompts/developer.md`) | Same adapter |
+| 1. Language model (LLM) | Claude through LiteLLM (`harness/litellm_provider.py`):  **CODE**; the first live pass is **IN REVIEW** (#100, which holds #109); tests use a scripted fake | Same adapter; the prompt says to call `run_model` exactly once and explain, so the model adds words, not a decision (`prompts/developer.md`) | Same adapter |
 | 2. Context | A new conversation for each role; the system prompt, the task, and each tool result, scrubbed and marked as untrusted data:  **CODE** (`harness/roles.py`, `harness/three_role_preview.py`) | Same, plus the Researcher's text as advice and earlier issues as data | Same; it never sees another role's conversation |
 | 3. Tools | `read_research`, read-only, and no other tool can run:  **CODE** (`ROLE_TOOLS`) | `run_model` only | `check_artifacts` only |
-| 4. Chosen success criteria | Set in code before the loop:  all three of `parameters`, `sources`, and `evidence` read, or the case fails:  **CODE**.  Whether the answer is right is not graded on `develop`; a code grade of the low-confidence and conflict rows it names is **IN REVIEW** (#109) | Set in code:  `run_model` was called and the results pass the schema and hash checks in `run_case`:  **CODE** | Set in code:  `check_artifacts` was called, and the tool's evaluation is the record, never the model's text:  **CODE** |
+| 4. Chosen success criteria | Set in code before the loop:  all three of `parameters`, `sources`, and `evidence` read, or the case fails:  **CODE**.  Whether the answer is right is not graded on `develop`; a code grade of the low-confidence and conflict rows it names is **IN REVIEW** (#100, which holds #109) | Set in code:  `run_model` was called and the results pass the schema and hash checks in `run_case`:  **CODE** | Set in code:  `check_artifacts` was called, and the tool's evaluation is the record, never the model's text:  **CODE** |
 | 5. Loop | `run_role`, at most 4 steps:  **CODE**.  The model picks which file to read next and when to stop | The same loop, but one allowed call, so one pass | The same loop, one allowed call |
 
 ## The loop:  observe, think, act, check
@@ -39,7 +39,7 @@ Our check runs once per round, after the role finishes, not on every pass.  With
 |---|---|---|
 | Success | A test the harness can check, chosen before the loop (part 4 above).  The model ending with a text reply stops the loop, but a case passes only when the code checks pass | **CODE** |
 | Limits | At most 4 steps for a role; at most 3 revision rounds; a 1,200-token reply limit and a 30-second timeout with no retries; a reply cut off at the limit fails loudly (#108).  A shared cap of 12 Claude calls per run is part of the live command (`MAX_CALLS`) | **CODE**; the call cap is **IN REVIEW** (#100) |
-| Stuck | If the last two passes repeat the same action, stop and report.  Before this rule a repeated call ran to the 4-step cap and ended as "no final answer", which reads as a limit.  An identical result repeated across revision rounds is not detected early; the 3-round cap ends it | **IN REVIEW** (#112) |
+| Stuck | If the last two passes repeat the same action, stop and report.  Before this rule a repeated call ran to the 4-step cap and ended as "no final answer", which reads as a limit.  An identical result repeated across revision rounds is not detected early; the 3-round cap ends it | **CODE** (#112) |
 
 ## Spot a fake agent
 
@@ -47,7 +47,7 @@ Our check runs once per round, after the role finishes, not on every pass.  With
 |---|---|---|
 | One-shot | One prompt, one answer, so nothing can be corrected | No.  Tool results go back to the model.  A Developer or an Evaluator that answers without its tool fails the case |
 | Fixed chain | The steps are hard-coded, so the model never chooses an action | **Closest for the Developer and the Evaluator.**  Each may make exactly one tool call, and the harness fails the case otherwise.  The scripted preview (#94) is a fixed chain by design, and its caption labels it a scripted preview |
-| Blind loop | It repeats, but never checks a result and has no way to stop | No.  The step cap, the required calls, the code checks, and the stuck rule (**IN REVIEW**, #112) each end it |
+| Blind loop | It repeats, but never checks a result and has no way to stop | No.  The step cap, the required calls, the code checks, and the stuck rule (**CODE**, #112) each end it |
 
 Fix first the part that makes the closest fake:  a fixed chain needs a real choice.  The choices in "The answer first" are the options.
 
