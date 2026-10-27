@@ -189,7 +189,8 @@ def test_the_grid_command_needs_a_stage_and_refuses_a_final_batch_on_unchecked_e
 def test_a_pilot_batch_runs_on_unchecked_evidence_with_a_warning(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(experiments, "REPO", make_source(tmp_path, one_not_checked))
     ran = []
-    monkeypatch.setattr(experiments, "run_batch", lambda *args: ran.append(1) or {"status": "completed"})
+    monkeypatch.setattr(experiments, "run_batch",
+                        lambda *args, stage=None, **kwargs: ran.append(stage) or {"status": "completed"})
     code = experiments.main(["--preview", "--stage", "pilot", "--trials", "1", "--output", str(tmp_path / "grid")])
-    assert code == 0 and ran == [1]
+    assert code == 0 and ran == ["pilot"]  # the stage reaches the batch, which records it
     assert "Evidence warning:  the contradiction check is not done" in capsys.readouterr().out

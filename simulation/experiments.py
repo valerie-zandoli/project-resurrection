@@ -65,8 +65,12 @@ def write_json(path, value):
 
 
 def run_batch(output, seed=42, trials=100, months=120,
-              settlement_rule=DEFAULT_SETTLEMENT_RULE, breeding_rule=DEFAULT_BREEDING_RULE):
-    """Save every attempt, stopping the batch at the first failure without retry."""
+              settlement_rule=DEFAULT_SETTLEMENT_RULE, breeding_rule=DEFAULT_BREEDING_RULE, stage=None):
+    """Save every attempt, stopping the batch at the first failure without retry.
+
+    `stage` is the evidence-gate stage that the command ran at ("pilot" or "final"); it is recorded in
+    batch.json so that a pilot cannot later pass for the final grid.  None means the gate did not run.
+    """
     if any(type(value) is not int for value in (seed, trials, months)):
         raise ValueError('Seed, trials, and months must be integers')
     if seed < 0 or trials < 1 or months < 1:
@@ -89,6 +93,7 @@ def run_batch(output, seed=42, trials=100, months=120,
                   aggregation_conventions='proposed-model-conventions-section-4',
                   settlement_rule=settlement_rule,
                   breeding_rule=breeding_rule,
+                  stage=stage,
                   seed=seed, seed_rule=SEED_RULE, trials_per_cell=trials,
                   duration_months=months, python_version=platform.python_version(),
                   code_sha256={name: hashlib.sha256((REPO / name).read_bytes()).hexdigest()
@@ -165,7 +170,7 @@ def main(argv=None):
         print(f'Evidence warning:  {warning}')
     try:
         report = run_batch(args.output, args.seed, args.trials, args.months,
-                           args.settlement_rule, args.breeding_rule)
+                           args.settlement_rule, args.breeding_rule, stage=args.stage)
     except (OSError, ValueError) as exc:
         print(f'Batch failed: {exc}')
         return 1
