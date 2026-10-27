@@ -13,7 +13,7 @@ The video takes about 60 seconds of the four minutes (a proposal).  Each beat in
 | 0:00 to 0:17 | The question | slide 1 | Anastasiya | 30 |
 | 0:17 to 0:39 | Three roles and the harness | architecture diagram | Anastasiya | 41 |
 | 0:39 to 1:02 | What runs today | status slide | Valerie | 44 |
-| 1:02 to 2:05 | Video: the scripted preview | preview slide, then the video | Valerie | 93 |
+| 1:02 to 2:05 | Video: the scripted preview | preview slide, then the video | Valerie | 100 |
 | 2:05 to 2:46 | The history test | history report | Valerie | 83 |
 | 2:46 to 3:24 | The grid and its limits | Table 1 and Figure 1 | Anastasiya | 76 |
 | 3:24 to 3:46 | What stays open | open-decisions list | both | 42 |
@@ -34,7 +34,7 @@ Every claim carries a tag.  "Tested only" means merged code with a named test th
 
 **4. Video: the scripted preview (about 60 seconds, voice-over)**
 
-scripted preview; the Researcher inspects existing tables.  The simulation and the Evaluator's code check are real; the role replies are scripted, and no live model has run the roles yet.  First, a planted flaw, a wrong persistence endpoint:  the code check returns revise, with the issue.  The harness cannot yet loop back to a corrected run by itself.  Then the clean run:  pass.  On 26 October we said that nothing was enforced in a live run.  Today the video shows one code check enforced on a saved run; no live model is involved.
+scripted preview; the Researcher inspects existing tables.  The simulation and the Evaluator's code check are real; the role replies are scripted, and one live Claude pass has run separately; it is in review.  First, a planted flaw, a wrong persistence endpoint:  the code check returns revise, with the issue.  The harness cannot yet loop back to a corrected run by itself.  Then the clean run:  pass.  On 26 October we said that nothing was enforced in a live run.  Since then the code checks decided one live pass, and this video shows the same check on a saved planted flaw.
 
 **5. The history test (history report)**
 
@@ -53,9 +53,9 @@ The format (told by Valerie on 2026-10-26):  a four-minute maximum, slides and v
 
 **Caption (required).**  Every screen and slide that shows the three-role preview carries the words **scripted preview; the Researcher inspects existing tables**.  The command (`python -m harness.three_role_preview`) prints them as its first and last line, so a recording of it carries them; say them aloud once in the voice-over.
 
-**Slide text (the preview).**  Title:  "What a scripted run shows".  Lines:  "scripted preview; the Researcher inspects existing tables";  "the code check catches a planted flaw:  revise, with the issue";  "then the clean run passes";  "no live model has run the roles yet" [FILL:  change only if the recorded live pass exists].  Footer:  "Synthetic preview; historical validation not assessed."
+**Slide text (the preview).**  Title:  "What a scripted run shows".  Lines:  "scripted preview; the Researcher inspects existing tables";  "the code check catches a planted flaw:  revise, with the issue";  "then the clean run passes";  "this preview is scripted; one live Claude pass has run (in review)".  Footer:  "Synthetic preview; historical validation not assessed."
 
-**Video (Valerie records it on Friday 2026-10-30 after the freeze).**  (1) The caption line.  (2) The Evaluator's check on the planted flaw 6 case (#69):  `revise`, with the issue.  (3) The unflawed run:  `pass`.  The commands are in "Video commands" below (dry run on 2026-10-26; repeat them on the frozen version).  Label step 2 a planted flaw:  the harness cannot yet loop from `revise` to a corrected run by itself.  **Improvement over 26 October:**  that presentation said that nothing was enforced in a live run; the video shows one enforced check on a recorded run.
+**Video (Valerie records it on Friday 2026-10-30 after the freeze).**  (1) The caption line.  (2) The Evaluator's check on the planted flaw 6 case (#69):  `revise`, with the issue.  (3) The unflawed run:  `pass`.  The commands are in "Video commands" below (dry run on 2026-10-26; repeat them on the frozen version).  Label step 2 a planted flaw:  the harness cannot yet loop from `revise` to a corrected run by itself.  **Improvement over 26 October:**  that presentation said that nothing was enforced in a live run; since then the code checks decided one live pass (in review), and the video shows the same check on a recorded planted flaw.
 
 ## Video commands (dry run on 2026-10-26)
 
