@@ -20,10 +20,20 @@ model remains a separate decision; a successful request proves connectivity only
 
 The same snapshot, tool restrictions, schemas, and code checks as the scripted
 preview apply. Each role starts a separate conversation. Researcher must inspect
-both existing tables, Developer calls the fixed simulator once per round, and
-Evaluator must call the code checks. Their explanations cannot replace tool
-records or a code verdict. Research text is truncated by the existing role runner;
-this does not demonstrate complete source review or autonomous research.
+both existing tables and the evidence file (#104), Developer calls the fixed
+simulator once per round, and Evaluator must call the code checks. Their
+explanations cannot replace tool records or a code verdict. The role runner now
+passes each research file whole, up to 40,000 characters (#107); this still does
+not demonstrate complete source review or autonomous research.
+
+**The saved run in `examples/live_claude_20261026/` predates #104 and #107.**  Its
+Researcher saw only the first 2,000 characters of each table (11 to 25 percent of
+each file; its own summary says the reads came back cut off) and did not read the
+evidence file.  Treat it as an integration check of the live path, not as evidence
+that the model read the research.  Replace it with a new live run after this merges.
+
+**After this merges, run `pip install -r requirements.txt` again.**  Tool calls need
+`litellm[mcp]`; with a plain `litellm` install the live case fails before any reply.
 
 There are at most four model steps per role and 12 attempted model calls across
 the whole live case. Requests have the adapter's 30-second timeout and no automatic
