@@ -17,12 +17,13 @@ def test_injected_case_runs_real_tools_but_never_claims_live_claude(tmp_path):
     assert result.status == 'pass'
     meta = json.loads((result.run_dir / 'live.json').read_text())
     assert meta['mode'] == 'injected_provider_test'
-    assert meta['model_calls_attempted'] == 7
-    assert meta['model_calls_completed'] == dict(researcher=3, developer=2, evaluator=2)
+    # The Researcher reads the two tables and the evidence file in one step (#104), so it makes two calls.
+    assert meta['model_calls_attempted'] == 6
+    assert meta['model_calls_completed'] == dict(researcher=2, developer=2, evaluator=2)
     assert meta['historical_validation'] == 'not_assessed'
     assert len(meta['code_sha256']) == 10
     records = [json.loads(x) for x in (result.run_dir / 'model-calls.jsonl').read_text().splitlines()]
-    assert len(records) == 14 and all(r['prompt_version'] for r in records)
+    assert len(records) == 12 and all(r['prompt_version'] for r in records)
 
 
 def test_shared_budget_stops_before_an_extra_provider_request(tmp_path):
