@@ -25,8 +25,15 @@ display colours, not biological differences. Rounded faces, ear tufts, spots,
 walking and blinking are decorative. The woodland, stream and stepping stones
 are also decorative, not a map of actual habitats or movement routes.
 Up to 72 symbols are displayed on wider screens, or 24 on narrow screens to
-keep the animals readable. Larger populations show an explicit sampling label
-and exact counts above. On narrow screens the two illustrated patches stack.
+keep the animals readable. The largest monthly population determines a fixed
+whole-number scale for the run at that screen size (for example, one picture
+represents approximately two lynxes). Picture counts follow the monthly totals
+using that same scale, so a halved population shows roughly half as many pictures.
+Grid spacing and picture sizes stay fixed across months. Rounding can differ by
+up to one picture; a surviving population always shows at least one. Female/male
+picture proportions follow the recorded counts, rounded to whole pictures.
+The map states its scale and the exact population stays above. On narrow screens
+the two illustrated patches stack; resizing may change the scale.
 Areas and constant rabbit density are copied from the run configuration.
 Rabbit symbols increase with food density (up to 12 on wider screens or 6 on
 narrow screens); zero food shows none. They illustrate the constant food input,
