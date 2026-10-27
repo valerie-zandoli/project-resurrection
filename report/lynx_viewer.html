@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lynx on the move · Project Resurrection</title>
+<style>
+:root{color-scheme:light;--ink:#243e35;--muted:#576b61;--paper:#f6f5ed;--green:#234d3b;--orange:#d06c33}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,-apple-system,sans-serif}main{max-width:1180px;margin:auto;padding:30px 28px 40px}header{display:flex;justify-content:space-between;align-items:center;gap:20px}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:800;color:var(--muted)}h1{font:500 clamp(30px,4vw,48px)/1.15 Georgia,serif;margin:9px 0}p{margin:6px 0}.subtitle{color:var(--muted)}.badge{border:1px solid #cbd7c6;border-radius:30px;padding:8px 15px;font-size:12px;white-space:nowrap}.stats{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:12px;margin:24px 0 16px}.stat{background:#fffdf8;border:1px solid #e2e5d9;border-radius:17px;padding:14px 20px}.stat strong{font-size:clamp(22px,3vw,31px);white-space:nowrap;line-height:1.2;display:block;font-weight:600}.stat span{color:var(--muted);font-size:13px}.stat:first-child{background:var(--green);color:white}.stat:first-child span{color:#d6e3d8}.stage{position:relative;border-radius:24px;overflow:hidden;background:#e6edda;border:1px solid #d5dfca}canvas{display:block;width:100%;height:auto}.map-top{position:absolute;top:17px;left:20px;right:20px;display:flex;justify-content:space-between;gap:10px;pointer-events:none}.map-top span{background:#ffffffe0;border-radius:20px;padding:6px 12px;font-size:12px}.map-note{background:#f0f3e7;padding:10px 20px;font-size:12px;color:#455c50;border-top:1px solid #d5dfca}.controls{display:flex;align-items:center;gap:12px;margin-top:18px}button,select{font:inherit;border:1px solid #c8d2c1;border-radius:12px;background:#fffdf8;color:var(--ink);padding:10px 16px;cursor:pointer}button.primary{background:var(--green);color:white;border-color:var(--green);min-width:112px}button:disabled{opacity:.4;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #da7e47;outline-offset:3px}.timeline{flex:1}input[type=range]{width:100%;accent-color:var(--green);cursor:pointer}.range-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}.bottom{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-top:25px}.panel{background:#fffdf8;border:1px solid #e2e5d9;border-radius:17px;padding:18px 20px}.panel h2{font-size:15px;margin:0 0 10px}#chart{width:100%;height:95px;display:block}.details{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.legend{display:flex;gap:18px;font-size:12px;color:var(--muted);margin-top:8px}.dot{display:inline-block;width:9px;height:9px;border-radius:100%;margin-right:6px;background:#bc7648}.dot.male{background:#7e8b91}.footer{font-size:12px;color:var(--muted);margin-top:20px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}@media(max-width:650px){main{padding:20px 14px}header{display:block}.badge{display:inline-block;margin-top:10px}.stats{grid-template-columns:repeat(2,1fr);gap:8px}.stat{padding:12px}.controls{flex-wrap:wrap}.timeline{flex-basis:100%;order:5}.bottom{grid-template-columns:1fr;gap:12px}.map-top{top:8px;left:8px;right:8px}.map-top span{font-size:10px;padding:4px 8px}.map-top span:nth-child(2){display:none}}
+</style>
+</head>
+<body><main>
+<header><div><div class="eyebrow">Project Resurrection / field notes</div><h1>A little room to roam.</h1><p class="subtitle">Meet the lynx in our simulated world. Watch one month at a time.</p></div><span class="badge" id="kind">Synthetic model</span></header>
+<section class="stats" aria-label="Recorded monthly counts">
+<div class="stat"><strong id="population">—</strong><span>living lynx</span></div>
+<div class="stat"><strong id="month">—</strong><span id="calendar">simulation month</span></div>
+<div class="stat"><strong id="births">—</strong><span>births this month</span></div>
+<div class="stat"><strong id="deaths">—</strong><span>deaths this month</span></div>
+</section>
+<section class="stage" aria-label="Illustrated habitat">
+<div class="map-top"><span id="patch-a"></span><span>Illustrated habitat · not a geographic map</span><span id="patch-b"></span></div>
+<canvas id="habitat" width="1100" height="440" role="img" aria-label="Illustrative lynx population"></canvas>
+<div class="map-note" id="map-note">Counts are recorded. Walking and positions are illustrative; monthly animal tracks are not saved.</div>
+</section>
+<div class="controls" aria-label="Playback controls">
+<button class="primary" id="play" type="button">▶ Play</button><button id="reset" type="button">↶ Restart</button>
+<button id="previous" type="button" aria-label="Previous month">←</button><button id="next" type="button" aria-label="Next month">→</button>
+<div class="timeline"><label class="sr-only" for="scrub">Simulation month</label><input id="scrub" type="range" min="0" value="0" step="1"><div class="range-labels"><span>Starting population</span><span id="end-label"></span></div></div>
+<label class="sr-only" for="speed">Playback speed</label><select id="speed"><option value="1800">Relaxed</option><option value="900">Brisk</option><option value="3000">Take it slow</option></select>
+</div>
+<div class="bottom"><section class="panel"><h2>The population story</h2><svg id="chart" viewBox="0 0 700 95" role="img" aria-label="Recorded population over the entire run"></svg><div class="legend"><span><i class="dot"></i><span id="female-count"></span> females</span><span><i class="dot male"></i><span id="male-count"></span> males</span><span id="movements"></span></div></section>
+<section class="panel"><h2>Behind this little world</h2><p class="details" id="run-details"></p><p class="details" id="food-details"></p><p class="details">Playback reads a saved run. It makes no new predictions and uses no AI calls.</p></section></div>
+<p class="footer">An exploratory synthetic simulation, not a wildlife forecast. The landscape is decorative. Full-run population curve is shown below; the marker follows the selected month.</p>
+<p class="sr-only" aria-live="polite" id="announcement"></p>
+</main>
+<script type="application/json" id="run-data">__RUN_DATA__</script>
+<script>
+'use strict';
+const run=JSON.parse(document.getElementById('run-data').textContent);
+const $=id=>document.getElementById(id), rows=run.history, last=rows.length-1;
+const canvas=$('habitat'),ctx=canvas.getContext('2d'),reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
+let index=0,playing=false,timer=null,frame=0,lastPaint=0;
+const MAX_ICONS=72;
+function random(n){const v=Math.sin(n*127.1+run.seed*.013)*43758.5453;return v-Math.floor(v)}
+function tree(x,y,size){ctx.fillStyle='#576d4d';ctx.beginPath();ctx.ellipse(x,y,size*.64,size,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#73865d';ctx.beginPath();ctx.ellipse(x-4,y-4,size*.43,size*.7,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#697253';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,y+size*.2);ctx.lineTo(x,y+size+9);ctx.stroke()}
+function landscape(){ctx.fillStyle='#e5edd6';ctx.fillRect(0,0,1100,440);ctx.fillStyle='#d3e0bd';ctx.beginPath();ctx.ellipse(230,228,280,210,-.12,0,7);ctx.fill();ctx.fillStyle='#dce5c5';ctx.beginPath();ctx.ellipse(895,235,290,200,.12,0,7);ctx.fill();ctx.strokeStyle='#b9d1c7';ctx.lineWidth=35;ctx.beginPath();ctx.moveTo(540,-10);ctx.bezierCurveTo(470,160,650,200,552,450);ctx.stroke();ctx.strokeStyle='#d4ddd0';ctx.lineWidth=23;ctx.beginPath();ctx.moveTo(435,224);ctx.lineTo(660,224);ctx.stroke();ctx.strokeStyle='#9baf93';ctx.lineWidth=2;ctx.setLineDash([5,6]);ctx.stroke();ctx.setLineDash([]);for(let i=0;i<28;i++){const x=25+random(i+30)*1050,y=60+random(i+90)*345;if(x<105||x>985||y>390||y<90)tree(x,y,11+random(i+20)*12)}for(let i=0;i<45;i++){ctx.fillStyle=i%2?'#c0cf9f':'#e1cf96';ctx.beginPath();ctx.arc(20+random(i+500)*1060,70+random(i+800)*340,1.7,0,7);ctx.fill()}}
+function lynx(x,y,sex,phase,size){ctx.save();ctx.translate(x,y+Math.sin(phase)*1.4);ctx.scale(size,size);ctx.fillStyle='#00000012';ctx.beginPath();ctx.ellipse(0,14,20,4,0,0,7);ctx.fill();const coat=sex==='female'?'#bc7648':'#7e8b91';ctx.strokeStyle=coat;ctx.lineWidth=4;ctx.lineCap='round';for(let leg=0;leg<4;leg++){const xx=leg<2?-9:8;ctx.beginPath();ctx.moveTo(xx,5);ctx.lineTo(xx+Math.sin(phase+leg*Math.PI)*4,13);ctx.stroke()}ctx.fillStyle=coat;ctx.beginPath();ctx.ellipse(-2,0,18,9,0,0,7);ctx.fill();ctx.strokeStyle='#3f4d43';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(-23,-5);ctx.stroke();ctx.fillStyle=coat;ctx.beginPath();ctx.moveTo(5,-8);ctx.lineTo(6,-24);ctx.lineTo(15,-16);ctx.lineTo(24,-24);ctx.lineTo(25,-7);ctx.closePath();ctx.fill();ctx.strokeStyle='#293e34';ctx.lineWidth=2;[[6,-24,5,-28],[24,-24,26,-28]].forEach(a=>{ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(a[2],a[3]);ctx.stroke()});ctx.fillStyle='#e9d5b5';ctx.beginPath();ctx.ellipse(17,-8,10,6,0,0,7);ctx.fill();ctx.fillStyle='#293e34';[[12,-13],[21,-13],[18,-7]].forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],1.5,0,7);ctx.fill()});ctx.fillStyle='#4b493c';[[-11,-3],[-3,2],[3,-4]].forEach(p=>{ctx.beginPath();ctx.ellipse(p[0],p[1],1.8,1,0,0,7);ctx.fill()});ctx.restore()}
+function draw(time=0){landscape();const row=rows[index],total=Math.min(MAX_ICONS,row.population),femaleIcons=Math.round(total*(row.population?row.females/row.population:0));for(let i=0;i<total;i++){const side=i%2,slot=Math.floor(i/2),cols=6,x=(side?665:90)+(slot%cols)*61,y=140+Math.floor(slot/cols)*48;const motion=reduceMotion.matches||!playing?0:time*.001;const wander=reduceMotion.matches?0:Math.sin(motion*.7+i)*5;lynx(x+wander,y,i<femaleIcons?'female':'male',motion*5+i,total>48?.9:1.3)}if(!row.population){ctx.fillStyle='#47614b';ctx.font='20px Georgia';ctx.textAlign='center';ctx.fillText('No living lynx in the recorded population.',550,190)}if(row.population>MAX_ICONS){ctx.fillStyle='#344e3e';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText(`Showing ${MAX_ICONS} symbols for ${row.population} living lynx.`,550,410)}}
+const ns='http://www.w3.org/2000/svg';
+function svg(tag,attrs){const el=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));return el}
+const peak=Math.max(1,...rows.map(r=>r.population)),point=i=>[15+(last?i/last:0)*670,78-rows[i].population/peak*65];
+$('chart').append(svg('line',{x1:15,y1:78,x2:685,y2:78,stroke:'#d5ddce'}));
+$('chart').append(svg('polyline',{points:rows.map((_,i)=>point(i).join(',')).join(' '),fill:'none',stroke:'#46745a','stroke-width':3,'stroke-linejoin':'round'}));
+const marker=svg('circle',{r:5,fill:'#d06c33',stroke:'#fff','stroke-width':2});$('chart').append(marker);
+function pause(){playing=false;clearInterval(timer);timer=null;$('play').textContent='▶ Play';motionChanged()}
+function select(i){index=Math.max(0,Math.min(last,i));const r=rows[index];$('population').textContent=r.population;$('month').textContent=`${r.month} / ${last}`;const monthNumber=((run.config.start_month-1+r.month)%12+12)%12;$('calendar').textContent=`${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][monthNumber]} · simulation month`;$('births').textContent=`+${r.births}`;$('deaths').textContent=r.deaths;$('female-count').textContent=r.females;$('male-count').textContent=r.males;$('movements').textContent=`${r.movements} recorded patch moves`;$('scrub').value=index;$('previous').disabled=index===0;$('next').disabled=index===last;const [cx,cy]=point(index);marker.setAttribute('cx',cx);marker.setAttribute('cy',cy);canvas.setAttribute('aria-label',`Month ${r.month}: ${r.population} living lynx, ${r.births} births, ${r.deaths} deaths. Positions are illustrative.`);$('announcement').textContent=`Month ${r.month}, ${r.population} living lynx.`;draw(performance.now());if(index===last)pause()}
+function start(){if(index===last)select(0);playing=true;$('play').textContent='Ⅱ Pause';timer=setInterval(()=>select(index+1),Number($('speed').value));motionChanged()}
+$('play').onclick=()=>playing?pause():start();$('reset').onclick=()=>{pause();select(0)};$('previous').onclick=()=>{pause();select(index-1)};$('next').onclick=()=>{pause();select(index+1)};$('scrub').oninput=e=>{pause();select(Number(e.target.value))};$('speed').onchange=()=>{if(playing){pause();start()}};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
+function animate(t){if(!playing)return;if(t-lastPaint>65){draw(t);lastPaint=t}frame=requestAnimationFrame(animate)}
+function motionChanged(){cancelAnimationFrame(frame);if(reduceMotion.matches||!playing)draw(0);else frame=requestAnimationFrame(animate)}
+reduceMotion.addEventListener('change',motionChanged);
+$('kind').textContent=run.data_kind==='sample'?'Sample fixture · not a simulation run':'Synthetic simulation · saved run';
+$('run-details').textContent=`Run ${run.run_id} · seed ${run.seed} · ${last} months.`;
+$('food-details').textContent=`Food: ${run.config.food_rabbits_per_ha} rabbits per hectare (constant).`;
+run.config.patches.slice(0,2).forEach((p,i)=>{$(i?'patch-b':'patch-a').textContent=`Patch ${p.id} · ${p.area_km2} km²`});
+$('end-label').textContent=`Month ${last}`;$('scrub').max=last;select(0);motionChanged();
+</script></body></html>
