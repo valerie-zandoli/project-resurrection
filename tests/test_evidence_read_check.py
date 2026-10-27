@@ -100,3 +100,23 @@ def test_the_researcher_task_text_reaches_the_model(tmp_path):
     run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
     first_user_message = researcher.calls[0]["messages"][0]["content"]
     assert first_user_message == RESEARCHER_TASK
+
+
+def test_the_live_case_summary_and_live_json_carry_the_grade(tmp_path):
+    from harness.live_case import run_live_case
+    providers = scripted_providers()
+    result = run_live_case(tmp_path / "case", options=OPTIONS, provider_factory=providers.__getitem__)
+    meta = json.loads((result.run_dir / "live.json").read_text())
+    summary = (result.run_dir / "live-summary.md").read_text()
+    assert meta["evidence_read_check"]["pass"] is True
+    assert "Evidence read check (graded by code): pass" in summary
+
+
+def test_the_summary_line_names_what_a_failed_answer_missed_or_invented():
+    from harness.live_case import evidence_read_line
+    found = report()
+    check = grade_evidence_answer(answer(found["low"][1:], ["no_such_parameter"]), found)
+    line = evidence_read_line(check)
+    assert line.startswith("Evidence read check (graded by code): fail")
+    assert found["low"][0] in line and "no_such_parameter" in line
+    assert "not run" in evidence_read_line(None)

@@ -56,6 +56,19 @@ class RecordedProvider:
         return reply
 
 
+def evidence_read_line(check):
+    """One readable line for the code-graded evidence question (see docs/live-workflow.md)."""
+    if check is None:
+        return 'Evidence read check (graded by code): not run, because the Researcher did not finish.'
+    if check['pass']:
+        return ('Evidence read check (graded by code): pass '
+                '(every low row and every recorded conflict named, none invented).')
+    parts = [] if check['answered'] else ['a LOW or CONFLICTS line is missing']
+    parts += [f"{label} {kind}: {', '.join(check[label][kind])}"
+              for label in ('low', 'conflicts') for kind in ('missing', 'invented') if check[label][kind]]
+    return 'Evidence read check (graded by code): fail (' + '; '.join(parts) + ').'
+
+
 def run_live_case(output, *, options, env_file=DEFAULT_ENV_FILE, model=None,
                   source_root=REPO, provider_factory=None, max_calls=MAX_CALLS):
     """Run with one fresh provider/conversation per role and a shared finite budget.
@@ -87,6 +100,11 @@ def run_live_case(output, *, options, env_file=DEFAULT_ENV_FILE, model=None,
         result = run_three_role_case(output, providers=providers, options=options,
                                      source_root=source_root)
     try:
+        evidence_check = json.loads(
+            (output / 'round_0' / 'researcher.json').read_text(encoding='utf-8')).get('evidence_check')
+    except (OSError, ValueError):
+        evidence_check = None
+    try:
         adapter_version = version('litellm')
     except PackageNotFoundError:
         adapter_version = 'not_installed'
@@ -99,6 +117,7 @@ def run_live_case(output, *, options, env_file=DEFAULT_ENV_FILE, model=None,
         model_calls_attempted=budget.attempted, model_calls_completed=budget.completed,
         max_model_calls=max_calls, options=options,
         all_roles_received_model_replies=all(budget.completed.values()),
+        evidence_read_check=evidence_check,
         historical_validation='not_assessed',
         code_sha256={name: hashlib.sha256((REPO / name).read_bytes()).hexdigest() for name in files},
     )
@@ -109,7 +128,8 @@ def run_live_case(output, *, options, env_file=DEFAULT_ENV_FILE, model=None,
              f'Model calls attempted: {budget.attempted} of {max_calls}.', '',
              '| Role | Model | Completed requests |', '|---|---|---|']
     lines += [f'| {role} | {models[role]} | {budget.completed[role]} |' for role in ROLES]
-    lines += ['', 'The numerical simulator and code checks provide the authoritative results.',
+    lines += ['', evidence_read_line(evidence_check), '',
+              'The numerical simulator and code checks provide the authoritative results.',
               'Researcher inspects existing tables; full scientific evidence review is not demonstrated.',
               'Developer calls a fixed simulator and does not generate or repair code.',
               'Historical validation: not assessed. This is a small integration run, not a final experiment.', '']
