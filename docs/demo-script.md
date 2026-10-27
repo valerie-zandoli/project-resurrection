@@ -55,7 +55,37 @@ The format (told by Valerie on 2026-10-26):  a four-minute maximum, slides and v
 
 **Slide text (the preview).**  Title:  "What a scripted run shows".  Lines:  "scripted preview; the Researcher inspects existing tables";  "the code check catches a planted flaw:  revise, with the issue";  "then the clean run passes";  "no live model has run the roles yet" [FILL:  change only if the recorded live pass exists].  Footer:  "Synthetic preview; historical validation not assessed."
 
-**Video (Valerie records it on Friday 2026-10-30 after the freeze).**  (1) The caption line.  (2) The Evaluator's check on the planted flaw 6 case (#69):  `revise`, with the issue.  (3) The unflawed run:  `pass`.  [FILL:  the two commands, from `docs/baseline-test.md`.]  Label step 2 a planted flaw:  the harness cannot yet loop from `revise` to a corrected run by itself.  **Improvement over 26 October:**  that presentation said that nothing was enforced in a live run; the video shows one enforced check on a recorded run.
+**Video (Valerie records it on Friday 2026-10-30 after the freeze).**  (1) The caption line.  (2) The Evaluator's check on the planted flaw 6 case (#69):  `revise`, with the issue.  (3) The unflawed run:  `pass`.  The commands are in "Video commands" below (dry run on 2026-10-26; repeat them on the frozen version).  Label step 2 a planted flaw:  the harness cannot yet loop from `revise` to a corrected run by itself.  **Improvement over 26 October:**  that presentation said that nothing was enforced in a live run; the video shows one enforced check on a recorded run.
+
+## Video commands (dry run on 2026-10-26)
+
+Run on the branch of #104 (commit `6d2fb90`, which holds #94, #103, and #104) from the repository root in the Python 3.12 environment.  Repeat every command on the frozen version before recording.  Each output folder is new:  add a take number (`-take2`) to every folder name when you record again.
+
+1. The caption line and the clean scripted run (prints the caption first and last, then `pass`):
+
+   ```sh
+   python -m harness.three_role_preview --preview --seed 7 --months 12 --output /tmp/lynx-three-role-1
+   ```
+
+2. Build the planted-flaw cases once, before recording (`case-5` is the flaw 6 case and `case-2` is the unflawed run for `--blind-seed 1` on this commit; read `/tmp/lynx-cases-key.json` to confirm, and keep that file off the screen):
+
+   ```sh
+   python -m scripts.baseline_cases_runs --output /tmp/lynx-cases --blind-seed 1
+   ```
+
+3. The Evaluator's code check on the planted flaw 6 case (exit status 1; says `revise`, with the issue `persistence_recomputed`: `persisted is True but the final animals give False.`):
+
+   ```sh
+   python -m validators.results_checks --input /tmp/lynx-cases/case-5/input.json --results /tmp/lynx-cases/case-5/results.json --root /tmp/lynx-cases/case-5/root --output /tmp/lynx-eval-flaw6.json
+   ```
+
+4. The same check on the unflawed run (exit status 0; says `pass`, 0 issues):
+
+   ```sh
+   python -m validators.results_checks --input /tmp/lynx-cases/case-2/input.json --results /tmp/lynx-cases/case-2/results.json --root /tmp/lynx-cases/case-2/root --output /tmp/lynx-eval-clean.json
+   ```
+
+Each command ran in under a second.  The voice-over, not the commands, sets the length of the video.  Label step 3 on screen as a planted flaw.  A simulator change can change which case is flaw 6 (`docs/baseline-test.md`, Limits).
 
 ## Before you start
 
