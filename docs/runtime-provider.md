@@ -4,7 +4,7 @@ Drafted 2026-10-22 by Valerie with Claude Code.  The Agent PRD says the runtime 
 
 ## Proposal
 
-- The runtime agents use Claude through LiteLLM. The shared model is `anthropic/claude-sonnet-5-5` (the plain API id is `claude-sonnet-5-5`), chosen by Valerie on 2026-10-26; Anastasiya's agreement is pending.  The plain API id passed `scripts/check_key.py` on Valerie's key on 2026-10-22 and 2026-10-24; through the adapter it has not been checked yet (see Implementation status).
+- The runtime agents use Claude through LiteLLM. The shared model is `anthropic/claude-sonnet-5-5` (the plain API id is `claude-sonnet-5-5`), chosen by Valerie on 2026-10-26; Anastasiya agreed the same day (Slack, 17:03 ET).  The plain API id passed `scripts/check_key.py` on Valerie's key on 2026-10-22 and 2026-10-24; through the adapter it passed on 2026-10-26 (see Implementation status).
 - Each partner uses a personal key from LaNice's one-time link, stored only in a local `.env` (see `.env.example`).
 - Valerie keeps Claude Code and Anastasiya keeps Codex as coding tools.  The runtime agents use one provider so a result does not depend on who ran it.
 
@@ -23,7 +23,7 @@ Drafted 2026-10-22 by Valerie with Claude Code.  The Agent PRD says the runtime 
 
 ## Decision
 
-Pending.  Reply "yes" or the change you want.
+Decided on 2026-10-26:  the shared model is `anthropic/claude-sonnet-5-5`.  Valerie chose it, and Anastasiya agreed in Slack at 17:03 ET.  The Claude adapter that uses LiteLLM was built by Anastasiya and merged (#91).
 
 ## Implementation status
 
@@ -31,10 +31,10 @@ The harness now has a LiteLLM adapter in `harness/litellm_provider.py`. It uses
 `ANTHROPIC_API_KEY` from the ignored local `.env` file or the process environment,
 limits each request, exposes only the role's allowed tools, and keeps the API key
 out of messages and traces. The default model is `anthropic/claude-sonnet-5-5`; set `CLAUDE_MODEL` to override it.  LiteLLM's quickstart shows `anthropic/claude-sonnet-5`, which also worked on Valerie's key, but the pair uses one model for every run.
-The provider choice and shared model setting remain pending partner agreement.
+The shared model setting was agreed on 2026-10-26 (see Decision).
 
 Run `python scripts/check_litellm_provider.py` for one short live connection check.
-Valerie ran it on 2026-10-26 with litellm 1.106.4 and the model `claude-sonnet-5`, before the shared model was set to `claude-sonnet-5-5` (below); it printed `Claude connection works`.  `litellm` is pinned to that version in `requirements.txt`.  **TO DO (Valerie, before the live pass):**  run `python scripts/check_key.py` and `python scripts/check_litellm_provider.py` again with `claude-sonnet-5-5`, and record the result here.
+Valerie ran it on 2026-10-26 with litellm 1.106.4 and the model `claude-sonnet-5`, before the shared model was set to `claude-sonnet-5-5` (below); it printed `Claude connection works`.  `litellm` is pinned to that version in `requirements.txt`.  Valerie ran both checks again on the evening of 2026-10-26 with litellm 1.106.4 and `claude-sonnet-5-5`:  `python scripts/check_key.py` printed `OK:  HTTP 200 from claude-sonnet-5-5.`, and `python scripts/check_litellm_provider.py` printed `Claude connection works:  Hello! The connection is working.`  Both checks send one greeting and do not use tools; tool calls need `litellm[mcp]` (see `docs/live-workflow.md`).
 The regular test suite uses a local stand-in and makes no API calls.
 
 References checked 2026-10-26:
