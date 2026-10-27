@@ -23,6 +23,11 @@ def call(name, **arguments):
     return dict(text="", tool_calls=[dict(name=name, arguments=arguments)])
 
 
+def calls(*names):
+    """One reply that asks for several calls at once; it differs from a single call, so it is not a stuck loop."""
+    return dict(text="", tool_calls=[dict(name=name, arguments={}) for name in names])
+
+
 def test_one_case_reaches_all_three_roles_and_keeps_real_artifacts(tmp_path):
     providers = pipeline.scripted_providers()
     output = tmp_path / "case"
@@ -77,7 +82,7 @@ def test_invalid_research_stops_before_any_role_or_simulation(tmp_path):
 
 def test_duplicate_execution_is_not_silently_run_again(tmp_path):
     providers = pipeline.scripted_providers()
-    providers["developer"] = FakeProvider([call("run_model"), call("run_model")])
+    providers["developer"] = FakeProvider([call("run_model"), calls("run_model", "run_model")])
     result = pipeline.run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
     assert result.status == "failed" and "only once" in result.reason
     assert providers["evaluator"].calls == []
@@ -114,14 +119,15 @@ def test_unknown_research_key_fails_without_reading_arbitrary_files(tmp_path):
 
 def test_role_step_limit_is_preserved(tmp_path):
     providers = pipeline.scripted_providers()
-    providers["researcher"] = FakeProvider([call("read_research", key="parameters")] * 5)
+    providers["researcher"] = FakeProvider([call("read_research", key=key) for key in
+                                            ("parameters", "sources", "evidence", "parameters", "sources")])
     result = pipeline.run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
     assert result.status == "failed" and "no final answer in 4 steps" in result.reason
 
 
 def test_a_second_check_artifacts_call_fails_and_is_not_run_again(tmp_path):
     providers = pipeline.scripted_providers()
-    providers["evaluator"] = FakeProvider([call("check_artifacts"), call("check_artifacts")])
+    providers["evaluator"] = FakeProvider([call("check_artifacts"), calls("check_artifacts", "check_artifacts")])
     result = pipeline.run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
     assert result.status == "failed" and "only once" in result.reason
 

@@ -92,10 +92,29 @@ def test_bad_tool_arguments_are_refused_not_retried():
 
 
 def test_a_role_that_never_answers_fails_after_the_step_cap():
-    provider = FakeProvider([call("check_artifacts")] * 10)
+    provider = FakeProvider([call("read_research", key=str(n)) for n in range(10)])
     with pytest.raises(RoleError, match="no final answer in 4 steps"):
-        run_role("evaluator", provider, "t", {"check_artifacts": lambda: {}})
+        run_role("researcher", provider, "t", {"read_research": lambda key: "x"})
     assert len(provider.calls) == 4
+
+
+def test_a_role_that_repeats_a_tool_call_in_two_steps_in_a_row_is_stopped_and_reported(tmp_path):
+    ran = []
+    trace = Trace(tmp_path / "t.jsonl")
+    provider = FakeProvider([call("check_artifacts")] * 10)
+    with pytest.raises(RoleError, match="evaluator is stuck.*steps 1 and 2"):
+        run_role("evaluator", provider, "t", {"check_artifacts": lambda: ran.append(1) or {}}, trace=trace)
+    assert len(provider.calls) == 2 and ran == [1]  # the repeat never runs
+    last = json.loads((tmp_path / "t.jsonl").read_text().splitlines()[-1])
+    assert last["message"].startswith("evaluator is stuck") and last["tool"] is None
+
+
+def test_a_different_call_or_a_call_after_a_gap_is_not_stuck():
+    read = lambda key: "x"
+    provider = FakeProvider([call("read_research", key="a"), call("read_research", key="b"),
+                             call("read_research", key="a"), say("done")])
+    outcome = run_role("researcher", provider, "t", {"read_research": read})
+    assert outcome["steps"] == 4 and outcome["text"] == "done"
 
 
 def test_the_fake_provider_fails_loudly_when_its_script_runs_out():

@@ -5,6 +5,7 @@ the harness accepts.  The model's text is advice; the output of a tool is the re
 """
 
 import inspect
+import json
 from pathlib import Path
 
 from harness.trace import scrub
@@ -45,6 +46,7 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
     allowed = ROLE_TOOLS[role]
     messages = [dict(role="user", content=task)]
     results = {}
+    previous = None  # the tool calls of the step before:  asking for the same ones again means the loop is stuck
     for step in range(1, max_steps + 1):
         reply = provider.complete(system, messages, allowed)
         if not reply["tool_calls"]:
@@ -52,6 +54,14 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
                 trace.add(role, reply["text"], prompt_version=version)
             return dict(text=reply["text"], tool_results=results, steps=step, prompt_version=version)
         calls = reply["tool_calls"]
+        signature = [(call["name"], json.dumps(call.get("arguments", {}), sort_keys=True, default=str))
+                     for call in calls]
+        if signature == previous:  # a repeat gets the same result, so stop before it runs and say why
+            message = f"{role} is stuck:  it asked for the same tool call in steps {step - 1} and {step}"
+            if trace:
+                trace.add(role, message, prompt_version=version)
+            raise RoleError(message)
+        previous = signature
         if calls:
             assistant_call_ids = []
             serialized_calls = []
