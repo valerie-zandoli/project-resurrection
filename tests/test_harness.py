@@ -175,7 +175,8 @@ def test_the_trace_is_one_numbered_json_line_per_step_in_a_fixed_shape(tmp_path)
     steps = lines(tmp_path / "case" / "trace.jsonl")
     assert [s["step"] for s in steps] == list(range(1, len(steps) + 1))
     keys = {"step", "role", "prompt_version", "input_hashes", "message", "tool", "tool_args",
-            "tool_result_summary", "validator_verdict", "evaluator_status", "revision_round", "removed_text"}
+            "tool_result_summary", "validator_verdict", "evaluator_status", "revision_round", "removed_text",
+            "sent_chars", "received_chars"}
     assert all(set(s) == keys for s in steps)
     roles = [s["role"] for s in steps]
     assert {"harness", "developer", "evaluator"} <= set(roles)
