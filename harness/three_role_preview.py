@@ -6,6 +6,7 @@ that alone is not evidence of a verified live workflow.
 """
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
@@ -18,6 +19,11 @@ from simulation.model import REPO
 from validators.handoff_hashes import check_files_current
 from validators.results_checks import build_evaluation
 
+# The words that every screen and slide about this preview must carry.
+CAPTION = "scripted preview; the Researcher inspects existing tables"
+# The same file as the evidence gate (#86); import it from validators.evidence_gate once #86 has merged.
+EVIDENCE_FILE = "data/parameters/evidence_columns_DRAFT.csv"
+
 
 def scripted_providers():
     """Local stand-ins that exercise tools, not model reasoning or evidence quality."""
@@ -29,8 +35,10 @@ def scripted_providers():
 
     return {
         "researcher": FakeProvider([
-            call("read_research", key="parameters"), call("read_research", key="sources"),
-            say("Scripted preview: existing research tables inspected; evidence quality not assessed."),
+            dict(text="", tool_calls=[dict(name="read_research", arguments=dict(key=key))
+                                      for key in ("parameters", "sources", "evidence")]),
+            say("Scripted preview: existing research tables and the evidence file inspected; "
+                "evidence quality not assessed."),
         ]),
         "developer": FakeProvider([
             reply for _ in range(4) for reply in (
@@ -58,14 +66,14 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
     trace = Trace(output / "roles.jsonl")
     research = None
 
-    def record(role, outcome, round_number):
+    def record(role, outcome, round_number, **extra):
         text, removed = scrub(outcome["text"], limit=2000)
         path = output / f"round_{round_number}" / f"{role}.json"
         path.write_text(json.dumps(dict(role=role, revision_round=round_number,
                                        text=text, removed_text=removed,
                                        steps=outcome["steps"],
                                        prompt_version=outcome["prompt_version"],
-                                       tools_used=list(outcome["tool_results"])), indent=2) + "\n")
+                                       tools_used=list(outcome["tool_results"]), **extra), indent=2) + "\n")
 
     def developer(config, round_number, issues, root):
         nonlocal research
@@ -73,23 +81,35 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
             RESEARCH_FILES, ("parameters_sha256", "sources_sha256"))}
         if research is None:
             read = set()
+            evidence_sha256 = None
 
             def read_research(key):
+                nonlocal evidence_sha256
                 files = dict(zip(("parameters", "sources"), RESEARCH_FILES))
+                if key == "evidence":
+                    read.add(key)
+                    path = Path(source_root) / EVIDENCE_FILE
+                    if not path.is_file():
+                        return f"NO EVIDENCE FILE at {EVIDENCE_FILE}; say that no evidence labels were available."
+                    data = path.read_bytes()
+                    evidence_sha256 = hashlib.sha256(data).hexdigest()  # names the version that was read
+                    return data.decode("utf-8")
                 if key not in files:
-                    raise RoleError("unknown research key; use parameters or sources")
+                    raise RoleError("unknown research key; use parameters, sources, or evidence")
                 read.add(key)
                 return (Path(root) / files[key]).read_text(encoding="utf-8")
 
             research = run_role(
                 "researcher", providers["researcher"],
-                "Inspect the existing validated snapshot using read_research with keys "
-                "parameters and sources. Summarize assumptions and limits. Do not invent "
-                "evidence or change the tables. This is a synthetic workflow preview.",
+                "Inspect the existing validated snapshot and the evidence file using read_research "
+                "with the keys parameters, sources, and evidence. Summarize assumptions and limits, "
+                "and report the confidence labels and recorded conflicts as the file states them. "
+                "Do not invent evidence or change a table or a label. This is a synthetic workflow preview.",
                 {"read_research": read_research}, trace=trace)
-            record("researcher", research, round_number)
-            if read != {"parameters", "sources"}:
-                raise RoleError("the Researcher must read both snapshot tables")
+            record("researcher", research, round_number, evidence_file=EVIDENCE_FILE,
+                   evidence_sha256=evidence_sha256)
+            if read != {"parameters", "sources", "evidence"}:
+                raise RoleError("the Researcher must read both snapshot tables and the evidence file")
 
         ran = False
 
@@ -141,8 +161,8 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
         mode="scripted_preview" if all(isinstance(p, FakeProvider) for p in providers.values())
         else "provider_supplied_unverified",
         status=result.status, reason=result.reason, attempts=result.attempts,
-        historical_validation="not_assessed",
-        limits=["Researcher inspects existing tables; does not create or verify evidence.",
+        historical_validation="not_assessed", caption=CAPTION,
+        limits=["Researcher inspects existing tables and the evidence file; does not create or verify evidence.",
                 "Developer uses fixed simulator; cannot repair or execute generated code.",
                 "Scripted success does not evaluate real model behavior."],
     )
@@ -159,6 +179,7 @@ def main(argv=None):
     parser.add_argument("--area", type=float, default=50)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
+    print(f"Caption: {CAPTION}")
     try:
         result = run_three_role_case(
             args.output, providers=scripted_providers(),
@@ -167,6 +188,7 @@ def main(argv=None):
         print(f"Scripted preview could not start: {exc}")
         return 2
     print(f"Scripted three-role preview: {result.status}. Saved to {result.run_dir}.")
+    print(f"Caption: {CAPTION}")
     return 0 if result.status == "pass" else 1
 
 

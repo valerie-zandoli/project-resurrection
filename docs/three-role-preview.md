@@ -17,10 +17,14 @@ test. It does not use the held-out history count.
 
 1. The existing harness validates both research tables, snapshots them, and
    computes their content hashes. Invalid tables stop before any role runs.
-2. Researcher reads the two snapshot tables through `read_research` using only
-   the keys `parameters` and `sources`. Reading both is required before execution.
-   This role inspects existing work; it does not establish source accuracy or
-   generate a new parameter table. Existing role-runner text truncation applies,
+2. Researcher reads the two snapshot tables and the evidence file through
+   `read_research` using only the keys `parameters`, `sources`, and `evidence`
+   (the confidence labels and recorded conflicts that the next roles should know).
+   Reading all three is required before execution; if there is no evidence file,
+   the tool says so and the Researcher must report it. The evidence file is read
+   from the source folder, not from the snapshot, so `researcher.json` records its
+   SHA-256 (the version that was read). This role inspects existing work; it does
+   not establish source accuracy or generate a new parameter table. Existing role-runner text truncation applies,
    so this is not proof the complete evidence was reviewed.
 3. Developer receives the Researcher explanation as marked untrusted advice.
    Its only tool is the fixed `run_model`, with no model-controlled arguments.
@@ -44,8 +48,9 @@ Existing `case.json`, `trace.jsonl`, snapshot, and per-round `input.json`,
 `results.json`, and `evaluation.json` remain the authoritative records.
 `roles.jsonl` records role/tool steps with prompt versions and input hashes.
 Per-round `researcher.json` (round 0 only), `developer.json`, and `evaluator.json`
-hold scrubbed explanations, tool names, and step counts. These explanations are
-advice. `pipeline.json` labels the mode and limitations. Historical validation
+hold scrubbed explanations, tool names, and step counts (`researcher.json` also
+names the evidence file and its SHA-256). These explanations are
+advice. `pipeline.json` labels the mode, the limitations, and the caption. Historical validation
 remains `not_assessed`.
 
 The function `run_three_role_case` accepts one provider per role for later
@@ -54,3 +59,13 @@ their presence is not proof of a successful live call. The default command stays
 scripted until the Claude adapter and its connection have been reviewed and tested.
 The Developer prompt is a new preview prompt; existing Researcher/Evaluator
 prompts and shared contracts are reused without changes.
+
+## The caption
+
+Every screen and slide that shows this preview carries these words:
+**scripted preview; the Researcher inspects existing tables**.  The command prints
+them as its first and last line and writes them to `pipeline.json` (`caption`), so a
+screen recording of the command carries them without any editing.  The preview does
+not exercise the handoff in which the Researcher writes the tables and the harness
+validates and snapshots them:  the tables already exist, and the Researcher only
+reads them.
