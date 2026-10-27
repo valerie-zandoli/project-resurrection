@@ -62,6 +62,14 @@ const $=id=>document.getElementById(id), rows=run.history, last=rows.length-1;
 const canvas=$('habitat'),ctx=canvas.getContext('2d'),reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let index=0,playing=false,timer=null,frame=0,lastPaint=0;
 const MAX_ICONS=72;
+const populationPeak=Math.max(1,...rows.map(row=>row.population));
+function populationSymbols(row,compact){
+  const perSymbol=Math.max(1,Math.ceil(populationPeak/(compact?24:MAX_ICONS)));
+  const capacity=Math.ceil(populationPeak/perSymbol);
+  const total=row.population?Math.max(1,Math.round(row.population/perSymbol)):0;
+  const females=Math.round(total*(row.population?row.females/row.population:0));
+  return {perSymbol,capacity,total,females};
+}
 function random(n){const v=Math.sin(n*127.1+run.seed*.013)*43758.5453;return v-Math.floor(v)}
 // The scene illustrates totals only; these symbols are not tracked animals.
 let scene=null;
@@ -218,13 +226,12 @@ function draw(time=0){
   const {w,h,compact,patches}=scene,row=rows[index];
   ctx.clearRect(0,0,w,h);ctx.drawImage(backdrop,0,0,w,h);
   drawRabbits(time);
-  // Fewer symbols on phones keep faces readable; exact totals remain above.
-  const total=Math.min(compact?24:MAX_ICONS,row.population);
-  const femaleIcons=Math.round(total*(row.population?row.females/row.population:0));
+  // Keep the scale and layout fixed across months so declines remain visible.
+  const {perSymbol,capacity,total,females:femaleIcons}=populationSymbols(row,compact);
   const motion=reduceMotion.matches||!playing?0:time*.001;
   for(let i=0;i<total;i++){
     const side=i%2,slot=Math.floor(i/2),p=patches[side];
-    const count=side?Math.floor(total/2):Math.ceil(total/2);
+    const count=side?Math.floor(capacity/2):Math.ceil(capacity/2);
     const innerW=p.w-22,innerH=p.h-44;
     const cols=Math.max(1,Math.ceil(Math.sqrt(count*innerW/innerH*.8)));
     const lines=Math.ceil(count/cols),cellW=innerW/cols,cellH=innerH/lines;
@@ -236,9 +243,9 @@ function draw(time=0){
     lynx(x+wander,y,i<femaleIcons?'female':'male',motion?motion*4+i:0,size,
       random(i+900)>.5?1:-1,Boolean(motion&&Math.sin(motion*1.1+i*2.4)>.996));
   }
-  const caption=row.population>total
-    ?`Showing ${total} symbols for ${row.population} living lynx`
-    :`${total} lynx pictured · illustrative positions`;
+  const caption=perSymbol>1
+    ?`1 picture ≈ ${perSymbol} lynx · ${total} pictured / ${row.population} living`
+    :`1 picture = 1 lynx · ${total} pictured`;
   if($('scene-count').textContent!==caption)$('scene-count').textContent=caption;
   if(!row.population){
     ctx.fillStyle='#47614b';ctx.font=`${compact?15:20}px Georgia`;ctx.textAlign='center';
