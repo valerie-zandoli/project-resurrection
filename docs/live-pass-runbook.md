@@ -20,6 +20,7 @@ Every box must be checked by the person named.  A box that cannot be checked mea
 | The Developer wiring exists:  the fixed `run_model` tool reached through the role loop | Anastasiya | [ ] |
 | `python scripts/check_key.py` prints `OK: HTTP 200 from claude-sonnet-5-5` on the day | whoever holds the key | [ ] |
 | The LiteLLM path is tested once (Tue 2026-10-27, 09:30 ET) | Valerie | [ ] |
+| The installed packages match `requirements.txt`:  run `pip install -r requirements.txt` again after every pull or merge that changes that file (once #100 merges, tool calls need `litellm[mcp]`, and a plain `litellm` fails before any reply) | whoever runs the pass | [ ] |
 | The two research files pass the parameter validator | either | [ ] |
 | The working tree is clean and `develop` is at the commit that both owners name | either | [ ] |
 
