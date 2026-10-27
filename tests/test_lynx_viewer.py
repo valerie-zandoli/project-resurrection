@@ -13,7 +13,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.fixture
 def results():
-    return json.loads((ROOT / 'examples/live_claude_20261026/round_0/results.json').read_text())
+    data = json.loads((ROOT / 'examples/handoffs/results.json').read_text())
+    data['config']['duration_months'] = 2
+    data['history'].append({**data['history'][-1], 'month': 2})
+    return data
 
 
 def embedded(html):
@@ -27,7 +30,7 @@ def test_recorded_history_is_preserved_without_claiming_individual_tracks(result
     data = embedded(html)
     assert data['history'] == results['history']
     assert data['config'] == results['config']
-    assert data['data_kind'] == 'simulation'
+    assert data['data_kind'] == results['data_kind']
     assert 'final_animals' not in data
     assert results == before
     assert 'monthly animal tracks are not saved' in html

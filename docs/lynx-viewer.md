@@ -3,7 +3,7 @@
 Turn one saved synthetic results file into an offline HTML viewer:
 
 ```sh
-python -m report.lynx_viewer examples/live_claude_20261026/round_0/results.json --output /tmp/lynx-viewer.html
+python -m report.lynx_viewer examples/handoffs/results.json --output /tmp/lynx-viewer.html
 ```
 
 Open the resulting file in a browser. No server, internet connection, model call,
