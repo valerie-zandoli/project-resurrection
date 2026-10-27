@@ -146,7 +146,7 @@ def test_bad_batch_controls_do_not_create_output(tmp_path, arguments):
 
 def test_cli_requires_preview_and_reports_success_or_failure(tmp_path):
     with pytest.raises(SystemExit):
-        experiments.main(['--output', str(tmp_path / 'missing')])
-    args = ['--preview', '--trials', '1', '--months', '1', '--output', str(tmp_path / 'out')]
+        experiments.main(['--stage', 'pilot', '--output', str(tmp_path / 'missing')])
+    args = ['--preview', '--stage', 'pilot', '--trials', '1', '--months', '1', '--output', str(tmp_path / 'out')]
     assert experiments.main(args) == 0
     assert experiments.main(args) == 1

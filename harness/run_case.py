@@ -5,8 +5,8 @@ Evaluator is the code checks, so every rule that the harness guarantees can be t
 key.  Roles that call a model replace these two functions later; the loop does not change.
 
 The harness, not an agent, does all of the following (docs/architecture.md, "Enforced by"):
-validates the research files, makes the read-only snapshot, computes the hashes, compares them
-at every handoff, counts the revision rounds (at most 3), and writes the trace.
+validates the research files, runs the evidence gate, makes the read-only snapshot, computes the
+hashes, compares them at every handoff, counts the revision rounds (at most 3), and writes the trace.
 """
 
 import json
@@ -20,6 +20,7 @@ from harness.handback import OWNERS, Case
 from harness.snapshot import RESEARCH_FILES, make_snapshot
 from harness.trace import Trace, scrub
 from simulation.model import REPO, preview_config, simulate
+from validators.evidence_gate import STAGES, check_evidence
 from validators.handoff_hashes import check_files_current, check_handoff_hashes
 from validators.parameters import validate_parameters
 from validators.results_checks import build_evaluation
@@ -39,6 +40,7 @@ class CaseResult:
     attempts: int
     issues: list = field(default_factory=list)
     run_dir: Path = None
+    evidence: dict = None  # the evidence gate's report; None if the case ended before the gate
 
 
 def simulator_developer(config, round_number, issues, root):
@@ -60,14 +62,18 @@ def _write(path, data):
 
 def run_case(output, *, options, source_root=REPO, developer=simulator_developer,
              evaluator=code_evaluator, max_rounds=MAX_ROUNDS):
-    """Run one case into a new folder.  `options` holds seed, months, food, and area."""
+    """Run one case into a new folder.  `options` holds seed, months, food, and area, and may hold
+    `stage` ("pilot" by default, or "final"), which sets how strict the evidence gate is."""
     output = Path(output)
+    stage = options.get("stage", "pilot")
+    if stage not in STAGES:
+        raise HarnessError(f"stage must be one of {', '.join(STAGES)}, not {stage!r}")
     if output.exists():
         raise HarnessError(f"output folder already exists; use a new one: {output}")
     output.mkdir(parents=True)
     trace = Trace(output / "trace.jsonl")
     case = Case(output.name)
-    state = dict(hashes={}, issues=[], attempts=0)
+    state = dict(hashes={}, issues=[], attempts=0, evidence=None)
 
     def finish(status, reason, issues=None):
         issues = issues if issues is not None else state["issues"]
@@ -75,9 +81,10 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
         summary = dict(case_id=case.case_id, status=status, reason=reason, attempts=state["attempts"],
                        run_ids=list(case.run_ids), issues=issues, research_sha256=state["hashes"],
                        notify=[] if status == "pass" else list(OWNERS),
-                       clarification=case.report() if case.stopped else None)
+                       clarification=case.report() if case.stopped else None,
+                       evidence=state["evidence"])
         _write(output / "case.json", summary)
-        return CaseResult(status, reason, state["attempts"], issues, output)
+        return CaseResult(status, reason, state["attempts"], issues, output, state["evidence"])
 
     # 1. Snapshot and hash.  The agents carry these hashes unchanged.
     snapshot_root = output / "snapshot"
@@ -99,6 +106,18 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
         shutil.rmtree(snapshot_root, ignore_errors=True)  # nothing that failed validation is left for an agent to read
         return finish("rejected", "research files failed validation: " + "; ".join(errors[:3]), [])
     trace.add("harness", "research files passed validation", validator="ok")
+
+    # 1b. The evidence gate, as CODE:  a malformed evidence file, or (in a final run) a contradiction
+    # check that is not done, stops the case before anything runs.  Low rows and conflicts are listed.
+    gate_errors, state["evidence"] = check_evidence(source_root, *paths, stage)
+    if gate_errors:
+        trace.add("harness", "evidence gate stopped the case", validator=gate_errors, tool_args=dict(stage=stage))
+        shutil.rmtree(snapshot_root, ignore_errors=True)  # nothing that the gate refused is left for an agent to read
+        return finish("rejected", "evidence gate: " + "; ".join(gate_errors), [])
+    gate = state["evidence"]
+    trace.add("harness", f"evidence gate passed ({stage}):  {len(gate['low'])} low, "
+              f"{len(gate['conflicts'])} with a recorded conflict, {len(gate['not_checked'])} not checked",
+              validator=gate["warnings"] or "ok")
 
     config = preview_config(options["seed"], options["months"], options["food"], options["area"],
                             root=snapshot_root)
