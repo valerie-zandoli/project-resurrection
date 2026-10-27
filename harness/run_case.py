@@ -10,6 +10,7 @@ hashes, compares them at every handoff, counts the revision rounds (at most 3), 
 """
 
 import json
+import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -85,11 +86,24 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
         _write(output / "case.json", summary)
         return CaseResult(status, reason, state["attempts"], issues, output, state["evidence"])
 
-    # 1. Validate the research files, as CODE.  A failure stops the case before anything runs.
-    paths = [Path(source_root) / relative for relative in RESEARCH_FILES]
+    # 1. Snapshot and hash.  The agents carry these hashes unchanged.
+    snapshot_root = output / "snapshot"
+    try:
+        state["hashes"] = make_snapshot(source_root, snapshot_root)
+    except OSError as exc:
+        trace.add("harness", "research files could not be copied", validator=str(exc))
+        shutil.rmtree(snapshot_root, ignore_errors=True)  # no half-made snapshot is left to read
+        return finish("rejected", f"research files could not be read: {exc}", [])
+    trace.input_hashes = state["hashes"]
+    trace.add("harness", "read-only snapshot of the research files made", validator="ok")
+
+    # 2. Validate the SNAPSHOT, as CODE, so that the validated bytes are the bytes that the agents read.
+    #    A failure stops the case before anything runs.
+    paths = [snapshot_root / relative for relative in RESEARCH_FILES]
     errors = validate_parameters(*paths)
     if errors:
         trace.add("harness", "research files failed validation", validator=errors)
+        shutil.rmtree(snapshot_root, ignore_errors=True)  # nothing that failed validation is left for an agent to read
         return finish("rejected", "research files failed validation: " + "; ".join(errors[:3]), [])
     trace.add("harness", "research files passed validation", validator="ok")
 
@@ -98,17 +112,12 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
     gate_errors, state["evidence"] = check_evidence(source_root, *paths, stage)
     if gate_errors:
         trace.add("harness", "evidence gate stopped the case", validator=gate_errors, tool_args=dict(stage=stage))
+        shutil.rmtree(snapshot_root, ignore_errors=True)  # nothing that the gate refused is left for an agent to read
         return finish("rejected", "evidence gate: " + "; ".join(gate_errors), [])
     gate = state["evidence"]
     trace.add("harness", f"evidence gate passed ({stage}):  {len(gate['low'])} low, "
               f"{len(gate['conflicts'])} with a recorded conflict, {len(gate['not_checked'])} not checked",
               validator=gate["warnings"] or "ok")
-
-    # 2. Snapshot and hash.  The agents carry these hashes unchanged.
-    snapshot_root = output / "snapshot"
-    state["hashes"] = make_snapshot(source_root, snapshot_root)
-    trace.input_hashes = state["hashes"]
-    trace.add("harness", "read-only snapshot of the research files made", validator="ok")
 
     config = preview_config(options["seed"], options["months"], options["food"], options["area"],
                             root=snapshot_root)

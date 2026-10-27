@@ -75,7 +75,7 @@ def test_the_same_table_runs_as_a_pilot_with_a_warning(tmp_path):
     assert result.status == "pass"
     assert len(result.evidence["warnings"]) == 1 and name in result.evidence["warnings"][0]
     assert case_json(tmp_path / "case")["evidence"]["not_checked"] == [name]
-    gate_line = [json.loads(line) for line in (tmp_path / "case/trace.jsonl").read_text().splitlines()][1]
+    gate_line = [json.loads(line) for line in (tmp_path / "case/trace.jsonl").read_text().splitlines()][2]
     assert "evidence gate passed (pilot)" in gate_line["message"] and name in gate_line["validator_verdict"]
 
 
