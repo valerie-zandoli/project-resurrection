@@ -30,7 +30,8 @@ not demonstrate complete source review or autonomous research.
 Researcher saw only the first 2,000 characters of each table (11 to 25 percent of
 each file; its own summary says the reads came back cut off) and did not read the
 evidence file.  Treat it as an integration check of the live path, not as evidence
-that the model read the research.  Replace it with a new live run after this merges.
+that the model read the research.  It is kept as an earlier record; the current example is
+`examples/live_claude_20261027/` (see "Observed run, 2026-10-27" below).
 
 **After this merges, run `pip install -r requirements.txt` again.**  Tool calls need
 `litellm[mcp]`; with a plain `litellm` install the live case fails before any reply.
@@ -80,3 +81,18 @@ and code fingerprints. This is integration evidence only.
 An earlier attempt stopped before a model reply because LiteLLM's tool path
 needed its `mcp` extra. `requirements.txt` now includes that extra. The failed
 attempt was retained locally; the example above is the subsequent deliberate run.
+
+## Observed run, 2026-10-27
+
+The saved example in `examples/live_claude_20261027/` passed on the first simulation round:  12 synthetic
+months, seed 7, six completed Claude requests (two per role), using `anthropic/claude-sonnet-5-5` and
+LiteLLM 1.106.4.  Valerie ran it from the code of #109.  The Researcher read all three whole files
+(parameters, sources, and the evidence file) and answered in 148 words.  The evidence read check, graded by
+code, passed:  all 11 low rows and all 8 recorded conflicts were named, and none was invented.  All 12 code
+checks passed.
+
+This is one run, so it does not show that the model does this every time.  The check grades two columns, not
+understanding.  It is an integration run on synthetic data, not a scientific result.  Two earlier runs on the
+same day failed because the Researcher's reply was cut off at the token limit (the second one with the limit
+raised to 4,000); their folders were not saved.  The cause and the fix are described under "The evidence read
+check" above.
