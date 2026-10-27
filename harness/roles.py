@@ -78,12 +78,14 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
                 else:
                     output = tools[name](**arguments)  # an error inside the tool is a defect and propagates
                     results[name] = output  # only a successful call is a result; a refusal is never the record
-                content, _ = scrub(output if isinstance(output, str) else repr(output), limit=MAX_TOOL_RESULT)
+                sent = output if isinstance(output, str) else repr(output)
+                content, _ = scrub(sent, limit=MAX_TOOL_RESULT)
+                received_chars = len(content)  # counted before the data wrapper, which adds the same lines to every source
                 if name in UNTRUSTED_TOOLS:
                     content = wrap_untrusted(content)
                 if trace:
-                    trace.add(role, "tool called", tool=name, tool_args=arguments,
-                              tool_result=content, prompt_version=version)
+                    trace.add(role, "tool called", tool=name, tool_args=arguments, tool_result=content,
+                              sent_chars=len(sent), received_chars=received_chars, prompt_version=version)
             messages.append(dict(role="tool", name=name, tool_call_id=call_id, content=content))
     raise RoleError(f"{role} gave no final answer in {max_steps} steps")
 
