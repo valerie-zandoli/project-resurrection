@@ -4,51 +4,52 @@ Drafted 2026-10-24 by Valerie with Claude Code.  This is a first draft for Valer
 
 Text in [FILL: ...] brackets depends on a run that has not happened yet.  Do not present a bracket as a result.
 
-## Time budget (4:00, with about 20 seconds of slack)
+## Time budget (4:00 maximum, with about 14 seconds of slack)
 
-| Clock | Beat | On screen | Proposed speaker |
-|---|---|---|---|
-| 0:00 to 0:25 | 1. The question | slide 1 | Anastasiya |
-| 0:25 to 1:00 | 2. Three roles and the harness | architecture diagram | Anastasiya |
-| 1:00 to 1:30 | 3. What runs today | status slide | Valerie |
-| 1:30 to 2:15 | 4. One saved run and one hand-back | `input.json`, `results.json`, `evaluation.json` | Valerie |
-| 2:15 to 2:55 | 5. The history test | history report | Valerie |
-| 2:55 to 3:30 | 6. The grid and its limits | Table 1 and Figure 1 | Anastasiya |
-| 3:30 to 4:00 | 7. What stays open | open-decisions list | both |
+The video takes about 60 seconds of the four minutes (a proposal).  Each beat includes 3 seconds for the screen change; spoken beats run at about 130 words a minute.
+
+| Clock | Beat | On screen | Proposed speaker | Words |
+|---|---|---|---|---|
+| 0:00 to 0:17 | The question | slide 1 | Anastasiya | 30 |
+| 0:17 to 0:39 | Three roles and the harness | architecture diagram | Anastasiya | 41 |
+| 0:39 to 1:02 | What runs today | status slide | Valerie | 44 |
+| 1:02 to 2:05 | Video: the scripted preview | preview slide, then the video | Valerie | 93 |
+| 2:05 to 2:46 | The history test | history report | Valerie | 83 |
+| 2:46 to 3:24 | The grid and its limits | Table 1 and Figure 1 | Anastasiya | 76 |
+| 3:24 to 3:46 | What stays open | open-decisions list | both | 42 |
 
 ## Script
 
 **1. The question (slide 1)**
 
-Can a small Iberian lynx population survive for 120 months?  We built a simulation to ask that question, and a team of three agents and one piece of ordinary code to run it with care.  In four minutes we will show how the pieces fit, what has been tested, and what the model cannot tell us.
+Can a small Iberian lynx population survive for 120 months?  We built a simulation to ask, with three agents and one piece of ordinary code to run it with care.
 
 **2. Three roles and the harness (diagram)**
 
-The Researcher reads the sources and writes the parameters.  The Simulation Developer runs the model.  The Evaluator checks the results.  Between them sits the harness, which is ordinary code:  it passes the files, checks their hashes, takes a read-only snapshot, limits revisions to three rounds, and writes a trace.  The prompts ask; the code guarantees.
+The Researcher reads the sources and writes the parameters.  The Simulation Developer runs the model.  The Evaluator checks the results.  The harness, which is ordinary code, passes the files and limits revisions to three rounds.  The prompts ask; the code guarantees.
 
 **3. What runs today (status slide)**
 
-Every claim carries a tag.  "Tested only" means merged code with a named test that the running system does not yet apply.  "In review" means an open pull request.  Then "planned" and "prompt only."  [FILL on the day: the tag of the Evaluator checks, the hand-back path, and the harness, read from the repository that morning.]
+Every claim carries a tag.  "Tested only" means merged code with a named test that the running system does not yet apply.  [FILL on the day: the tag of the Evaluator checks, the hand-back path, and the harness, read from the repository that morning.]
 
-**4. One saved run and one hand-back (files)**
+**4. Video: the scripted preview (about 60 seconds, voice-over)**
 
-This is one saved run.  The input fixes the parameters, the seed, and the file hashes.  The simulator writes the results.  The Evaluator recomputes the persistence endpoint and checks the arithmetic, and returns [FILL: pass, or the list of issues].  When a required fact is missing, one request goes to the Researcher, in one batch.  If a required gap stays open, the run stops and says so; it does not guess.
+scripted preview; the Researcher inspects existing tables.  The simulation and the Evaluator's code check are real; the role replies are scripted, and no live model has run the roles yet.  First, a planted flaw, a wrong persistence endpoint:  the code check returns revise, with the issue.  The harness cannot yet loop back to a corrected run by itself.  Then the clean run:  pass.  On 26 October we said that nothing was enforced in a live run.  Today the video shows one code check enforced on a saved run; no live model is involved.
 
 **5. The history test (history report)**
 
-We start with the 53 lynx counted in 2002 in Andújar-Cardeña.  We calibrate one number, post-dispersal mortality, on the growth to 2010.  Then we run once, with 500 trials, against the 2011 count that the model never saw.  We fixed the bounds before any run:  growth of 1.12 to 1.22, and a 2011 count of 181.8 to 222.2, within 10% of 202, the census office's own figure.  The result:  [FILL: median growth, median 2011 count, pass or fail, stated as it came out].  We have three counts, so a pass is weak evidence, and a fail does not say which rule is wrong.
+From the 53 lynx counted in 2002 in Andújar-Cardeña, we calibrate one number, post-dispersal mortality, on growth to 2010.  Then one run of 500 trials meets the 2011 count that the model never saw.  We fixed the bounds first:  growth 1.12 to 1.22; a 2011 count within 10% of 202.  The result:  [FILL: median growth, median 2011 count, pass or fail, as it came out].  With three counts, a pass is weak evidence, and a fail does not say which rule is wrong.
 
 **6. The grid and its limits (Table 1, Figure 1)**
 
-Across food levels and areas, [FILL: persistence share with 95% intervals, from the final batch].  Four limits matter most.  The model treats every food level above 4.6 per hectare the same, so it cannot tell them apart.  The cliff at 4.6 is our assumption.  Area matters only through the number of territories.  And persistence means that at month 120 a living female of breeding age holds a territory and a living male of breeding age shares her patch, not long-term viability.
+Across food levels and areas, [FILL: persistence share with 95% intervals, from the final batch].  Four limits matter.  Food above 4.6 per hectare is treated as one level, so the model cannot tell those apart.  The cliff at 4.6 is our assumption.  Area matters only through the number of territories.  Persistence means that at month 120 a living breeding-age female holds a territory and a living breeding-age male shares her patch; it is not long-term viability.
 
 **7. What stays open**
 
-Still open:  the area assumption; [FILL: any decision still open on the day]; and the sources that we have not read in full (`docs/unread-sources.md`).  Everything is in the repository, with the commands to reproduce it.  Thank you.  We are glad to take questions.
-
+Still open:  the area assumption; [FILL: any decision still open on the day]; and the sources that we have not read in full.  Everything is in the repository, with the commands to reproduce it.  Thank you.  We are glad to take questions.
 ## Video and slide text
 
-The format (told by Valerie on 2026-10-26):  a four-minute maximum, slides and video, in the Sunnyside space, showing improvement over each previous presentation.  The script above is the spoken part for four minutes and has not yet been cut to fit a video; that cut is still to do.
+The format (told by Valerie on 2026-10-26):  a four-minute maximum, slides and video, in the Sunnyside space, showing improvement over each previous presentation.  The script above was cut on 2026-10-26 to fit the video:  the video takes about 60 seconds of the four minutes (a proposal for Valerie and Anastasiya to change), and the spoken beats share the rest.
 
 **Caption (required).**  Every screen and slide that shows the three-role preview carries the words **scripted preview; the Researcher inspects existing tables**.  The command (`python -m harness.three_role_preview`) prints them as its first and last line, so a recording of it carries them; say them aloud once in the voice-over.
 
@@ -67,15 +68,15 @@ The format (told by Valerie on 2026-10-26):  a four-minute maximum, slides and v
 
 ## Rehearsal rules
 
-- Read the script aloud with a timer.  About 130 words a minute is a steady pace; the script is about 450 words, so it runs near 3:30 before pauses, with room for the screen changes.
-- If the run is long, cut in this order:  the second half of beat 3, the hash and snapshot detail in beat 2, then the hand-back sentences in beat 4.  Never cut the limits in beats 5 and 6.
+- Read the script aloud with a timer.  About 130 words a minute is a steady pace; the spoken beats outside the video are 316 words, which runs about 146 seconds, and the video adds 60 seconds, so the plan totals 3:46 with 14 seconds of slack.  The count includes the [FILL] brackets as written now; a longer result will add time.
+- The 2026-10-26 cut already took the second half of beat 3, the hash and snapshot detail in beat 2, and the old beat 4 (one saved run and one hand-back).  If the run is still long, shorten the video voice-over (keep the caption and the two verdicts), then the sources phrase in beat 7.  Never cut the caption, or the limits in beats 5 and 6.
 - If a live call fails, say so and show the saved file from `docs/demo-plan.md` ("The fallback").  Do not retry in front of the audience.
 - No beat depends on the API key; every live call is recorded by Fri 2026-10-30, 18:00 ET.
 - Fill every bracket from a saved file, never from memory, and say "not yet run" for anything with no file.
 
 ## To agree
 
-Who speaks which beat; whether the slot is exactly four minutes or has a question period after it; which saved run to show in beat 4.
+Who speaks which beat; whether the slot is exactly four minutes or has a question period after it; whether the video may take about 60 seconds; which saved run, if any, to show beyond the video.
 
 ## Facts behind the numbers (for questions)
 
@@ -88,4 +89,4 @@ Who speaks which beat; whether the slot is exactly four minutes or has a questio
 | Food above 4.6 rabbits per hectare gives the same run; the 4.6 cliff is our assumption | `docs/model-conventions.md`; `docs/research-notes.md` (the monograph says 1.0 and 4.6 were enough, not minimums) |
 | Persistence:  a living female of breeding age holding a territory and a living male of breeding age in one patch at month 120 | `docs/agent-handoffs.md` (the `settled` field) |
 | Three roles, the harness, and the status tags | `docs/architecture.md`; `docs/demo-plan.md` |
-| The script runs near 3:30 | about 450 words at about 130 words a minute |
+| The plan totals 3:46 | 316 spoken words outside the video at about 130 words a minute, 60 seconds of video, and 3 seconds per screen change |
