@@ -5,6 +5,7 @@ the harness accepts.  The model's text is advice; the output of a tool is the re
 """
 
 import inspect
+import json
 from pathlib import Path
 
 from harness.trace import scrub
@@ -45,6 +46,7 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
     allowed = ROLE_TOOLS[role]
     messages = [dict(role="user", content=task)]
     results = {}
+    previous = None  # the tool calls of the step before:  asking for the same ones again means the loop is stuck
     for step in range(1, max_steps + 1):
         reply = provider.complete(system, messages, allowed)
         if not reply["tool_calls"]:
@@ -52,6 +54,14 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
                 trace.add(role, reply["text"], prompt_version=version)
             return dict(text=reply["text"], tool_results=results, steps=step, prompt_version=version)
         calls = reply["tool_calls"]
+        signature = [(call["name"], json.dumps(call.get("arguments", {}), sort_keys=True, default=str))
+                     for call in calls]
+        if signature == previous:  # a repeat gets the same result, so stop before it runs and say why
+            message = f"{role} is stuck:  it asked for the same tool call in steps {step - 1} and {step}"
+            if trace:
+                trace.add(role, message, prompt_version=version)
+            raise RoleError(message)
+        previous = signature
         if calls:
             assistant_call_ids = []
             serialized_calls = []
@@ -78,12 +88,14 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
                 else:
                     output = tools[name](**arguments)  # an error inside the tool is a defect and propagates
                     results[name] = output  # only a successful call is a result; a refusal is never the record
-                content, _ = scrub(output if isinstance(output, str) else repr(output), limit=MAX_TOOL_RESULT)
+                sent = output if isinstance(output, str) else repr(output)
+                content, _ = scrub(sent, limit=MAX_TOOL_RESULT)
+                received_chars = len(content)  # counted before the data wrapper, which adds the same lines to every source
                 if name in UNTRUSTED_TOOLS:
                     content = wrap_untrusted(content)
                 if trace:
-                    trace.add(role, "tool called", tool=name, tool_args=arguments,
-                              tool_result=content, prompt_version=version)
+                    trace.add(role, "tool called", tool=name, tool_args=arguments, tool_result=content,
+                              sent_chars=len(sent), received_chars=received_chars, prompt_version=version)
             messages.append(dict(role="tool", name=name, tool_call_id=call_id, content=content))
     raise RoleError(f"{role} gave no final answer in {max_steps} steps")
 

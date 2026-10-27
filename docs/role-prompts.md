@@ -12,6 +12,7 @@ Written 2026-10-25 by Valerie with Claude Code.  The prompts are `prompts/resear
 | Arguments that do not fit a tool are refused, not retried | `run_role` | `test_bad_tool_arguments_are_refused_not_retried` |
 | A refused call is never a tool result, and the harness fails the case (no retry) when the Evaluator returns anything that is not a schema-valid evaluation | `run_role`, `run_case` | `tests/test_evaluator_result.py` |
 | A role gets at most 4 steps, then the case fails | `MAX_STEPS` | `test_a_role_that_never_answers_fails...` |
+| A role that asks for the same tool call in two steps in a row is stopped and reported as stuck; the repeat never runs | `run_role` | `test_a_role_that_repeats_a_tool_call...` |
 | The model's text is advice; the tool's output is the record:  a model cannot pass a run that the code check rejected | `model_evaluator` | `test_the_model_cannot_pass_a_run...` |
 | An Evaluator that skips `check_artifacts` fails the case | `model_evaluator` | `test_an_evaluator_that_skips_the_tool...` |
 | Every step is traced with the prompt version | `Trace` | `test_the_trace_records_each_step...` |
