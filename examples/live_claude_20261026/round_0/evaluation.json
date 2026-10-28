@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "run_id": "preview-7",
+  "data_kind": "evaluation",
+  "revision_round": 0,
+  "parameters_sha256": "b76fe642bfbcac51c18c087f00aadc0a60f6e36bafe5d152cff659b3a0cf8312",
+  "sources_sha256": "186870d96510c03c56a6e492c190a80c3792b67b27dfe1fe45a4285c39433fdf",
+  "status": "pass",
+  "issues": [],
+  "checks": [
+    {
+      "name": "input_schema",
+      "passed": true,
+      "detail": "The input file matches its schema."
+    },
+    {
+      "name": "results_schema",
+      "passed": true,
+      "detail": "The results file matches its schema."
+    },
+    {
+      "name": "run_identity",
+      "passed": true,
+      "detail": "Run ID, seed, and configuration match the input."
+    },
+    {
+      "name": "provenance",
+      "passed": true,
+      "detail": "data_kind simulation fits the hashes."
+    },
+    {
+      "name": "file_hashes",
+      "passed": true,
+      "detail": "Both research files match the hashes in the input and the results."
+    },
+    {
+      "name": "history_months",
+      "passed": true,
+      "detail": "History covers months 0 to 12 in order."
+    },
+    {
+      "name": "population_accounting",
+      "passed": true,
+      "detail": "Population balances in all 12 months."
+    },
+    {
+      "name": "animal_records",
+      "passed": true,
+      "detail": "40 final animals have unique IDs, valid patches, and valid territory flags."
+    },
+    {
+      "name": "territory_capacity",
+      "passed": true,
+      "detail": "No patch holds more territories than its area allows."
+    },
+    {
+      "name": "final_counts",
+      "passed": true,
+      "detail": "30 living and 10 dead animals match the history."
+    },
+    {
+      "name": "birth_timing_and_food",
+      "passed": true,
+      "detail": "Births occur only in the birth month and only with enough food."
+    },
+    {
+      "name": "persistence_recomputed",
+      "passed": true,
+      "detail": "persisted (True) matches the final animals."
+    }
+  ],
+  "historical_validation": "not_assessed"
+}

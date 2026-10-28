@@ -1,0 +1,13 @@
+{
+  "role": "researcher",
+  "revision_round": 0,
+  "text": "## Snapshot summary (read-only; nothing changed)\n\nBoth reads came back cut off. The `parameters` table ends mid-row at `cub_cumulative_survival`. The `sources` table ends mid-sentence in the `ferreras2004` quality note, and any rows after it are missing. Everything below covers only what was returned.\n\n### Parameters returned (6 complete rows, 1 truncated)\n| Parameter | Baseline (low\u2013high) | Source |\n|---|---|---|\n| breeding_age_min | 3 (2\u20134) years | palomares2005; catsg |\n| breeding_age_max | 9 (8\u20139) years | palomares2005 |\n| annual_breeding_probability | 0.833 (0.667\u20131.0) | palomares2005 |\n| litter_size_at_birth | 3.0 (2\u20134) cubs | palomares2005 |\n| cub_cumulative_survival_3mo | 0.75 (0.631\u20130.84) | palomares2005 |\n| cub_cumulative_survival_10mo | 0.69 (0.544\u20130.806) | palomares2005 |\n| cub_cumulative_survival\u2026 | truncated | unknown |\n\n### Assumptions and our own choices (not published values)\n- **breeding_age_min high = 4.** This is an assumption, chosen \"by us for sensitivity\". It has no source.\n- **Wilson 95% intervals.** The low and high for both cub survival rows were computed by us from the published percentage and n. The paper gives no interval. These are derived values, not published ones.\n- **breeding_age_max range (8\u20139).** This is the observed spread across three females, not a statistical interval.\n- **annual_breeding_probability range.** This is the observed yearly range, not an interval.\n\n### Limits and caveats\n- **Single study, single place.** All visible values come from palomares2005, which covers Coto del Rey in Do\u00f1ana. It is a peer-reviewed primary study with 3 to 4 breeding females, and I have no evidence of any other origin.\n- **Possible upward bias.** The source subpopulation is protected and has the highest rabbit density in Do\u00f1ana. The table says annual_breeding_probability \"may be an upper value\". The same caution plausibly applies to the other rates, but the sources returned don't state that.\n- **litter_size_at_birth is a minimum number born.",
+  "removed_text": [
+    "cut 126 characters"
+  ],
+  "steps": 2,
+  "prompt_version": "2026-10-25-draft-1",
+  "tools_used": [
+    "read_research"
+  ]
+}
