@@ -8,6 +8,7 @@ import pytest
 
 from harness.provider import FakeProvider
 from harness.run_case import HarnessError
+from harness.snapshot import EVIDENCE_FILE, SNAPSHOT_FILES
 from harness import three_role_preview as pipeline
 from simulation.model import REPO
 from validators.handoff_hashes import file_sha256
@@ -169,6 +170,39 @@ def test_the_researcher_reads_the_evidence_file_and_the_run_records_which_versio
     first_label = (REPO / pipeline.EVIDENCE_FILE).read_text().splitlines()[1].split(",")[1]  # a confidence label
     evidence_result = providers["researcher"].calls[1]["messages"][-1]["content"]
     assert "UNTRUSTED SOURCE TEXT" in evidence_result and first_label in evidence_result  # data, not instructions
+
+
+def test_the_researcher_reads_the_evidence_bytes_that_the_gate_checked(tmp_path, monkeypatch):
+    source = tmp_path / "source"
+    for relative in SNAPSHOT_FILES:
+        target = source / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REPO / relative, target)
+    original_run_case = pipeline.run_case
+
+    def change_source_before_research(output, *, options, source_root, developer, evaluator,
+                                      max_rounds=3):
+        def change_then_run(config, round_number, issues, root):
+            (Path(source_root) / EVIDENCE_FILE).write_text("changed after snapshot\\n", encoding="utf-8")
+            return developer(config, round_number, issues, root)
+
+        return original_run_case(output, options=options, source_root=source_root,
+                                 developer=change_then_run, evaluator=evaluator,
+                                 max_rounds=max_rounds)
+
+    monkeypatch.setattr(pipeline, "run_case", change_source_before_research)
+    providers = pipeline.scripted_providers()
+    output = tmp_path / "case"
+    result = pipeline.run_three_role_case(output, providers=providers, options=OPTIONS, source_root=source)
+    snapshot_evidence = output / "snapshot" / EVIDENCE_FILE
+    saved = json.loads((output / "round_0/researcher.json").read_text())
+    assert result.status == "pass"
+    assert saved["evidence_sha256"] == file_sha256(snapshot_evidence)
+    assert saved["evidence_sha256"] == json.loads((output / "case.json").read_text())["evidence"]["sha256"]
+    assert saved["evidence_sha256"] != file_sha256(source / EVIDENCE_FILE)
+    evidence_result = providers["researcher"].calls[1]["messages"][-1]["content"]
+    original_first_label = (snapshot_evidence.read_text().splitlines()[1].split(",")[1])
+    assert original_first_label in evidence_result
 
 
 def test_a_researcher_that_skips_the_evidence_file_fails(tmp_path):

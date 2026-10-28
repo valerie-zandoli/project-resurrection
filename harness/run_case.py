@@ -17,7 +17,7 @@ from pathlib import Path
 import jsonschema
 
 from harness.handback import OWNERS, Case
-from harness.snapshot import RESEARCH_FILES, make_snapshot
+from harness.snapshot import RESEARCH_FILES, check_snapshot_current, make_snapshot
 from harness.trace import Trace, scrub
 from simulation.model import REPO, preview_config, simulate
 from validators.evidence_gate import STAGES, check_evidence
@@ -109,7 +109,7 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
 
     # 1b. The evidence gate, as CODE:  a malformed evidence file, or (in a final run) a contradiction
     # check that is not done, stops the case before anything runs.  Low rows and conflicts are listed.
-    gate_errors, state["evidence"] = check_evidence(source_root, *paths, stage)
+    gate_errors, state["evidence"] = check_evidence(snapshot_root, *paths, stage)
     if gate_errors:
         trace.add("harness", "evidence gate stopped the case", validator=gate_errors, tool_args=dict(stage=stage))
         shutil.rmtree(snapshot_root, ignore_errors=True)  # nothing that the gate refused is left for an agent to read
@@ -127,6 +127,12 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
     issues = []
     for round_number in range(max_rounds + 1):
         round_dir = output / f"round_{round_number}"
+        errors = check_snapshot_current(state["hashes"], snapshot_root)
+        if errors:
+            trace.add("harness", "research snapshot changed", validator=errors,
+                      revision_round=round_number)
+            return finish("rejected", "research snapshot changed during the case (no retry): "
+                          + "; ".join(errors))
         errors = check_files_current(config, snapshot_root)
         if errors:
             trace.add("harness", "research files changed since the snapshot", validator=errors,
@@ -142,6 +148,12 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
             reason, _ = scrub(f"developer failed with {type(exc).__name__}: {exc}")
             trace.add("developer", reason, tool="run_model", revision_round=round_number)
             return finish("failed", reason + " (no retry)")
+        errors = check_snapshot_current(state["hashes"], snapshot_root)
+        if errors:
+            trace.add("harness", "research snapshot changed during the Developer step", validator=errors,
+                      revision_round=round_number)
+            return finish("rejected", "research snapshot changed during the Developer step (no retry): "
+                          + "; ".join(errors))
         _write(round_dir / "results.json", results)
         trace.add("developer", "results returned", tool="run_model", tool_args=options,
                   tool_result=f"persisted={results.get('persisted')}", revision_round=round_number)

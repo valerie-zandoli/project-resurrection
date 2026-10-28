@@ -1,0 +1,11 @@
+{
+  "role": "developer",
+  "revision_round": 0,
+  "text": "**Result for preview-7, revision 0:** The model ran once with seed 7 for 12 months. The run reports `persisted: True`. That means a settled breeding pair was in the same patch at the end. I'm not judging whether the result passes. The Evaluator does that.\n\n**Setup (supplied by the harness):**\n- There were two patches, A and B, each 50 km\u00b2 with habitat quality 1.0.\n- Food was 4.6 rabbits/ha.\n- The run started with 10 females and 10 males, aged 36\u201396 months.\n\n**Population:**\n- The population went from 20 to 30 animals. The final count was 23 females and 7 males.\n- Month 2 had a single birth pulse of 20 births. The population rose from 19 to 38.\n- After that there were only deaths. The population fell from 38 to 30 by month 8\u201310 and then held steady.\n- Male numbers dropped from 10 to 7, with 4 of the original 10 males dead. Females rose, but most of the new females are 10-month-old juveniles who haven't settled.\n- All settled animals at the end are adult females. No males are settled.\n\n**Caveats:**\n- This is a **synthetic preview**. **Historical validation was not assessed.**\n- The run's own assumptions list several provisional parts: survival, aging, settlement, male movement, births, and recording. Litter size is uniform across the table range.\n- Mortality uses older transferred evidence, and dispersal at 18 months is assumed.\n- Food affects breeding only. Density is constant.\n- The researcher's notes say the parameters are low or medium confidence, and several have recorded conflicts. This fixed simulator can't resolve those. They need review outside this run.\n- This is revision 0, and the prior issue list was empty. There was nothing to fix.",
+  "removed_text": [],
+  "steps": 2,
+  "prompt_version": "2026-10-26-preview-1",
+  "tools_used": [
+    "run_model"
+  ]
+}
