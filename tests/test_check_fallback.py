@@ -24,10 +24,10 @@ def write_json(path, data):
     path.write_text(json.dumps(data), encoding="utf-8")
 
 
-def batch(trials, status="completed"):
+def batch(trials, status="completed", stage="final"):
     cells = [dict(name=name, status="completed", planned_trials=trials,
                   trials=[dict(trial=n, status="completed") for n in range(trials)]) for name in FOODS_AREAS]
-    return dict(format_version="preview-batch-1", status=status, cells=cells)
+    return dict(format_version="preview-batch-1", status=status, stage=stage, cells=cells)
 
 
 def trace_lines(count=4):
@@ -40,8 +40,8 @@ def bundle(tmp_path):
     write_json(root / "history/report.json", dict(
         run_seed=20261101, verdict=dict(result="fail"), areas=[dict(main_run=True), dict(main_run=False)],
         must_say=["a"] * 8, parameters_sha256="0" * 64))
-    write_json(root / "batches/pilot/batch.json", batch(100))
-    write_json(root / "batches/final/batch.json", batch(500))
+    write_json(root / "batches/pilot/batch.json", batch(100, stage="pilot"))
+    write_json(root / "batches/final/batch.json", batch(500, stage="final"))
     (root / "batches/final/table1.md").write_text("| a | b |\n|---|---|\n| 1 | 2 |\n", encoding="utf-8")
     (root / "batches/final/figure1.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'></svg>", encoding="utf-8")
     for name in ("input", "results", "evaluation"):
@@ -218,3 +218,22 @@ def test_the_checker_imports_no_network_or_model_library_and_never_runs_the_hist
             imported.add(node.module.split(".")[0])
     assert imported.isdisjoint({"urllib", "http", "socket", "requests", "anthropic", "litellm", "simulation", "subprocess"})
     assert imported <= {"argparse", "json", "re", "sys", "pathlib", "validators"}, imported
+
+
+@pytest.mark.parametrize("stage, expected", [("pilot", "BAD"), (None, "BAD"), ("final", "OK")])
+def test_the_final_grid_must_have_run_at_the_final_stage(bundle, stage, expected):
+    # A 500-trial batch run with --stage pilot only warned at the evidence gate, so it is not the final grid.
+    data = batch(500, stage=stage)
+    if stage is None:
+        del data["stage"]  # a batch made before the stage was recorded
+    write_json(bundle / "batches/final/batch.json", data)
+    assert statuses(bundle)["batches/final/batch.json"][0] == expected
+
+
+@pytest.mark.parametrize("stage, expected", [("pilot", "OK"), ("final", "OK"), (None, "BAD")])
+def test_the_pilot_grid_may_have_run_at_either_stage_but_must_say_which(bundle, stage, expected):
+    data = batch(100, stage=stage)
+    if stage is None:
+        del data["stage"]
+    write_json(bundle / "batches/pilot/batch.json", data)
+    assert statuses(bundle)["batches/pilot/batch.json"][0] == expected
