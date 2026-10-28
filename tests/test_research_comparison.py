@@ -1,13 +1,34 @@
 """Research comparisons report saved input values, not inferred wildlife observations."""
 import csv
 import json
+import shutil
 
 import pytest
 
 from report.experiment_controls import run_experiment
 from report.research_comparison import research_comparison
 from simulation.model import load_parameters
+from simulation.model import REPO
 from tests.test_experiment_controls import SETTINGS
+
+
+def test_valid_source_spacing_does_not_break_experiment(tmp_path):
+    source = tmp_path / 'research'
+    shutil.copytree(REPO / 'data/parameters', source / 'data/parameters')
+    path = source / 'data/parameters/iberian_lynx_baseline.csv'
+    with path.open(newline='') as handle:
+        reader = csv.DictReader(handle)
+        columns, rows = reader.fieldnames, list(reader)
+    for row in rows:
+        row['source'] = ' ; '.join(row['source'].split(';'))
+    with path.open('w', newline='') as handle:
+        writer = csv.DictWriter(handle, fieldnames=columns)
+        writer.writeheader()
+        writer.writerows(rows)
+    result = run_experiment(SETTINGS, tmp_path / 'runs', source_root=source)
+    breeding = next(row for row in result['comparison']['rows'] if row['name'] == 'breeding_age_min')
+    assert [item['key'] for item in breeding['sources']] == ['palomares2005', 'catsg']
+    assert all(item['citation'] for row in result['comparison']['rows'] for item in row['sources'])
 
 
 @pytest.mark.parametrize('food,allows', [(1, False), (4.6, True), (55, True)])

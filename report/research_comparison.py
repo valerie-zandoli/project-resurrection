@@ -41,7 +41,7 @@ def research_comparison(config, results, snapshot):
                          confidence_reason=confidence.get('confidence_reason', ''),
                          evidence_note=source['evidence_or_assumption'],
                          sources=[dict(key=key, citation=sources[key]['citation'])
-                                  for key in source['source'].split(';')], checks=checks))
+                                  for key in map(str.strip, source['source'].split(';'))], checks=checks))
     patches = [dict(id=patch['id'], area=patch['area_km2'],
                     female_capacity=math.floor(patch['area_km2'] / p.home_range),
                     starting_females=config['initial_population']['females'] // 2)
