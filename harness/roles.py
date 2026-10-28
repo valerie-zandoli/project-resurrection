@@ -50,6 +50,11 @@ def run_role(role, provider, task, tools, *, trace=None, max_steps=MAX_STEPS, pr
     for step in range(1, max_steps + 1):
         reply = provider.complete(system, messages, allowed)
         if not reply["tool_calls"]:
+            if not isinstance(reply["text"], str) or not reply["text"].strip():
+                message = f"{role} returned an empty final answer; no handoff accepted"
+                if trace:
+                    trace.add(role, message, prompt_version=version)
+                raise RoleError(message)
             if trace:
                 trace.add(role, reply["text"], prompt_version=version)
             return dict(text=reply["text"], tool_results=results, steps=step, prompt_version=version)
