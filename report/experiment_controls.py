@@ -4,7 +4,6 @@ import argparse
 import hmac
 import json
 import math
-import os
 import platform
 import re
 import secrets
@@ -22,7 +21,7 @@ from report.preview_evaluator import evaluate_preview
 from report.research_comparison import research_comparison
 from harness.litellm_provider import LiteLLMProvider, DEFAULT_ENV_FILE
 from simulation.model import REPO, load_parameters, preview_config, simulate, summary, validate_config
-from validators.evidence_gate import EVIDENCE_FILE, check_repository
+from validators.evidence_gate import check_repository
 from validators.handoff_hashes import file_sha256
 
 LIMITS = {
@@ -58,13 +57,7 @@ def run_experiment(settings, output_root, source_root=REPO):
     directory.mkdir(parents=True, exist_ok=False)
     try:
         snapshot = directory / 'snapshot'
-        hashes = make_snapshot(source_root, snapshot)
-        evidence = Path(source_root) / EVIDENCE_FILE
-        if evidence.is_file():
-            target = snapshot / EVIDENCE_FILE
-            shutil.copyfile(evidence, target)
-            os.chmod(target, 0o444)
-            hashes[EVIDENCE_FILE] = file_sha256(target)
+        hashes = make_snapshot(source_root, snapshot)  # copies, locks, and hashes the evidence file too (#100)
         errors, evidence_report = check_repository(snapshot, 'pilot')
         if errors:
             raise ValueError('The research evidence check stopped the preview: ' + '; '.join(errors))
