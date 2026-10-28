@@ -67,3 +67,25 @@ def test_run_model_declaration_accepts_no_model_controlled_arguments():
     from harness.litellm_provider import _tool_spec
     assert _tool_spec('run_model')['function']['parameters'] == {
         'type': 'object', 'properties': {}, 'additionalProperties': False}
+
+
+@pytest.mark.parametrize('role', ('researcher', 'developer', 'evaluator'))
+@pytest.mark.parametrize('blank', ('', ' \n\t'))
+@pytest.mark.parametrize('after_tools', (False, True))
+def test_empty_final_answers_fail_without_advancing_the_handoff(tmp_path, role, blank, after_tools):
+    providers = scripted_providers()
+    if after_tools:
+        providers[role].replies[1] = dict(text=blank, tool_calls=[])
+    else:
+        providers[role] = FakeProvider([dict(text=blank, tool_calls=[])])
+    result = run_live_case(tmp_path / 'case', options=OPTIONS,
+                           provider_factory=providers.__getitem__)
+    assert result.status == 'failed'
+    assert f'{role} returned an empty final answer' in result.reason
+    roles = ('researcher', 'developer', 'evaluator')
+    for later in roles[roles.index(role) + 1:]:
+        assert providers[later].calls == []
+    records = [json.loads(line) for line in (result.run_dir / 'roles.jsonl').read_text().splitlines()]
+    assert any(record['role'] == role and 'empty final answer' in record['message']
+               and record['prompt_version'] for record in records)
+    assert not (result.run_dir / 'round_0' / 'evaluation.json').exists()
