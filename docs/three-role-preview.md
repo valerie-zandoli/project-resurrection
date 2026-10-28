@@ -15,17 +15,19 @@ test. It does not use the held-out history count.
 
 ## Jobs and handoffs
 
-1. The existing harness validates both research tables, snapshots them, and
-   computes their content hashes. Invalid tables stop before any role runs.
+1. The existing harness validates both research tables, snapshots them and the
+   optional evidence file read-only, and computes their content hashes. Invalid
+   tables stop before any role runs.
 2. Researcher reads the two snapshot tables and the evidence file through
    `read_research` using only the keys `parameters`, `sources`, and `evidence`
    (the confidence labels and recorded conflicts that the next roles should know).
    Reading all three is required before execution; if there is no evidence file,
    the tool says so and the Researcher must report it. The evidence file is read
-   from the source folder, not from the snapshot, so `researcher.json` records its
-   SHA-256 (the version that was read). This role inspects existing work; it does
-   not establish source accuracy or generate a new parameter table. Existing role-runner text truncation applies,
-   so this is not proof the complete evidence was reviewed.
+   from that same snapshot, so the Researcher and evidence gate use the same
+   bytes; `researcher.json` records the file's SHA-256. This role inspects existing
+   work; it does not establish source accuracy or generate a new parameter table.
+   Existing role-runner text truncation applies, so this is not proof the complete
+   evidence was reviewed.
 3. Developer receives the Researcher explanation as marked untrusted advice.
    Its only tool is the fixed `run_model`, with no model-controlled arguments.
    It runs once per round against the recorded configuration and unchanged snapshot.

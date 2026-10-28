@@ -1,0 +1,11 @@
+{
+  "role": "evaluator",
+  "revision_round": 0,
+  "text": "**Verdict for run preview-7, revision 0: pass.** The tool returned status `pass` and no issues. All 12 checks passed.\n\nThe checks that passed:\n- **Schemas:** the input and results files both match their schemas.\n- **Run identity:** the run ID, seed and configuration match the input.\n- **Provenance:** `data_kind` fits the hashes. The run's `data_kind` is listed as \"evaluation\", and the provenance check's detail text mentions \"simulation\".\n- **File hashes:** both research files match the hashes in the input and the results.\n- **History months:** the history covers months 0 to 12 in order.\n- **Population accounting:** the population balances in all 12 months.\n- **Animal records:** the 40 final animals have unique IDs, valid patches and valid territory flags.\n- **Territory capacity:** no patch holds more territories than its area allows.\n- **Final counts:** 30 living and 10 dead animals match the history.\n- **Birth timing and food:** births occur only in the birth month and only with enough food.\n- **Persistence:** the recomputed result matches. `persisted` is True and agrees with the final animals.\n\n**Developer changes:** none. The tool returned no requested changes.\n\n**Historical validation:** `not_assessed`. The history test has not run, so this pass says nothing about whether the model matches the historical record. It only shows the run is internally consistent.",
+  "removed_text": [],
+  "steps": 2,
+  "prompt_version": "2026-10-25-draft-1",
+  "tools_used": [
+    "check_artifacts"
+  ]
+}

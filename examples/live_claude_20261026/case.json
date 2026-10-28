@@ -1,0 +1,16 @@
+{
+  "case_id": "lynx-live-20261026-2",
+  "status": "pass",
+  "reason": "every check passed",
+  "attempts": 1,
+  "run_ids": [
+    "preview-7"
+  ],
+  "issues": [],
+  "research_sha256": {
+    "data/parameters/iberian_lynx_baseline.csv": "b76fe642bfbcac51c18c087f00aadc0a60f6e36bafe5d152cff659b3a0cf8312",
+    "data/parameters/sources.csv": "186870d96510c03c56a6e492c190a80c3792b67b27dfe1fe45a4285c39433fdf"
+  },
+  "notify": [],
+  "clarification": null
+}
