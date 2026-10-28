@@ -24,7 +24,7 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 <h1>What if we changed their world?</h1>
 <p class="intro">Choose the conditions, run the simulator, then watch your lynx population. Every experiment is saved separately.</p>
 <form id="experiment"><fieldset id="settings"><div class="fields">
-<label>Rabbit food level<input id="food" name="food" type="number" min="0" max="100" step="any" value="4.6" required><span class="help">Rabbits per hectare. Try 1, 4.6 or 55.</span></label>
+<label>Rabbit food level<select id="food" name="food" required><option value="1">1</option><option value="5" selected>5</option><option value="15">15</option><option value="25">25</option><option value="35">35</option><option value="45">45</option><option value="55">55</option></select><span class="help">Rabbits per hectare. Choose one of these seven food levels.</span></label>
 <label>Land per patch<input id="area" name="area" type="number" min="1" max="1000" step="any" value="100" required><span class="help" id="total-area">Two patches: 200 square kilometres in total.</span></label>
 <label>Starting lynxes<input id="population" name="population" type="number" min="4" max="200" step="4" value="20" required><span class="help">Multiples of 4; equal sexes and patch allocation.</span></label>
 <label>Months to simulate<input id="months" name="months" type="number" min="1" max="120" step="1" value="36" required><span class="help">12 months = 1 year. Up to 10 years.</span></label>

@@ -8,6 +8,9 @@ python -m report.experiment_controls --output /tmp/lynx-experiments --port 8767
 
 Open the printed local address. Choose rabbit food density, land per patch,
 starting population, duration and random seed, then select **Run my experiment**.
+The food dropdown offers 1, 5, 15, 25, 35, 45 and 55 rabbits per hectare, with 5
+selected initially. These are interface choices; the research breeding threshold
+and the preregistered batch food levels remain unchanged.
 The page runs the existing numerical simulator and embeds its saved viewer.
 The simulation itself makes no AI calls. Changing a field does not change the displayed saved run
 until a new run succeeds. Previous experiments can be selected during the session.
