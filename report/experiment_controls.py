@@ -19,6 +19,7 @@ from harness.snapshot import make_snapshot
 from report.lynx_viewer import render_viewer
 from report.preview_evaluator import evaluate_preview
 from report.research_comparison import research_comparison
+from report.history_preview import read_panel
 from harness.litellm_provider import LiteLLMProvider, DEFAULT_ENV_FILE
 from simulation.model import REPO, load_parameters, preview_config, simulate, summary, validate_config
 from validators.evidence_gate import check_repository
@@ -102,12 +103,13 @@ class PreviewServer(ThreadingHTTPServer):
     """Loopback only; no arbitrary filesystem routes or remote-triggered runs."""
 
     def __init__(self, port, output_root, source_root=REPO, *, env_file=DEFAULT_ENV_FILE,
-                 provider_factory=None):
+                 provider_factory=None, history_preview=None):
         self.output_root = Path(output_root)
         self.source_root = Path(source_root)
         self.token = secrets.token_urlsafe(32)
         self.busy = threading.Lock()
         self.completed = set()
+        self.history_preview = read_panel(history_preview)
         self.reviews = {}
         self.review_attempts = {}
         self.provider_factory = provider_factory or (lambda: LiteLLMProvider.from_environment(env_file=env_file))
@@ -144,6 +146,9 @@ class PreviewHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self.correct_host():
             self.respond(403, {'error': 'Open the local address printed by the server.'})
+            return
+        if self.path == '/api/history-preview':
+            self.respond(200, {'preview': self.server.history_preview})
             return
         if self.path == '/':
             template = Path(__file__).with_name('experiment_controls.html').read_text(encoding='utf-8')
@@ -240,10 +245,11 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True, help='folder for new, individually named runs')
     parser.add_argument('--port', type=int, default=8767)
+    parser.add_argument('--history-preview', type=Path, help='saved development-only history report ending in 2010')
     parser.add_argument('--env-file', type=Path, default=DEFAULT_ENV_FILE,
                         help='local ignored key file for Claude evaluation; never copied into runs')
     args = parser.parse_args(argv)
-    with PreviewServer(args.port, args.output, env_file=args.env_file) as server:
+    with PreviewServer(args.port, args.output, env_file=args.env_file, history_preview=args.history_preview) as server:
         print(f'Open {server.origin}/ — simulation is local; Send to Evaluator calls Claude. Ctrl+C to stop.', flush=True)
         try:
             server.serve_forever()

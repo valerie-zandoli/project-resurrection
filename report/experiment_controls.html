@@ -23,6 +23,14 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 <div class="eyebrow">Project Resurrection / your experiment</div>
 <h1>What if we changed their world?</h1>
 <p class="intro">Choose the conditions, run the simulator, then watch your lynx population. Every experiment is saved separately.</p>
+<section class="comparison" id="history-preview" hidden aria-label="Preliminary historical comparison">
+<div class="eyebrow">Early check · separate from your experiment below</div>
+<h2>Real counts vs. the model: 2002–2010</h2>
+<p id="history-settings"></p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Year</th><th scope="col">Real count</th><th scope="col">Simulated count</th><th scope="col">Difference</th></tr></thead><tbody id="history-rows"></tbody></table></div>
+<p id="history-growth" class="meaning"></p>
+<p class="explanation">Preliminary development preview, not the final history verdict. Five trials are too few to establish accuracy. The model has not been calibrated for this preview. The 2002 count sets the starting population; it is not a prediction. Values from Doñana are transferred to Andújar–Cardeña, and 750 square kilometres is a boundary assumption. The reserved 2011 test has not been run. Changing the food or land below does not change this separate saved comparison.</p>
+</section>
 <form id="experiment"><fieldset id="settings"><div class="fields">
 <label>Rabbit food level<select id="food" name="food" required><option value="1">1</option><option value="5" selected>5</option><option value="15">15</option><option value="25">25</option><option value="35">35</option><option value="45">45</option><option value="55">55</option></select><span class="help">Rabbits per hectare. Choose one of these seven food levels.</span></label>
 <label>Land per patch<input id="area" name="area" type="number" min="1" max="1000" step="any" value="100" required><span class="help" id="total-area">Two patches: 200 square kilometres in total.</span></label>
@@ -66,6 +74,23 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 'use strict';
 const token='__SESSION_TOKEN__',$=id=>document.getElementById(id),saved=new Map();
 let active=null,viewerObserver=null;
+async function loadHistoryPreview(){
+  try{
+    const response=await fetch('/api/history-preview');if(!response.ok)return;
+    const {preview}=await response.json();if(!preview)return;
+    const number=value=>new Intl.NumberFormat(undefined,{maximumFractionDigits:2}).format(value);
+    $('history-settings').textContent=`Andújar–Cardeña · ${preview.trials} trials · seed ${preview.seed} · ${preview.area_km2} square kilometres total · food ${preview.food} rabbits per hectare · annual mortality ${number(preview.annual_mortality*100)}%.`;
+    preview.rows.forEach(row=>{
+      const tr=document.createElement('tr');
+      [row.year,number(row.observed),`${number(row.simulated_median)} median (${number(row.simulated_min)}–${number(row.simulated_max)} across five trials)`,`${row.difference>0?'+':''}${number(row.difference)} (${number(row.difference_percent)}%)`].forEach(text=>{const td=document.createElement('td');td.textContent=text;tr.append(td)});
+      const source=document.createElement('small');source.textContent=`Source: ${row.source}`+(row.initialization?' · starting condition':'');tr.children[1].append(source);$('history-rows').append(tr);
+    });
+    const inside=preview.simulated_growth>=preview.growth_bounds[0]&&preview.simulated_growth<=preview.growth_bounds[1];
+    $('history-growth').textContent=`Annual growth multiplier: real counts ${number(preview.observed_growth)}; model median ${number(preview.simulated_growth)}. This early result is ${inside?'inside':'outside'} the planned growth band of ${preview.growth_bounds.join('–')}. This is not the final pass/fail result.`;
+    $('history-preview').hidden=false;
+  }catch(error){/* A history preview is optional; experiment controls remain usable. */}
+}
+loadHistoryPreview();
 function values(){return Object.fromEntries(['food','area','population','months','seed'].map(id=>[id,Number($(id).value)]))}
 function changed(){
   const area=Number($('area').value);
