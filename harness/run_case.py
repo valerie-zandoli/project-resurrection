@@ -122,6 +122,7 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
     config = preview_config(options["seed"], options["months"], options["food"], options["area"],
                             root=snapshot_root)
     case.start_run(config["run_id"])
+    trace.run_id = config["run_id"]
     trace.add("harness", f"input written for run {config['run_id']}", tool_args=options)
 
     issues = []

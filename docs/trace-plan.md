@@ -18,6 +18,27 @@ One file per run, `runs/<run_id>/trace.jsonl`, with one line per step:
 
 Hand-authored fixtures stay labeled `sample`.  Never present them as traces.
 
+## Implemented role context records (October 29, 2026)
+
+Role traces record `role_start`, `assistant_tools`, `tool_result`/`tool_refused`,
+`role_final`, and error events. The `context` field retains the scrubbed system
+prompt, actual task, assistant tool-call text, and model-visible tool results.
+The existing message/result summaries remain limited to 400 characters; context
+is preserved separately so that summary cuts do not hide a decision's inputs.
+`model_removed_text` records cuts/redactions made before sending tool text to the
+model; `removed_text` records removals made while persisting the trace.
+
+Join harness and role files by `case_id` and `run_id`, then revision round.
+Within a role file, `role_call_id` identifies one conversation and `tool_call_id`
+identifies the provider's call (or the generated fallback ID). These records show
+observable messages and tool actions, not hidden model reasoning.
+
+Every persisted field is sanitized, including metadata and full context. Known
+key prefixes, bearer credentials, assigned secrets, and structured credential
+fields are redacted. This is not a detector for every possible private datum;
+inspect traces before sharing and retain only permitted source material. A trace
+claims its file exclusively on the first event and then appends.
+
 ## How to read a trace
 
 1. Start at step 1, not at the bad answer.
