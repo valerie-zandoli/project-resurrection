@@ -20,7 +20,7 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 .comparison{margin:22px 0;padding:22px;border:1px solid #dce2d1;border-radius:20px;background:#fffdf8}.comparison h2{font:500 27px Georgia,serif;margin:0 0 10px}.comparison .meaning{padding:12px 15px;border-radius:10px;background:#eaf0db}.comparison p{overflow-wrap:anywhere}.table-wrap{overflow-x:auto;margin-top:18px}table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{padding:12px 10px;border-bottom:1px solid #e1e6d8;vertical-align:top}th{background:#edf1e4;font-weight:600}td:first-child{min-width:180px}td small{display:block;color:var(--muted);margin-top:5px}td details{margin:8px 0 0}td details p{max-width:390px}.check-result{min-width:150px}#comparison-outcome{font-weight:600}
 .project-hero{position:relative;padding:96px 20px 25px;margin-bottom:25px;border-bottom:1px solid #ccd8be;background:radial-gradient(ellipse at 70% 40%,#e6edd5,transparent 65%);border-radius:28px 28px 0 0;isolation:isolate}.project-title{display:flex;justify-content:center;align-items:baseline;flex-wrap:wrap;gap:18px 28px;font:500 clamp(32px,7vw,84px)/1.3 Georgia,serif;letter-spacing:-.045em;margin:0;color:#244a38}.project-title span{position:relative;white-space:nowrap}.project-title span:after{content:'';position:absolute;height:5px;left:5%;right:3%;bottom:7px;border-radius:50%;background:#adc18c55;z-index:-1}.hero-animal{position:absolute;top:0;left:0;width:94px;height:76px;pointer-events:none;will-change:transform}.hero-rabbit{width:66px;height:76px}.hero-tagline{text-align:center;font-size:13px;color:#59705b;margin:15px 0 0}.hero-controls{display:flex;justify-content:center;margin-top:13px}#header-motion{width:auto;min-height:32px;padding:4px 12px;background:transparent;border:1px solid #c5d0bb;color:#536b55;font-size:11px;border-radius:20px}.question-title{font:500 clamp(24px,3vw,35px)/1.2 Georgia,serif;margin:18px 0 9px}@media(max-width:580px){.project-hero{padding:92px 8px 20px}.project-title{gap:66px 18px;font-size:clamp(32px,8.5vw,48px)}.hero-tagline{font-size:12px}.hero-animal{width:78px;height:64px}.hero-rabbit{width:54px;height:64px}}
 @media(max-width:900px){.fields{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:580px){main{padding:22px 14px}form{padding:16px}.fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.fields label:last-child{grid-column:1/-1}.actions{align-items:flex-start}button{width:100%}.saved{gap:10px}}
-</style></head><body><main>
+</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap"><style>body,h1,h2,h3,p,input,button,select,table,summary,.project-title,.question-title,.empty strong{font-family:'Space Grotesk',sans-serif!important}</style><style>#reset,#previous,#next,.research-expand>summary{background:#c5a44b!important;color:#202c22!important;border-color:#a88a3c!important}.research-expand>summary{font-size:16px!important;min-height:48px;padding:12px 22px!important;display:list-item;width:fit-content;box-sizing:border-box}#evaluation-report details:not(.research-expand){margin:12px 0}#evaluation-checks{font-size:13px}</style><style>.research-expand>summary{cursor:pointer;padding:14px 18px;border:1px solid #c5d0bb;border-radius:12px;font-weight:600;color:#244a38}.research-expand[open]>summary{margin-bottom:18px}.research-expand>summary:focus-visible{outline:3px solid #59705b;outline-offset:3px}</style><style>#reset{font-weight:700}</style></head><body><main>
 <header class="project-hero" id="project-hero">
 <h1 class="project-title" aria-label="Project Resurrection"><span id="title-project">Project</span><span id="title-resurrection">Resurrection</span></h1>
 <svg class="hero-animal hero-rabbit" id="header-rabbit" viewBox="0 0 90 100" aria-hidden="true">
@@ -44,21 +44,14 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 <ellipse cx="87" cy="65" rx="10" ry="8" fill="#fff5df"/><ellipse cx="100" cy="65" rx="10" ry="8" fill="#fff5df"/><path d="M89 59L98 59L94 65Z" fill="#664d3e"/><path d="M94 65Q91 71 86 68M94 65Q98 71 102 68" fill="none" stroke="#664d3e" stroke-width="1.5"/>
 <g fill="#775b35"><ellipse cx="37" cy="65" rx="3" ry="4"/><ellipse cx="48" cy="76" rx="3" ry="4"/><ellipse cx="60" cy="62" rx="3" ry="4"/><ellipse cx="32" cy="78" rx="2" ry="3"/><ellipse cx="76" cy="37" rx="2" ry="3"/><ellipse cx="92" cy="32" rx="2" ry="3"/><ellipse cx="111" cy="38" rx="2" ry="3"/></g>
 </svg>
-<p class="hero-tagline">A little hope. A lot of hops. A future for the Iberian lynx.</p>
+<p class="hero-tagline">One Small Hop for a Rabbit, One Giant Leap for Iberian Lynx</p>
 <div class="hero-controls"><button id="header-motion" type="button" aria-pressed="false">Pause animation</button></div>
 </header>
 <h2 class="question-title">What if we changed their world?</h2>
-<p class="intro">Choose the conditions, run the simulator, then watch your lynx population. Every experiment is saved separately.</p>
-<section class="comparison" id="history-preview" hidden aria-label="Preliminary historical comparison">
-<div class="eyebrow">Early check · separate from your experiment below</div>
-<h2>Real counts vs. the model: 2002–2010</h2>
-<div id="calibration-result" hidden></div><p id="history-settings"></p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Year</th><th scope="col">Real count</th><th scope="col">Simulated count</th><th scope="col">Difference</th></tr></thead><tbody id="history-rows"></tbody></table></div>
-<p id="history-growth" class="meaning"></p>
-<p class="explanation">Preliminary development preview, not the final history verdict. Five trials are too few to establish accuracy. The model has not been calibrated for this preview. The 2002 count sets the starting population; it is not a prediction. Values from Doñana are transferred to Andújar–Cardeña, and 750 square kilometres is a boundary assumption. The reserved 2011 test has not been run. Changing the food or land below does not change this separate saved comparison.</p>
-</section>
+<p class="intro">The Researcher reads the research inputs. The Simulator runs your experiment. The Evaluator checks the saved results. Change food and land to explore how the simulated lynx population changes. Every experiment is saved separately.</p>
+
 <form id="experiment"><fieldset id="settings"><div class="fields">
-<label>Rabbit food level<select id="food" name="food" required><option value="1">1</option><option value="5" selected>5</option><option value="15">15</option><option value="25">25</option><option value="35">35</option><option value="45">45</option><option value="55">55</option></select><span class="help">Rabbits per hectare. Choose one of these seven food levels.</span></label>
+<label>Rabbit food level<select id="food" name="food" required><option value="1">Low · 1</option><option value="4.6" selected>Medium · 4.6</option><option value="55">High · 55</option></select><span class="help">Rabbits per hectare. Three fixed experiment settings, not ranges.</span></label>
 <label>Land per patch<input id="area" name="area" type="number" min="1" max="1000" step="any" value="100" required><span class="help" id="total-area">Two patches: 200 square kilometres in total.</span></label>
 <label>Starting lynxes<input id="population" name="population" type="number" min="4" max="200" step="4" value="20" required><span class="help">Multiples of 4; equal sexes and patch allocation.</span></label>
 <label>Months to simulate<input id="months" name="months" type="number" min="1" max="120" step="1" value="36" required><span class="help">12 months = 1 year. Up to 10 years.</span></label>
@@ -66,12 +59,14 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 </div><div class="actions"><button id="run" type="submit">Run my experiment</button><span id="status" role="status" aria-live="polite">Ready when you are.</span></div></fieldset>
 <p class="explanation">The research table supplies survival and breeding values. Food stays constant and affects breeding in this model. Starting ages are generated from 3–8 years. These controls run the existing numerical simulator, with no AI calls.</p>
 </form>
+<div class="empty" id="empty"><strong>Your little world starts here.</strong><p>Choose your settings above and press “Run my experiment.”</p></div>
+<iframe id="viewer" title="Your saved lynx simulation" hidden></iframe>
 <p id="error" role="alert" hidden></p>
 <section id="saved-section" hidden aria-label="Saved previews">
 <div class="saved"><label for="saved-runs">Saved experiments in this session<select id="saved-runs"></select></label>
 <div class="links"><a id="open-viewer" target="_blank" rel="noopener">Open saved viewer</a><a id="download-results" download="results.json">Download results</a><a id="download-input" download="input.json">Download settings</a></div></div>
 <details id="evidence"><summary id="evidence-title">Research notes</summary><div id="evidence-notes"></div></details>
-<section class="comparison" aria-label="Research versus this experiment">
+<section class="comparison" aria-label="Research versus this experiment"><details class="research-expand"><summary>Show research comparison</summary>
 <h2>Research vs. this experiment</h2>
 <p id="comparison-run" class="explanation"></p>
 <p id="food-comparison" class="meaning"></p><p id="land-comparison" class="meaning"></p>
@@ -81,20 +76,28 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 <thead><tr><th scope="col">Research value</th><th scope="col">Research estimate / range</th><th scope="col">Used by this run</th><th scope="col">Evaluator finding</th></tr></thead>
 <tbody id="comparison-rows"></tbody></table></div>
 <p class="explanation">Real historical population comparison: not assessed for this synthetic experiment. A pass on an automatic check does not establish that a research estimate is scientifically correct.</p>
-</section>
+</details></section>
 <section aria-label="Evaluator review">
 <button id="evaluate" type="button">Send to Evaluator</button>
 <p class="explanation">This sends the saved run's automatic artifact checks to the Claude Evaluator using your local key. It can take up to two minutes. The check verdict is recorded separately from Claude's explanation. Historical accuracy is not assessed.</p>
 <p id="evaluation-status" role="status" aria-live="polite">This experiment has not been sent for evaluation.</p>
 <div id="evaluation-report" hidden>
-<p><strong id="evaluation-verdict"></strong></p><p class="explanation">Claude's explanation</p><p id="evaluation-explanation"></p>
+<p><strong id="evaluation-verdict"></strong></p><p id="evaluation-short"></p><p><strong>Historical accuracy: Not assessed</strong></p><p class="explanation">This check does not compare your experiment with real population history.</p><details><summary>Full Claude explanation</summary><p id="evaluation-explanation" style="white-space:pre-wrap"></p></details>
 <ul id="evaluation-issues"></ul>
 <details><summary>See every check</summary><ul id="evaluation-checks"></ul></details>
 <a id="download-evaluation" download="evaluation-report.json">Download evaluation report</a>
 </div></section>
 </section>
-<div class="empty" id="empty"><strong>Your little world starts here.</strong><p>Choose your settings above and press “Run my experiment.”</p></div>
-<iframe id="viewer" title="Your saved lynx simulation" hidden></iframe>
+<section class="comparison" id="history-preview" hidden aria-label="Preliminary historical comparison">
+<div class="eyebrow">Early check · separate saved historical comparison</div>
+<h2>Real counts vs. the model: 2002–2010</h2>
+<div id="calibration-result" hidden></div><p id="history-settings"></p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Year</th><th scope="col">Real count</th><th scope="col">Simulated count</th><th scope="col">Difference</th></tr></thead><tbody id="history-rows"></tbody></table></div>
+<p id="history-growth" class="meaning"></p>
+<p class="explanation">Preliminary development preview, not the final history verdict. Five trials are too few to establish accuracy. The model has not been calibrated for this preview. The 2002 count sets the starting population; it is not a prediction. Values from Doñana are transferred to Andújar–Cardeña, and 750 square kilometres is a boundary assumption. The reserved 2011 test has not been run. Changing your experiment’s food or land does not change this separate saved comparison.</p>
+</section>
+
+
 <p class="footer">One synthetic preview explores what happens under this model's assumptions. It is not a final experiment batch or a validated wildlife forecast. The numerical simulator produces the run; the Evaluator reviews it separately when requested. Animals, rabbit symbols and locations in the viewer are illustrations.</p>
 </main><script>
 'use strict';
@@ -220,7 +223,7 @@ function showReview(review){
   if(!review)return;
   const evaluation=review.evaluation;
   $('evaluation-verdict').textContent={pass:'Checks passed',revise:'Changes requested',stop:'Review stopped'}[evaluation.status];
-  $('evaluation-explanation').textContent=review.explanation;
+  $('evaluation-explanation').textContent=review.explanation; const passedCount=evaluation.checks.filter(c=>c.passed).length; $('evaluation-verdict').textContent='Experiment checks: '+({pass:'Passed',revise:'Changes requested',stop:'Stopped'}[evaluation.status]||evaluation.status)+' — '+passedCount+' of '+evaluation.checks.length; $('evaluation-short').textContent=evaluation.issues.length?'Issues are listed below.':'No technical issues found.';
   $('evaluation-issues').replaceChildren();$('evaluation-checks').replaceChildren();
   evaluation.issues.forEach(issue=>{const li=document.createElement('li');li.textContent=issue.message+' Requested fix: '+issue.requested_change;$('evaluation-issues').append(li)});
   evaluation.checks.forEach(check=>{const li=document.createElement('li');li.textContent=(check.passed?'Passed: ':'Failed: ')+check.name.replaceAll('_',' ')+'. '+check.detail;$('evaluation-checks').append(li)});
@@ -262,4 +265,4 @@ $('experiment').addEventListener('submit',async event=>{
   }catch(error){$('error').textContent=error.message;$('error').hidden=false;$('status').textContent=active?'The previous saved experiment is still below.':'No result was created. Adjust the settings or try again.'}
   finally{$('settings').disabled=false;$('saved-runs').disabled=false;$('evaluate').disabled=Boolean(active?.review);$('run').textContent='Run my experiment'}
 });
-</script></body></html>
+</script><script>document.fonts.ready.then(()=>{if(typeof animateHeader==='function')animateHeader()})</script></body></html>
