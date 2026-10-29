@@ -40,7 +40,7 @@ Each parameter row of `data/parameters/iberian_lynx_baseline.csv` names its sour
 - The range-size result of Palomares 2001a rests on five ranges, with one female range inferred from male ranges.
 - Pellet counts did not predict rabbit density well in scrubland (Palomares 2001b), and the one pellet-to-density conversion in Palomares 2001a has no verified origin.
 
-**TO FILL:**  the final count of sources by reading status (from the `how_read` column of `sources.csv`), and the final evidence labels (low, medium, or high) from the evidence file.
+As of 2026-10-29 (`develop` at 60e2ef6), by the `how_read` column of `sources.csv` (20 sources):  9 read in full (6 "full text read", 2 "full text", and 1 accepted manuscript read in full), 6 where the full text of a report's tables or of a news item was read (1, 4, and 1), 3 web pages, 1 with pages 1 to 3 read, and 1 "not read; named only".  The evidence file labels 23 parameters:  11 low, 12 medium, and 0 high, and the evidence gate counts 8 rows with a recorded conflict.  **Recount at the freeze** (2026-10-30), because both files can still change until then.
 
 ## 5. Main grid (design)
 
@@ -75,17 +75,19 @@ See `docs/report-skeleton.md`, section "What the model cannot tell us".  Rewrite
 
 ## 9. How to reproduce
 
-- Python 3.12 in a fresh virtual environment, then `python -m pytest` (no key).  **TO FILL:**  the exact Python version and the number of tests that passed.
+- Python 3.12 in a fresh virtual environment, then `python -m pytest` (no key).  Python 3.12.15 was used on 2026-10-29, and 716 tests passed on `develop` at 60e2ef6.  **Recount at the freeze:**  the number grows as pull requests merge.
 - The history test:  `python -m simulation.history --run-seed 20261101 --output history-run-1`.
 - The batches:  `python -m simulation.experiments --preview --stage <pilot or final> --seed <seed> --trials <100 or 500> --months 120 --output <folder>`.  **TO FILL:**  the seeds.
 - The report table and figure:  `python -m report.figures`.
-- The harness:  `python -m harness --preview ...` offline; the live command is **TO FILL** (`docs/live-pass-runbook.md`).
+- The harness:  `python -m harness --preview ...` offline; the live command is `python -m harness.live_case --preview --live --seed 7 --months 12 --output <folder>` (it needs the key and sends paid Claude requests; see `docs/live-workflow.md` and `docs/live-pass-runbook.md`).
 - **TO FILL at the freeze:**  the commit hash of the code that produced every saved result and the hashes of the two research files (`docs/history-preregistration.md`).
 
 ## 10. What each of us did, and what the harness caught
 
-**How the harness and the roles behaved.  TO FILL after the live pass:**  the case status and the number of attempts; the issues that the Evaluator raised and what the Developer changed; any retry and its reason; whether a hand-back round ran and how it ended; and what the traces show about the model's calls (`runs/<case>/trace.jsonl`, `case.json`).
+**Shake-down of 2026-10-29 (a rehearsal on `develop` at 60e2ef6, not the final pass).**  The offline case passed in one attempt with no issues.  The scripted hand-back example stopped on its unresolved required gap (`female_home_range_km2`), as designed, and refused a second round.  The live case failed three times on the Researcher's second Claude call, because the model's hidden reasoning used the whole 1,200-token reply limit before any visible word; a fourth run, with the limit raised to 4,000 for that run only, passed with 6 of 12 Claude calls, all 12 code checks, and the evidence read check (the longest reply used 1,003 tokens).  The record is in `examples/shakedown_20261029/` (pull request #139), and the fix for the limit is pull request #136.
 
-**What the build caught.  TO FILL:**  the rows of `docs/regressions.md` that the build produced, each with the test that now catches it, and which rows still read "no test yet".
+**How the harness and the roles behaved in the final live pass.  TO FILL after that pass:**  the case status and the number of attempts; the issues that the Evaluator raised and what the Developer changed; any retry and its reason; whether a hand-back round ran and how it ended; and what the traces show about the model's calls (`runs/<case>/trace.jsonl`, `case.json`).
+
+**What the build caught.**  As of 2026-10-29 (`develop` at 60e2ef6), `docs/regressions.md` has 7 rows.  Two are caught by a test (the callback contracts, by `tests/test_harness_contracts.py`; the trace context, by `tests/test_trace_context.py`), one by a recorded contradiction entry in the evidence file (the EU report's misread densities; a test that the known conflicts are present is planned and not built), three still read "no test yet" (the stale status sentences, the approval given at an older commit, and the two values of the 2011 count), and one reads "no test" (food level 1 applied as a spring density, where the evidence text now says so).  The "dismiss stale approvals" setting that the approval row calls open was switched on for `main` on 2026-10-29.  Found on 2026-10-29 and not yet in that table, because their pull requests are open:  the live reply limit (#136), the hidden failure reason (#137), and two low-severity gaps from the red team (#138).
 
 **Our own parts.**  Each owner writes this paragraph in their own words.  The record that it can draw on is the pull request list and `docs/regressions.md`; the pull request author is not a reliable sign of who did the work, because most pull requests were opened from one account.  **TO FILL:**  Anastasiya's paragraph; Valerie's paragraph.
