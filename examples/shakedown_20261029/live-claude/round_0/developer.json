@@ -1,0 +1,11 @@
+{
+  "role": "developer",
+  "revision_round": 0,
+  "text": "I called `run_model` once, with no arguments, for synthetic case preview-7 at revision 0. This is a synthetic preview. Historical validation is not assessed, and I am not judging whether the result passes. The Evaluator does that separately.\n\n**Setup (supplied by the harness):**\n- Seed: 7.\n- Duration: 12 months.\n- Patches: two of 50 km\u00b2 each, with habitat quality 1.0.\n- Food: 4.6 rabbits/ha.\n- Starting population: 10 females and 10 males, aged 36\u201396 months.\n\n**Outcome:**\n- **Population:** It went from 20 to 30 animals by month 12, ending with 23 females and 7 males.\n- **Births:** All 20 births happened in month 2.\n- **Deaths:** There were 10 deaths in total, spread over months 1 and 4\u201310.\n- **Male losses:** Males dropped from 10 to 7, even though some of the births were male.\n- **Settlement:** At the end, the settled animals were all adult females. None of the surviving males were settled.\n- **Persistence:** The record shows `persisted: True`. Under the configured rule, that means a settled breeding pair was in the same patch at the end.\n\n**Caveats:**\n- The simulator's own assumptions list survival, aging, settlement, male movement, births and recording as provisional.\n- Litter size is a uniform integer across the table range.\n- Mortality uses older abstract evidence, and dispersal at 18 months is assumed.\n- Food affects breeding only. Density is constant and habitat quality is 1.0.\n- The researcher's notes list low-confidence parameters and conflicts, such as sex ratio and mortality. This fixed simulator can't resolve them, and the single run gives no way to test them.\n\nThere were no prior code-check issues to address. The harness stops after revision 3 and requires human review.",
+  "removed_text": [],
+  "steps": 2,
+  "prompt_version": "2026-10-26-preview-1",
+  "tools_used": [
+    "run_model"
+  ]
+}
