@@ -18,10 +18,36 @@ details{font-size:13px;color:var(--muted);margin-bottom:16px}summary{cursor:poin
 .empty{min-height:240px;display:grid;place-content:center;text-align:center;border:1px dashed #becdb3;border-radius:20px;padding:25px;background:#eaf0db}.empty strong{font:500 25px Georgia,serif}.empty p{color:var(--muted)}
 iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12px;color:var(--muted);margin:20px 0}
 .comparison{margin:22px 0;padding:22px;border:1px solid #dce2d1;border-radius:20px;background:#fffdf8}.comparison h2{font:500 27px Georgia,serif;margin:0 0 10px}.comparison .meaning{padding:12px 15px;border-radius:10px;background:#eaf0db}.comparison p{overflow-wrap:anywhere}.table-wrap{overflow-x:auto;margin-top:18px}table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{padding:12px 10px;border-bottom:1px solid #e1e6d8;vertical-align:top}th{background:#edf1e4;font-weight:600}td:first-child{min-width:180px}td small{display:block;color:var(--muted);margin-top:5px}td details{margin:8px 0 0}td details p{max-width:390px}.check-result{min-width:150px}#comparison-outcome{font-weight:600}
+.project-hero{position:relative;padding:96px 20px 25px;margin-bottom:25px;border-bottom:1px solid #ccd8be;background:radial-gradient(ellipse at 70% 40%,#e6edd5,transparent 65%);border-radius:28px 28px 0 0;isolation:isolate}.project-title{display:flex;justify-content:center;align-items:baseline;flex-wrap:wrap;gap:18px 28px;font:500 clamp(32px,7vw,84px)/1.3 Georgia,serif;letter-spacing:-.045em;margin:0;color:#244a38}.project-title span{position:relative;white-space:nowrap}.project-title span:after{content:'';position:absolute;height:5px;left:5%;right:3%;bottom:7px;border-radius:50%;background:#adc18c55;z-index:-1}.hero-animal{position:absolute;top:0;left:0;width:94px;height:76px;pointer-events:none;will-change:transform}.hero-rabbit{width:66px;height:76px}.hero-tagline{text-align:center;font-size:13px;color:#59705b;margin:15px 0 0}.hero-controls{display:flex;justify-content:center;margin-top:13px}#header-motion{width:auto;min-height:32px;padding:4px 12px;background:transparent;border:1px solid #c5d0bb;color:#536b55;font-size:11px;border-radius:20px}.question-title{font:500 clamp(24px,3vw,35px)/1.2 Georgia,serif;margin:18px 0 9px}@media(max-width:580px){.project-hero{padding:92px 8px 20px}.project-title{gap:66px 18px;font-size:clamp(32px,8.5vw,48px)}.hero-tagline{font-size:12px}.hero-animal{width:78px;height:64px}.hero-rabbit{width:54px;height:64px}}
 @media(max-width:900px){.fields{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:580px){main{padding:22px 14px}form{padding:16px}.fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.fields label:last-child{grid-column:1/-1}.actions{align-items:flex-start}button{width:100%}.saved{gap:10px}}
 </style></head><body><main>
-<div class="eyebrow">Project Resurrection / your experiment</div>
-<h1>What if we changed their world?</h1>
+<header class="project-hero" id="project-hero">
+<h1 class="project-title" aria-label="Project Resurrection"><span id="title-project">Project</span><span id="title-resurrection">Resurrection</span></h1>
+<svg class="hero-animal hero-rabbit" id="header-rabbit" viewBox="0 0 90 100" aria-hidden="true">
+<ellipse cx="44" cy="91" rx="27" ry="4" fill="#607b3922"/><ellipse cx="40" cy="73" rx="25" ry="17" fill="#d4c8ae"/>
+<circle cx="17" cy="70" r="9" fill="#f4eee0"/><ellipse cx="60" cy="43" rx="7" ry="24" fill="#dfd3bb" transform="rotate(-13 60 43)"/><ellipse cx="74" cy="40" rx="6" ry="23" fill="#dfd3bb" transform="rotate(9 74 40)"/>
+<ellipse cx="60" cy="42" rx="3" ry="16" fill="#dea8a0" transform="rotate(-13 60 42)"/><ellipse cx="74" cy="40" rx="2.5" ry="16" fill="#dea8a0" transform="rotate(9 74 40)"/>
+<ellipse cx="65" cy="65" rx="18" ry="16" fill="#e7dcc4"/><ellipse cx="69" cy="73" rx="13" ry="8" fill="#fff8e9"/><circle cx="72" cy="61" r="3" fill="#263f32"/><circle cx="73" cy="60" r="1" fill="white"/><circle cx="82" cy="69" r="2.6" fill="#b77b74"/>
+<ellipse cx="48" cy="87" rx="14" ry="5" fill="#b5a78d"/><ellipse cx="70" cy="85" rx="10" ry="4" fill="#eee3ce"/>
+</svg>
+<svg class="hero-animal" id="header-lynx" viewBox="0 0 130 105" aria-hidden="true">
+<ellipse cx="65" cy="97" rx="44" ry="5" fill="#607b3922"/>
+<path d="M30 70Q8 61 16 50" fill="none" stroke="#b57c3f" stroke-width="11" stroke-linecap="round"/><path d="M15 52L16 48" stroke="#344338" stroke-width="9" stroke-linecap="round"/>
+<ellipse cx="56" cy="70" rx="34" ry="21" fill="#cc9654"/><ellipse cx="48" cy="89" rx="15" ry="7" fill="#edc58a"/><ellipse cx="87" cy="90" rx="14" ry="6" fill="#edc58a"/>
+<path d="M70 37L69 13L86 28M99 28L117 13L112 42" fill="#d5a263" stroke="#d5a263" stroke-width="5" stroke-linejoin="round"/>
+<path d="M69 16L65 3M71 16L73 5M116 16L118 2M114 16L111 4" stroke="#344338" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M74 29L73 21L82 29M105 30L113 21L110 34" fill="#c37f70"/>
+<ellipse cx="92" cy="51" rx="29" ry="26" fill="#dfb578"/>
+<path d="M66 50L55 62L70 64L64 74L83 68M116 48L127 61L114 64L119 73L103 67" fill="#f1d4a3"/>
+<ellipse cx="81" cy="51" rx="7" ry="9" fill="#fff5d9"/><ellipse cx="103" cy="51" rx="7" ry="9" fill="#fff5d9"/><ellipse cx="83" cy="51" rx="3" ry="6" fill="#294638"/><ellipse cx="105" cy="51" rx="3" ry="6" fill="#294638"/>
+<circle cx="84" cy="48" r="1.5" fill="white"/><circle cx="106" cy="48" r="1.5" fill="white"/>
+<ellipse cx="87" cy="65" rx="10" ry="8" fill="#fff5df"/><ellipse cx="100" cy="65" rx="10" ry="8" fill="#fff5df"/><path d="M89 59L98 59L94 65Z" fill="#664d3e"/><path d="M94 65Q91 71 86 68M94 65Q98 71 102 68" fill="none" stroke="#664d3e" stroke-width="1.5"/>
+<g fill="#775b35"><ellipse cx="37" cy="65" rx="3" ry="4"/><ellipse cx="48" cy="76" rx="3" ry="4"/><ellipse cx="60" cy="62" rx="3" ry="4"/><ellipse cx="32" cy="78" rx="2" ry="3"/><ellipse cx="76" cy="37" rx="2" ry="3"/><ellipse cx="92" cy="32" rx="2" ry="3"/><ellipse cx="111" cy="38" rx="2" ry="3"/></g>
+</svg>
+<p class="hero-tagline">A little hope. A lot of hops. A future for the Iberian lynx.</p>
+<div class="hero-controls"><button id="header-motion" type="button" aria-pressed="false">Pause animation</button></div>
+</header>
+<h2 class="question-title">What if we changed their world?</h2>
 <p class="intro">Choose the conditions, run the simulator, then watch your lynx population. Every experiment is saved separately.</p>
 <section class="comparison" id="history-preview" hidden aria-label="Preliminary historical comparison">
 <div class="eyebrow">Early check · separate from your experiment below</div>
@@ -74,6 +100,41 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 'use strict';
 const token='__SESSION_TOKEN__',$=id=>document.getElementById(id),saved=new Map();
 let active=null,viewerObserver=null;
+const headerReduced=matchMedia('(prefers-reduced-motion: reduce)');
+let headerAnimations=[],headerPaused=headerReduced.matches;
+function animateHeader(){
+  headerAnimations.forEach(animation=>animation.cancel());headerAnimations=[];
+  const hero=$('project-hero').getBoundingClientRect(),start=$('title-project').getBoundingClientRect(),end=$('title-resurrection').getBoundingClientRect();
+  for(const [id,offset,delay] of [['header-rabbit',25,0],['header-lynx',-35,480]]){
+    const animal=$(id),w=animal.clientWidth,h=animal.clientHeight;
+    const x1=Math.max(0,Math.min(hero.width-w,start.left-hero.left+start.width/2+offset-w/2));
+    const x2=Math.max(0,Math.min(hero.width-w,end.left-hero.left+end.width/2+offset-w/2));
+    const y1=start.top-hero.top-h+12,y2=end.top-hero.top-h+12;
+    const pose=(x,y,rotation=0)=>`translate(${x}px,${y}px) rotate(${rotation}deg)`;
+    animal.style.transform=pose(id==='header-rabbit'&&headerReduced.matches?x2:x1,id==='header-rabbit'&&headerReduced.matches?y2:y1);
+    if(headerReduced.matches)continue;
+    const animation=animal.animate([
+      {transform:pose(x1,y1),opacity:1,offset:0},
+      {transform:pose(x1,y1+3,-5),opacity:1,offset:.12},
+      {transform:pose(x1+(x2-x1)*.5,Math.min(y1,y2)-57,-9),opacity:1,offset:.28},
+      {transform:pose(x2,y2,5),opacity:1,offset:.44},
+      {transform:pose(x2,y2),opacity:1,offset:.49},
+      {transform:pose(x2,y2),opacity:1,offset:.74},
+      {transform:pose(x2,y2),opacity:0,offset:.8},
+      {transform:pose(x1,y1),opacity:0,offset:.83},
+      {transform:pose(x1,y1),opacity:1,offset:.9},
+      {transform:pose(x1,y1),opacity:1,offset:1}
+    ],{duration:5600,delay,iterations:Infinity,easing:'ease-in-out'});
+    if(headerPaused||document.hidden)animation.pause();headerAnimations.push(animation);
+  }
+  $('header-motion').hidden=headerReduced.matches;
+  $('header-motion').textContent=headerPaused?'Play animation':'Pause animation';
+  $('header-motion').setAttribute('aria-pressed',String(headerPaused));
+}
+$('header-motion').addEventListener('click',()=>{headerPaused=!headerPaused;headerAnimations.forEach(a=>headerPaused?a.pause():a.play());$('header-motion').textContent=headerPaused?'Play animation':'Pause animation';$('header-motion').setAttribute('aria-pressed',String(headerPaused))});
+headerReduced.addEventListener('change',()=>{headerPaused=headerReduced.matches;animateHeader()});
+document.addEventListener('visibilitychange',()=>headerAnimations.forEach(a=>document.hidden||headerPaused?a.pause():a.play()));
+new ResizeObserver(animateHeader).observe($('project-hero'));
 async function loadHistoryPreview(){
   try{
     const response=await fetch('/api/history-preview');if(!response.ok)return;

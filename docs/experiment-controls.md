@@ -1,5 +1,9 @@
 # Local experiment controls
 
+The title header shows a decorative rabbit hopping from Project to Resurrection
+with a lynx following it. Pause/Play animation controls the header only. Reduced
+motion keeps the animals still, and hiding the page pauses their animation.
+
 Start from the repository root using the project's Python environment:
 
 ```sh
