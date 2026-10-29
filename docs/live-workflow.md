@@ -95,4 +95,7 @@ This is one run, so it does not show that the model does this every time.  The c
 understanding.  It is an integration run on synthetic data, not a scientific result.  Two earlier runs on the
 same day failed because the Researcher's reply was cut off at the token limit (the second one with the limit
 raised to 4,000); their folders were not saved.  The cause and the fix are described under "The evidence read
-check" above.
+check" above.  A third kind of failure was found by the shake-down of 2026-10-29:  three live runs of three failed on the
+Researcher's second call, because the model's hidden reasoning used the whole 1,200-token reply limit before any visible
+word.  The largest reply measured since then was 1,003 tokens (493 of reasoning, 510 visible), the limit is now 4,000, and
+a run with that limit passed (6 Claude calls; the evidence read check passed).

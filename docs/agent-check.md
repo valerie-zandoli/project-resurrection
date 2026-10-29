@@ -38,7 +38,7 @@ Our check runs once per round, after the role finishes, not on every pass.  With
 | Exit | The rule | Tag |
 |---|---|---|
 | Success | A test the harness can check, chosen before the loop (part 4 above).  The model ending with a text reply stops the loop, but a case passes only when the code checks pass | **CODE** |
-| Limits | At most 4 steps for a role; at most 3 revision rounds; a 1,200-token reply limit and a 30-second timeout with no retries; a reply cut off at the limit fails loudly (#108).  A shared cap of 12 Claude calls per run is part of the live command (`MAX_CALLS`) | **CODE**; the call cap is **IN REVIEW** (#100) |
+| Limits | At most 4 steps for a role; at most 3 revision rounds; a 4,000-token reply limit (reasoning counts against it) and a 30-second timeout with no retries; a reply cut off at the limit fails loudly (#108).  A shared cap of 12 Claude calls per run is part of the live command (`MAX_CALLS`) | **CODE**; the call cap is **IN REVIEW** (#100) |
 | Stuck | If the last two passes repeat the same action, stop and report.  Before this rule a repeated call ran to the 4-step cap and ended as "no final answer", which reads as a limit.  An identical result repeated across revision rounds is not detected early; the 3-round cap ends it | **CODE** (#112) |
 
 ## Spot a fake agent
