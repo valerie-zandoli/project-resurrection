@@ -39,7 +39,7 @@ Every box must be checked by the person named.  A box that cannot be checked mea
 5. Run the live case (whoever holds the key):  `python -m harness.live_case --preview --live --seed 7 --months 12 --output runs/shakedown-live-1` (the settings of the saved 2026-10-27 run, so the two can be compared; `docs/live-workflow.md`).  Expect status `pass`, at most 12 model calls, and the line "Evidence read check (graded by code): pass" in `live-summary.md`.  Use a new folder each time; the harness never overwrites one.
 6. Read `trace.jsonl` line by line.  Check that each step is one numbered line; that each model step names the prompt version; that no key-like text appears; and that every cut text is marked as cut.
 7. Read `case.json` and `evaluation.json`.  Check that the status follows the code checks, that each issue has a code, a message, and a requested change, and that the model's explanation is at most 150 words per issue.
-8. Run one hand-back example:  a case with one required gap, so that the request goes out once, the single round runs, and the case stops on an unresolved gap (`docs/handback-path.md`).  **TO FILL**:  the name of the case file, once the gap case is chosen with Anastasiya.
+8. Run one hand-back example:  a case with one required gap, so that the request goes out once, the single round runs, and the case stops on an unresolved gap (`docs/handback-path.md`).  Command (proposed by Anastasiya; scripted, so it needs no key):  `python -m harness.handback_example --output runs/shakedown-handback-1`.  Expect `Case stopped` on the female home range gap and exit code 1; the diet gap is logged as a limitation.  Copy the folder to `hand-back/` in the fallback bundle.
 9. Copy the case folders into the fallback folder with a note of the commit, the seed, the date, and the time (`docs/demo-plan.md`, "The fallback").  Commit them in a small pull request; never add `.env`.
 10. Ask one question before the freeze:  did any step show a flaw in the contract (the schemas) or in the parameter table?  If yes, fix it in a commit that says why, run the tests, and repeat steps 4 to 8.  If no, freeze.
 
@@ -54,7 +54,7 @@ Fill the four items in `docs/history-preregistration.md` under "TO FILL at the f
 | History test, once, seed 20261101 (it always runs the final evidence gate) | no | `python -m simulation.history --run-seed 20261101 --output history-run-1` |
 | Trial batches, 100 pilot and 500 final trials per cell | no | `python -m simulation.experiments --preview --stage pilot --seed <seed> --trials 100 --months 120 --output batch-1` (for the 500-trial final batch, use `--stage final --trials 500`; `--stage` has no default) |
 | One live pass through the three roles | yes | **TO FILL** (Anastasiya) |
-| One hand-back example | yes | **TO FILL** (Anastasiya) |
+| One hand-back example | no (scripted; proposed) | `python -m harness.handback_example --output final-handback-1` (copy to `hand-back/` in the fallback bundle) |
 
 ## If something fails
 

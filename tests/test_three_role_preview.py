@@ -43,7 +43,9 @@ def test_one_case_reaches_all_three_roles_and_keeps_real_artifacts(tmp_path):
     assert evaluation["historical_validation"] == "not_assessed"
     records = [json.loads(line) for line in (output / "roles.jsonl").read_text().splitlines()]
     # the Researcher reads the three files in one step (three tool calls), then answers
-    assert [r["role"] for r in records] == ["researcher"] * 4 + ["developer"] * 2 + ["evaluator"] * 2
+    handoffs = [r for r in records if r["event"] in {"tool_result", "role_final"}]
+    assert [r["role"] for r in handoffs] == ["researcher"] * 4 + ["developer"] * 2 + ["evaluator"] * 2
+    assert all(r["case_id"] == output.name and r["run_id"] == results["run_id"] for r in records)
     assert all(r["input_hashes"] and r["prompt_version"] for r in records)
     for role in providers:
         assert (output / f"round_0/{role}.json").exists()

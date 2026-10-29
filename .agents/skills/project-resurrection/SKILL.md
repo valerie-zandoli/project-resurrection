@@ -116,11 +116,17 @@ breeding requires an eligible male in the same patch.
 
 Historical calibration changes only post-dispersal annual mortality within
 0.10–0.50, using 2002–2010; hold out 2011. Target median annual total-individual
-growth 1.17 ± 0.05 and the 2011 total 214 ± 10%. Do not claim strong validation
+growth 1.17 ± 0.05 and the 2011 total 202 ± 10% (181.8–222.2), as approved
+on October 25 before any run; report 214 as the alternative source value only.
+Do not claim strong validation
 from these few anchors. Rough growth estimates at mortality 0.37 and 0.20 are
 preliminary calculations, not executed simulation findings.
 
-The endpoint breeding-pair rule remains proposed until explicitly confirmed.
+The agreed endpoint requires a living breeding-age female holding a territory
+and a living breeding-age male in the same patch. Food affects reproduction
+separately and is excluded from endpoint eligibility; report births in the final
+12 months alongside persistence. The simulator and independent result checks
+implement this rule. It does not establish long-term viability.
 Document monthly event order, litter-size sampling, historical initial age/sex
 structure, and aggregation/selection procedure before experiments. Do not fill
 these details with unsupported biological claims. Amend contracts through review
@@ -136,11 +142,11 @@ Validate finite numbers, low ≤ baseline ≤ high, required fields, unique name
 and semicolon-separated source references with `validators/parameters.py`.
 Structural acceptance does not establish biological correctness.
 
-The handoff checklist proposes confidence, confidence_reason, and contradicts
-parameter columns, origin metadata in the registry, and one batched researcher
-clarification round separate from developer revisions. Do not claim these are
-implemented; inspect current code/PRs. Agree on labels, reference syntax, unknown
-origin treatment, and clarification failure rules before modifying the contract.
+Evidence labels live in the separate `evidence_columns_DRAFT.csv` sidecar; the
+parameter table keeps its eight-column contract. Evidence validation/gating,
+snapshotting, and a separate batched clarification helper are implemented.
+Inspect current entrypoints before claiming a helper is wired into a runtime
+clarification loop. Preserve approved labels, reference syntax, and failure rules.
 Count underlying evidence per claim rather than all studies mentioned in a report.
 Human audits and two additional planted flaws also remain planned work.
 
@@ -175,11 +181,12 @@ Python flag, import scan, read-only file mode, or after-the-fact file scan alone
 cannot contain hostile generated code. Until genuine isolation is implemented,
 follow its human-code-review requirement and do not claim sandbox enforcement.
 Keep model credentials out of the numerical child process and preserve per-round
-artifacts and diagnostics. The runtime proposal is Claude through LiteLLM,
+artifacts and diagnostics. The opt-in runtime uses Claude through LiteLLM,
 with a separate personal key per partner stored in local ignored `.env` files.
-Read `docs/runtime-provider.md`; it remains marked pending agreement even though
-PR #18 merged. Its model ID is a proposal, not verified availability. Verify
-current official provider/adapter documentation before API implementation.
+Read `docs/live-workflow.md` for implemented commands and saved integration
+evidence; retain unresolved policy decisions in `docs/runtime-provider.md`.
+Inspect the configured model and verify current official documentation before
+changing API integration or making availability claims.
 Never copy one-time key links or secrets into chat, traces, Slack, Docs, or Git.
 A coding-tool subscription does not establish runtime API access.
 

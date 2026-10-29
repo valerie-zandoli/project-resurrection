@@ -129,7 +129,9 @@ def test_the_trace_records_each_step_with_the_prompt_version(tmp_path):
     run_role("evaluator", FakeProvider([call("check_artifacts"), say("fine")]), "t",
              {"check_artifacts": lambda: {"status": "pass"}}, trace=trace)
     lines = [json.loads(line) for line in (tmp_path / "t.jsonl").read_text().splitlines()]
-    assert [(l["role"], l["tool"]) for l in lines] == [("evaluator", "check_artifacts"), ("evaluator", None)]
+    assert [l["event"] for l in lines] == ["role_start", "assistant_tools", "tool_result", "role_final"]
+    assert [(l["role"], l["tool"]) for l in lines if l["event"] in {"tool_result", "role_final"}] == [
+        ("evaluator", "check_artifacts"), ("evaluator", None)]
     assert all(l["prompt_version"] == load_prompt("evaluator")[0] for l in lines)
 
 
@@ -138,7 +140,9 @@ def test_the_trace_shows_how_much_a_tool_returned_and_how_much_the_model_receive
     path = tmp_path / "t.jsonl"
     provider = FakeProvider([call("read_research", key="k"), say("ok")])
     run_role("researcher", provider, "t", {"read_research": lambda key: "x" * 500}, trace=Trace(path))
-    tool_line, final_line = [json.loads(line) for line in path.read_text().splitlines()]
+    entries = [json.loads(line) for line in path.read_text().splitlines()]
+    tool_line = next(line for line in entries if line["event"] == "tool_result")
+    final_line = entries[-1]
     assert (tool_line["sent_chars"], tool_line["received_chars"]) == (500, 100)
     assert (final_line["sent_chars"], final_line["received_chars"]) == (None, None)
     assert provider.calls[1]["messages"][-1]["content"].count("x") == 100  # the model got what the trace says
@@ -148,7 +152,8 @@ def test_a_result_that_is_not_cut_shows_the_same_number_on_both_sides(tmp_path):
     path = tmp_path / "t.jsonl"
     run_role("evaluator", FakeProvider([call("check_artifacts"), say("fine")]), "t",
              {"check_artifacts": lambda: "short"}, trace=Trace(path))
-    line = json.loads(path.read_text().splitlines()[0])
+    line = next(json.loads(line) for line in path.read_text().splitlines()
+                if json.loads(line)["event"] == "tool_result")
     assert (line["sent_chars"], line["received_chars"]) == (5, 5)
 
 
