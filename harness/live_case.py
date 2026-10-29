@@ -46,10 +46,11 @@ class RecordedProvider:
         try:
             reply = self.provider.complete(system, messages, tools)
         except Exception as exc:
-            # Raw provider exceptions can hold request headers or credentials.
-            self.trace.add(self.role, f'model request failed ({type(exc).__name__})',
-                           prompt_version=self.prompt_version)
-            raise ProviderError(f'live {self.role} request failed ({type(exc).__name__})') from None
+            # Raw provider exceptions can hold request headers or credentials.  A ProviderError's own text is already
+            # scrubbed (the adapter keeps only the class name of what it caught), so it is kept:  it says why.
+            reason = str(exc) if isinstance(exc, ProviderError) else type(exc).__name__
+            self.trace.add(self.role, f'model request failed ({reason})', prompt_version=self.prompt_version)
+            raise ProviderError(f'live {self.role} request failed ({reason})') from None
         self.budget.completed[self.role] += 1
         self.trace.add(self.role, reply['text'], tool_result=dict(tool_calls=reply['tool_calls']),
                        prompt_version=self.prompt_version)
