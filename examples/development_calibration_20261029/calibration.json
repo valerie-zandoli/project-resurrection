@@ -1,0 +1,180 @@
+{
+  "trials": 100,
+  "rows": [
+    {
+      "mortality": 0.1,
+      "median_growth": 1.2422128288929657
+    },
+    {
+      "mortality": 0.11,
+      "median_growth": 1.23101449531611
+    },
+    {
+      "mortality": 0.12,
+      "median_growth": 1.2172766416298253
+    },
+    {
+      "mortality": 0.13,
+      "median_growth": 1.2030049029832597
+    },
+    {
+      "mortality": 0.14,
+      "median_growth": 1.1970852740702282
+    },
+    {
+      "mortality": 0.15,
+      "median_growth": 1.1930202036234197
+    },
+    {
+      "mortality": 0.16,
+      "median_growth": 1.1760887656313694
+    },
+    {
+      "mortality": 0.17,
+      "median_growth": 1.1687318733895244
+    },
+    {
+      "mortality": 0.18,
+      "median_growth": 1.1589480102146212
+    },
+    {
+      "mortality": 0.19,
+      "median_growth": 1.1449316648122347
+    },
+    {
+      "mortality": 0.2,
+      "median_growth": 1.139823573574936
+    },
+    {
+      "mortality": 0.21,
+      "median_growth": 1.1270687337607974
+    },
+    {
+      "mortality": 0.22,
+      "median_growth": 1.119758655813889
+    },
+    {
+      "mortality": 0.23,
+      "median_growth": 1.1098362334781746
+    },
+    {
+      "mortality": 0.24,
+      "median_growth": 1.0839411104744354
+    },
+    {
+      "mortality": 0.25,
+      "median_growth": 1.087914295919941
+    },
+    {
+      "mortality": 0.26,
+      "median_growth": 1.0735351986020163
+    },
+    {
+      "mortality": 0.27,
+      "median_growth": 1.0706374827281668
+    },
+    {
+      "mortality": 0.28,
+      "median_growth": 1.056869555040628
+    },
+    {
+      "mortality": 0.29,
+      "median_growth": 1.0434796421409749
+    },
+    {
+      "mortality": 0.3,
+      "median_growth": 1.0372246034576225
+    },
+    {
+      "mortality": 0.31,
+      "median_growth": 1.0277868463892732
+    },
+    {
+      "mortality": 0.32,
+      "median_growth": 1.0228471970457549
+    },
+    {
+      "mortality": 0.33,
+      "median_growth": 1.003490071558875
+    },
+    {
+      "mortality": 0.34,
+      "median_growth": 0.9976218080187491
+    },
+    {
+      "mortality": 0.35,
+      "median_growth": 0.9863921008825058
+    },
+    {
+      "mortality": 0.36,
+      "median_growth": 0.9770057076361359
+    },
+    {
+      "mortality": 0.37,
+      "median_growth": 0.9592647060165397
+    },
+    {
+      "mortality": 0.38,
+      "median_growth": 0.9528034672970032
+    },
+    {
+      "mortality": 0.39,
+      "median_growth": 0.9494542040816901
+    },
+    {
+      "mortality": 0.4,
+      "median_growth": 0.9253665840881666
+    },
+    {
+      "mortality": 0.41,
+      "median_growth": 0.9103492052162507
+    },
+    {
+      "mortality": 0.42,
+      "median_growth": 0.8984141835882107
+    },
+    {
+      "mortality": 0.43,
+      "median_growth": 0.8959181841363776
+    },
+    {
+      "mortality": 0.44,
+      "median_growth": 0.8907235362263021
+    },
+    {
+      "mortality": 0.45,
+      "median_growth": 0.8609551220959792
+    },
+    {
+      "mortality": 0.46,
+      "median_growth": 0.8467038231485314
+    },
+    {
+      "mortality": 0.47,
+      "median_growth": 0.8305450076408603
+    },
+    {
+      "mortality": 0.48,
+      "median_growth": 0.8305450076408603
+    },
+    {
+      "mortality": 0.49,
+      "median_growth": 0.7894993279797844
+    },
+    {
+      "mortality": 0.5,
+      "median_growth": 0.7764308292240563
+    }
+  ],
+  "chosen_mortality": 0.17,
+  "chosen_median_growth": 1.1687318733895244,
+  "within_tolerance": true,
+  "kind": "development_calibration_only",
+  "heldout_run": false,
+  "through_year": 2010,
+  "seed": 20261029,
+  "area_km2": 750,
+  "python_version": "3.12.14",
+  "model_sha256": "10b0981454730ab25983a49fc737ebd7a170437dfee7ef2ea4417b9618c8c030",
+  "history_sha256": "c4688a31f4ef24795e1d4341acc9a6a7c652c9e3823e7908abd0d9b9abcd3fcf"
+}
