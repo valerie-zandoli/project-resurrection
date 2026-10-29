@@ -52,7 +52,8 @@ def test_failed_capacity_keeps_existing_files(tmp_path):
 def server(tmp_path):
     return SimpleNamespace(output_root=tmp_path, source_root=controls.REPO,
                            server_port=8767, origin='http://127.0.0.1:8767',
-                           token='test-token', completed=set(), busy=threading.Lock())
+                           token='test-token', completed=set(), busy=threading.Lock(),
+                           reviews={}, review_attempts={}, provider_factory=lambda: None)
 
 
 def request(server, method, path, body=None, headers=None):

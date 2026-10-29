@@ -17,6 +17,8 @@ import jsonschema
 
 from harness.snapshot import make_snapshot
 from report.lynx_viewer import render_viewer
+from report.preview_evaluator import evaluate_preview
+from harness.litellm_provider import LiteLLMProvider, DEFAULT_ENV_FILE
 from simulation.model import REPO, load_parameters, preview_config, simulate, summary, validate_config
 from validators.evidence_gate import check_repository
 from validators.handoff_hashes import file_sha256
@@ -96,12 +98,16 @@ def run_experiment(settings, output_root, source_root=REPO):
 class PreviewServer(ThreadingHTTPServer):
     """Loopback only; no arbitrary filesystem routes or remote-triggered runs."""
 
-    def __init__(self, port, output_root, source_root=REPO):
+    def __init__(self, port, output_root, source_root=REPO, *, env_file=DEFAULT_ENV_FILE,
+                 provider_factory=None):
         self.output_root = Path(output_root)
         self.source_root = Path(source_root)
         self.token = secrets.token_urlsafe(32)
         self.busy = threading.Lock()
         self.completed = set()
+        self.reviews = {}
+        self.review_attempts = {}
+        self.provider_factory = provider_factory or (lambda: LiteLLMProvider.from_environment(env_file=env_file))
         super().__init__(('127.0.0.1', port), PreviewHandler)
 
     @property
@@ -147,6 +153,12 @@ class PreviewHandler(BaseHTTPRequestHandler):
             content_type = 'text/html; charset=utf-8' if file.suffix == '.html' else 'application/json; charset=utf-8'
             self.respond(200, file.read_bytes(), content_type)
             return
+        review = re.fullmatch(r'/runs/(interactive-[a-f0-9]{32})/reviews/(review-[a-f0-9]{32})/report.json', self.path)
+        if review and review[1] in self.server.reviews:
+            result = self.server.reviews[review[1]]
+            if review[2] == result['review_id']:
+                self.respond(200, result)
+                return
         self.respond(404, {'error': 'Preview file not found.'})
 
     def do_POST(self):
@@ -154,7 +166,8 @@ class PreviewHandler(BaseHTTPRequestHandler):
                 or not hmac.compare_digest(self.headers.get('X-Experiment-Token', '').encode('utf-8'), self.server.token.encode('utf-8'))):
             self.respond(403, {'error': 'Refresh the local experiment page before running.'})
             return
-        if self.path != '/api/runs':
+        evaluation_request = re.fullmatch(r'/api/runs/(interactive-[a-f0-9]{32})/evaluate', self.path)
+        if self.path != '/api/runs' and not evaluation_request:
             self.respond(404, {'error': 'Unknown action.'})
             return
         if (self.headers.get('Content-Type') != 'application/json'
@@ -170,14 +183,21 @@ class PreviewHandler(BaseHTTPRequestHandler):
             return
         try:
             settings = json.loads(self.rfile.read(length))
-            validate_settings(settings)
+            if evaluation_request:
+                if settings != {}:
+                    raise ValueError('Evaluation takes only the saved run, with no overrides.')
+            else:
+                validate_settings(settings)
         except (ValueError, UnicodeDecodeError, OverflowError):
             self.respond(400, {'error': 'Check the numbers and supported ranges in the form.'})
             return
         if not self.server.busy.acquire(blocking=False):
-            self.respond(409, {'error': 'A preview is already running. Please wait.'})
+            self.respond(409, {'error': 'An experiment or evaluation is already running. Please wait.'})
             return
         try:
+            if evaluation_request:
+                self.evaluate_saved(evaluation_request[1])
+                return
             if len(self.server.completed) >= 100:
                 self.respond(429, {'error': 'This session has saved 100 previews. Restart the server to continue.'})
                 return
@@ -192,14 +212,36 @@ class PreviewHandler(BaseHTTPRequestHandler):
         finally:
             self.server.busy.release()
 
+    def evaluate_saved(self, run_id):
+        if run_id not in self.server.completed:
+            self.respond(404, {'error': 'Choose a completed experiment from this session.'})
+            return
+        if run_id in self.server.reviews:
+            self.respond(200, self.server.reviews[run_id])
+            return
+        attempts = self.server.review_attempts.get(run_id, 0)
+        if attempts >= 3:
+            self.respond(429, {'error': 'Three evaluation attempts have been used. Check the saved diagnostics before continuing.'})
+            return
+        self.server.review_attempts[run_id] = attempts + 1
+        try:
+            result = evaluate_preview(self.server.output_root / run_id,
+                                      provider_factory=self.server.provider_factory)
+            self.server.reviews[run_id] = result
+            self.respond(201, result)
+        except Exception:
+            self.respond(502, {'error': 'The Evaluator did not complete; no verdict was accepted. Check the local Claude key, model setting and connection. Your experiment is still saved.'})
+
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True, help='folder for new, individually named runs')
     parser.add_argument('--port', type=int, default=8767)
+    parser.add_argument('--env-file', type=Path, default=DEFAULT_ENV_FILE,
+                        help='local ignored key file for Claude evaluation; never copied into runs')
     args = parser.parse_args(argv)
-    with PreviewServer(args.port, args.output) as server:
-        print(f'Open {server.origin}/ — synthetic previews only. No model calls. Ctrl+C to stop.', flush=True)
+    with PreviewServer(args.port, args.output, env_file=args.env_file) as server:
+        print(f'Open {server.origin}/ — simulation is local; Send to Evaluator calls Claude. Ctrl+C to stop.', flush=True)
         try:
             server.serve_forever()
         except KeyboardInterrupt:
