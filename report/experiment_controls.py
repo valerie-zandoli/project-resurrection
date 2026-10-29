@@ -18,6 +18,7 @@ import jsonschema
 from harness.snapshot import make_snapshot, remove_snapshot
 from report.lynx_viewer import render_viewer
 from report.preview_evaluator import evaluate_preview
+from report.research_comparison import research_comparison
 from harness.litellm_provider import LiteLLMProvider, DEFAULT_ENV_FILE
 from simulation.model import REPO, load_parameters, preview_config, simulate, summary, validate_config
 from validators.evidence_gate import check_repository
@@ -28,7 +29,7 @@ LIMITS = {
     'population': (4, 200), 'seed': (0, 2**32 - 1),
 }
 INTEGER_FIELDS = {'months', 'population', 'seed'}
-ARTIFACTS = {'viewer.html', 'input.json', 'results.json', 'summary.json', 'preview.json'}
+ARTIFACTS = {'viewer.html', 'input.json', 'results.json', 'summary.json', 'preview.json', 'research-comparison.json'}
 
 
 def validate_settings(settings):
@@ -76,6 +77,7 @@ def run_experiment(settings, output_root, source_root=REPO):
         result = simulate(config, root=snapshot)
         report = summary(result)
         html = render_viewer(result)
+        comparison = research_comparison(config, result, snapshot)
         record = dict(purpose='interactive_synthetic_preview', stage='pilot',
                       historical_validation='not_assessed', settings=settings,
                       research_sha256=hashes, evidence=evidence_report,
@@ -84,7 +86,8 @@ def run_experiment(settings, output_root, source_root=REPO):
         for name, data in [('input', config), ('results', result), ('summary', report), ('preview', record)]:
             (directory / f'{name}.json').write_text(json.dumps(data, indent=2, allow_nan=False) + '\n')
         (directory / 'viewer.html').write_text(html, encoding='utf-8')
-        return dict(run_id=run_id, summary=report, settings=settings, evidence=evidence_report,
+        (directory / 'research-comparison.json').write_text(json.dumps(comparison, indent=2, allow_nan=False) + '\n')
+        return dict(run_id=run_id, summary=report, settings=settings, evidence=evidence_report, comparison=comparison,
                     viewer_url=f'/runs/{run_id}/viewer.html',
                     results_url=f'/runs/{run_id}/results.json',
                     input_url=f'/runs/{run_id}/input.json',
@@ -150,7 +153,7 @@ class PreviewHandler(BaseHTTPRequestHandler):
             self.respond(200, template.replace('__SESSION_TOKEN__', self.server.token).encode('utf-8'),
                          'text/html; charset=utf-8')
             return
-        match = re.fullmatch(r'/runs/(interactive-[a-f0-9]{32})/([a-z.]+)', self.path)
+        match = re.fullmatch(r'/runs/(interactive-[a-f0-9]{32})/([a-z.-]+)', self.path)
         if match and match[1] in self.server.completed and match[2] in ARTIFACTS:
             file = self.server.output_root / match[1] / match[2]
             content_type = 'text/html; charset=utf-8' if file.suffix == '.html' else 'application/json; charset=utf-8'

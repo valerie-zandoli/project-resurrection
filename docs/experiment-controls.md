@@ -8,6 +8,9 @@ python -m report.experiment_controls --output /tmp/lynx-experiments --port 8767
 
 Open the printed local address. Choose rabbit food density, land per patch,
 starting population, duration and random seed, then select **Run my experiment**.
+The food dropdown offers 1, 5, 15, 25, 35, 45 and 55 rabbits per hectare, with 5
+selected initially. These are interface choices; the research breeding threshold
+and the preregistered batch food levels remain unchanged.
 The page runs the existing numerical simulator and embeds its saved viewer.
 The simulation itself makes no AI calls. Changing a field does not change the displayed saved run
 until a new run succeeds. Previous experiments can be selected during the session.
@@ -65,3 +68,24 @@ failed attempts remain as diagnostics. The report can be downloaded from the pag
 This connection uses the current artifact-checking Evaluator; it does not add a
 full code audit, statistical review, historical validation or an automatic
 Developer revision loop. A requested revision is shown for the owner to address.
+
+## Research vs. this experiment
+
+Every completed run displays a comparison panel from its own saved research
+snapshot. It compares food with the breeding threshold and patch area with
+female territory capacity. Simulated totals for the whole run are shown
+separately from research estimates.
+
+The table shows 13 inputs read by the current simulator: research baseline and
+low–high range, value actually used (including overrides), source citation,
+evidence note and confidence label. Litter size shows the model's low–high
+sampling bounds rather than treating the published mean as a fixed number of
+births. The source notes distinguish published evidence from team assumptions;
+the ranges are not all statistical confidence intervals.
+
+Food/season and territory rows show the associated Evaluator check after review.
+Other rows say explicitly that no probability or scientific-validity verdict
+was produced. No observed historical population is invented for synthetic
+settings. Editing the form leaves the panel attached to the saved run until a
+new run finishes or another saved run is chosen. The panel data is also saved
+as `research-comparison.json` alongside the results.

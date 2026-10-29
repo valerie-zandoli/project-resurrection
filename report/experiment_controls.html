@@ -17,13 +17,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 details{font-size:13px;color:var(--muted);margin-bottom:16px}summary{cursor:pointer;color:var(--ink);padding:8px 0}details p{overflow-wrap:anywhere}
 .empty{min-height:240px;display:grid;place-content:center;text-align:center;border:1px dashed #becdb3;border-radius:20px;padding:25px;background:#eaf0db}.empty strong{font:500 25px Georgia,serif}.empty p{color:var(--muted)}
 iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12px;color:var(--muted);margin:20px 0}
+.comparison{margin:22px 0;padding:22px;border:1px solid #dce2d1;border-radius:20px;background:#fffdf8}.comparison h2{font:500 27px Georgia,serif;margin:0 0 10px}.comparison .meaning{padding:12px 15px;border-radius:10px;background:#eaf0db}.comparison p{overflow-wrap:anywhere}.table-wrap{overflow-x:auto;margin-top:18px}table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{padding:12px 10px;border-bottom:1px solid #e1e6d8;vertical-align:top}th{background:#edf1e4;font-weight:600}td:first-child{min-width:180px}td small{display:block;color:var(--muted);margin-top:5px}td details{margin:8px 0 0}td details p{max-width:390px}.check-result{min-width:150px}#comparison-outcome{font-weight:600}
 @media(max-width:900px){.fields{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:580px){main{padding:22px 14px}form{padding:16px}.fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.fields label:last-child{grid-column:1/-1}.actions{align-items:flex-start}button{width:100%}.saved{gap:10px}}
 </style></head><body><main>
 <div class="eyebrow">Project Resurrection / your experiment</div>
 <h1>What if we changed their world?</h1>
 <p class="intro">Choose the conditions, run the simulator, then watch your lynx population. Every experiment is saved separately.</p>
 <form id="experiment"><fieldset id="settings"><div class="fields">
-<label>Rabbit food level<input id="food" name="food" type="number" min="0" max="100" step="any" value="4.6" required><span class="help">Rabbits per hectare. Try 1, 4.6 or 55.</span></label>
+<label>Rabbit food level<select id="food" name="food" required><option value="1">1</option><option value="5" selected>5</option><option value="15">15</option><option value="25">25</option><option value="35">35</option><option value="45">45</option><option value="55">55</option></select><span class="help">Rabbits per hectare. Choose one of these seven food levels.</span></label>
 <label>Land per patch<input id="area" name="area" type="number" min="1" max="1000" step="any" value="100" required><span class="help" id="total-area">Two patches: 200 square kilometres in total.</span></label>
 <label>Starting lynxes<input id="population" name="population" type="number" min="4" max="200" step="4" value="20" required><span class="help">Multiples of 4; equal sexes and patch allocation.</span></label>
 <label>Months to simulate<input id="months" name="months" type="number" min="1" max="120" step="1" value="36" required><span class="help">12 months = 1 year. Up to 10 years.</span></label>
@@ -36,6 +37,17 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 <div class="saved"><label for="saved-runs">Saved experiments in this session<select id="saved-runs"></select></label>
 <div class="links"><a id="open-viewer" target="_blank" rel="noopener">Open saved viewer</a><a id="download-results" download="results.json">Download results</a><a id="download-input" download="input.json">Download settings</a></div></div>
 <details id="evidence"><summary id="evidence-title">Research notes</summary><div id="evidence-notes"></div></details>
+<section class="comparison" aria-label="Research versus this experiment">
+<h2>Research vs. this experiment</h2>
+<p id="comparison-run" class="explanation"></p>
+<p id="food-comparison" class="meaning"></p><p id="land-comparison" class="meaning"></p>
+<p id="comparison-outcome"></p>
+<p class="explanation">The research estimates below are inputs to the model. The run uses those values to calculate outcomes. The low–high ranges come from the research table and can include team assumptions; they are not all statistical confidence intervals. Open a source note to see the distinction.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Research values and values used in the saved run"><table>
+<thead><tr><th scope="col">Research value</th><th scope="col">Research estimate / range</th><th scope="col">Used by this run</th><th scope="col">Evaluator finding</th></tr></thead>
+<tbody id="comparison-rows"></tbody></table></div>
+<p class="explanation">Real historical population comparison: not assessed for this synthetic experiment. A pass on an automatic check does not establish that a research estimate is scientifically correct.</p>
+</section>
 <section aria-label="Evaluator review">
 <button id="evaluate" type="button">Send to Evaluator</button>
 <p class="explanation">This sends the saved run's automatic artifact checks to the Claude Evaluator using your local key. It can take up to two minutes. The check verdict is recorded separately from Claude's explanation. Historical accuracy is not assessed.</p>
@@ -77,8 +89,33 @@ function show(result){
   if(!lines.length)lines.push('No evidence warnings were recorded. This does not establish scientific validity.');
   lines.forEach(text=>{const p=document.createElement('p');p.textContent=text;$('evidence-notes').append(p)});
   $('evidence').open=evidence.warnings.length>0;
+  showComparison(result);
   showReview(result.review);
   changed();
+}
+function showComparison(result){
+  const data=result.comparison,format=value=>Array.isArray(value)?value.join('–'):new Intl.NumberFormat(undefined,{maximumFractionDigits:4}).format(value);
+  $('comparison-run').textContent='From the research snapshot saved with run '+data.run_id+'. These values follow the saved experiment, even if you edit the form above.';
+  $('food-comparison').textContent=`Your food: ${format(data.food)} rabbits per hectare. The model's breeding threshold: ${format(data.food_threshold)}. `+(data.food_allows_breeding?'Food permits breeding; season, age, territory and eligible males must also allow it.':'Food is below the threshold, so this model allows no births.');
+  $('land-comparison').textContent=data.patches.map(p=>`Patch ${p.id}: ${format(p.area)} square kilometres → space for ${p.female_capacity} female territories; ${p.starting_females} starting females.`).join(' ');
+  const outcome=data.outcomes;
+  $('comparison-outcome').textContent=`Simulated outcome: ${outcome.starting_population} → ${outcome.final_population} lynxes; ${outcome.births} births and ${outcome.deaths} deaths over the run.`;
+  $('comparison-rows').replaceChildren();
+  data.rows.forEach(row=>{
+    const number=value=>/probability|proportion/.test(row.research_units)?`${format(value)} (${format(value*100)}%)`:format(value);
+    const tr=document.createElement('tr');tr.dataset.parameter=row.name;
+    const label=document.createElement('td');label.textContent=row.label;
+    const notes=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Sources & confidence';notes.append(summary);
+    [`Confidence: ${row.confidence}. ${row.confidence_reason}`,row.evidence_note,...row.sources.map(s=>s.key+': '+s.citation)].forEach(text=>{const p=document.createElement('p');p.textContent=text;notes.append(p)});label.append(notes);
+    const research=document.createElement('td');research.textContent=`${number(row.research_value)} (range ${number(row.low)}–${number(row.high)})`;
+    const researchUnits=document.createElement('small');researchUnits.textContent=row.research_units;research.append(researchUnits);
+    const used=document.createElement('td');used.textContent=number(row.used_value);const units=document.createElement('small');units.textContent=row.used_units;used.append(units);
+    const finding=document.createElement('td');finding.className='check-result';
+    if(!row.checks.length)finding.textContent='Value shown; no probability or scientific-validity verdict from these checks.';
+    else if(!result.review)finding.textContent='Not evaluated yet — send this run to the Evaluator.';
+    else{const checks=result.review.evaluation.checks.filter(check=>row.checks.includes(check.name));finding.textContent=checks.length?checks.map(check=>(check.passed?'Passed: ':'Failed: ')+check.detail).join(' '):'This check was not reached; see the evaluation report.'}
+    tr.append(label,research,used,finding);$('comparison-rows').append(tr);
+  });
 }
 function showReview(review){
   $('evaluation-report').hidden=!review;
@@ -102,7 +139,7 @@ $('evaluate').addEventListener('click',async()=>{
   try{
     const response=await fetch(`/api/runs/${selected.run_id}/evaluate`,{method:'POST',headers:{'Content-Type':'application/json','X-Experiment-Token':token},body:'{}'});
     const result=await response.json();if(!response.ok)throw new Error(result.error||'Evaluation did not complete.');
-    selected.review=result;showReview(result);
+    selected.review=result;showReview(result);showComparison(selected);
   }catch(error){$('evaluation-status').textContent=error.message;$('evaluate').disabled=false}
   finally{$('settings').disabled=false;$('saved-runs').disabled=false}
 });
