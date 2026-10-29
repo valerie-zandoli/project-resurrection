@@ -6,6 +6,7 @@ snapshot, so a run is judged against the bytes that it was built from.
 
 import os
 import shutil
+import stat
 from pathlib import Path
 
 from validators.evidence_gate import EVIDENCE_FILE
@@ -13,6 +14,24 @@ from validators.handoff_hashes import file_sha256
 
 RESEARCH_FILES = ("data/parameters/iberian_lynx_baseline.csv", "data/parameters/sources.csv")
 SNAPSHOT_FILES = (*RESEARCH_FILES, EVIDENCE_FILE)
+
+
+def remove_snapshot(output):
+    """Remove only this case's snapshot, including Windows read-only copies."""
+    output = Path(output)
+    snapshot = output / "snapshot"
+    if not snapshot.resolve().is_relative_to(output.resolve()):
+        raise OSError("snapshot cleanup target is outside the case directory")
+    if not snapshot.exists():
+        return
+
+    def writable_retry(function, path, error):
+        if not isinstance(error, PermissionError):
+            raise error
+        os.chmod(path, stat.S_IWRITE | stat.S_IREAD)
+        function(path)
+
+    shutil.rmtree(snapshot, onexc=writable_retry)
 
 
 def make_snapshot(source_root, snapshot_root):
