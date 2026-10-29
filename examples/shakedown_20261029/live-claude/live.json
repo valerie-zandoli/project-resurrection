@@ -1,0 +1,96 @@
+{
+  "mode": "live_claude_attempt",
+  "status": "pass",
+  "reason": "every check passed",
+  "models": {
+    "researcher": "anthropic/claude-sonnet-5-5",
+    "developer": "anthropic/claude-sonnet-5-5",
+    "evaluator": "anthropic/claude-sonnet-5-5"
+  },
+  "litellm_version": "1.106.4",
+  "model_calls_attempted": 6,
+  "model_calls_completed": {
+    "researcher": 2,
+    "developer": 2,
+    "evaluator": 2
+  },
+  "max_model_calls": 12,
+  "options": {
+    "seed": 7,
+    "months": 12,
+    "food": 4.6,
+    "area": 50
+  },
+  "all_roles_received_model_replies": true,
+  "evidence_read_check": {
+    "answered": true,
+    "low": {
+      "expected": [
+        "annual_mortality_rate_all_causes",
+        "death_share_illegal_trapping",
+        "death_share_road_traffic",
+        "diet_rabbit_fraction",
+        "female_home_range_km2",
+        "food_level_high_rabbits_per_ha",
+        "food_level_low_rabbits_per_ha",
+        "food_level_medium_rabbits_per_ha",
+        "male_home_range_km2",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding"
+      ],
+      "reported": [
+        "annual_mortality_rate_all_causes",
+        "death_share_illegal_trapping",
+        "death_share_road_traffic",
+        "diet_rabbit_fraction",
+        "female_home_range_km2",
+        "food_level_high_rabbits_per_ha",
+        "food_level_low_rabbits_per_ha",
+        "food_level_medium_rabbits_per_ha",
+        "male_home_range_km2",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding"
+      ],
+      "missing": [],
+      "invented": []
+    },
+    "conflicts": {
+      "expected": [
+        "annual_mortality_rate_all_causes",
+        "breeding_age_min",
+        "dispersal_age_months",
+        "female_home_range_km2",
+        "food_level_medium_rabbits_per_ha",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding",
+        "sex_ratio_female_per_male_at_birth"
+      ],
+      "reported": [
+        "annual_mortality_rate_all_causes",
+        "breeding_age_min",
+        "dispersal_age_months",
+        "female_home_range_km2",
+        "food_level_medium_rabbits_per_ha",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding",
+        "sex_ratio_female_per_male_at_birth"
+      ],
+      "missing": [],
+      "invented": []
+    },
+    "pass": true
+  },
+  "historical_validation": "not_assessed",
+  "code_sha256": {
+    "harness/live_case.py": "c9517a026587394ee6a19d117c319efab92268ed59151f670bc3dd3ea61d16d6",
+    "harness/roles.py": "ccadbb890178e3e5db0c3e898167255d5a41cb4f03cedf4f66e46a43d74693ba",
+    "harness/litellm_provider.py": "7a11cb6079e89f01661269c841dc9651e3e072173ffde41173c66c7e3cbdba10",
+    "harness/three_role_preview.py": "dc118456b1b4f2209246045f7694fdfd7fea2f7421454a9556bded8e5dc2b517",
+    "harness/run_case.py": "72dd479fa94cb03264bbcc831aa4f2c667d9993ac10760ac3de82f323b526ee7",
+    "simulation/model.py": "10b0981454730ab25983a49fc737ebd7a170437dfee7ef2ea4417b9618c8c030",
+    "validators/results_checks.py": "072bdff77bb5f51f2d9b29be2971052f1b858ab126b6f384c015d163989d0977",
+    "prompts/researcher.md": "e6a85d44f1f276ac3365f95b54648e5299c595dc7918e002a29db594a2dda1eb",
+    "prompts/developer.md": "077111e31fc7c3720e8a04157a62a0849a4f0e9368b1d488b15f6bd96ef16d0f",
+    "prompts/evaluator.md": "bb815f986643af68f2d9860a335af9ae5a27570b8611d8d5f47f47791ec5ba7f"
+  }
+}
