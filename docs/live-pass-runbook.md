@@ -40,7 +40,7 @@ Every box must be checked by the person named.  A box that cannot be checked mea
 6. Read `trace.jsonl` line by line.  Check that each step is one numbered line; that each model step names the prompt version; that no key-like text appears; and that every cut text is marked as cut.
 7. Read `case.json` and `evaluation.json`.  Check that the status follows the code checks, that each issue has a code, a message, and a requested change, and that the model's explanation is at most 150 words per issue.
 8. Run one hand-back example:  a case with one required gap, so that the request goes out once, the single round runs, and the case stops on an unresolved gap (`docs/handback-path.md`).  Command (proposed by Anastasiya; scripted, so it needs no key):  `python -m harness.handback_example --output runs/shakedown-handback-1`.  Expect `Case stopped` on the female home range gap and exit code 1; the diet gap is logged as a limitation.  Copy the folder to `hand-back/` in the fallback bundle.
-9. Copy the case folders into the fallback folder with a note of the commit, the seed, the date, and the time (`docs/demo-plan.md`, "The fallback").  Commit them in a small pull request; never add `.env`.
+9. Copy the case folders into the fallback folder with a note of the commit, the seed, the date, and the time (`docs/demo-plan.md`, "The fallback").  Before anything is committed:  (a) read each `trace.jsonl` and `roles.jsonl` line by line (step 6), because since #129 a trace holds the full prompts and tool results and the redaction works by pattern only; (b) run `git status` to see which trace files and run folders are present, and add files by name (`git add <file>`), never `git add .` or `git add -A`; (c) once #133 merges, `trace.jsonl`, `roles.jsonl`, and `runs/` are ignored, so a trace that you have read and chosen to commit needs `git add -f <file>`.  Commit them in a small pull request; never add `.env`.
 10. Ask one question before the freeze:  did any step show a flaw in the contract (the schemas) or in the parameter table?  If yes, fix it in a commit that says why, run the tests, and repeat steps 4 to 8.  If no, freeze.
 
 ## The freeze (Friday 2026-10-30, midday)
@@ -55,6 +55,8 @@ Fill the four items in `docs/history-preregistration.md` under "TO FILL at the f
 | Trial batches, 100 pilot and 500 final trials per cell | no | `python -m simulation.experiments --preview --stage pilot --seed <seed> --trials 100 --months 120 --output batch-1` (for the 500-trial final batch, use `--stage final --trials 500`; `--stage` has no default) |
 | One live pass through the three roles | yes | **TO FILL** (Anastasiya) |
 | One hand-back example | no (scripted; proposed) | `python -m harness.handback_example --output final-handback-1` (copy to `hand-back/` in the fallback bundle) |
+
+Each command writes its output folder inside the repository.  Treat every `trace.jsonl` and `roles.jsonl` in them as in step 9:  read it before it goes to Git, Slack, a slide, or an email.
 
 ## If something fails
 
