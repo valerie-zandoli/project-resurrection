@@ -10,7 +10,9 @@ hashes, compares them at every handoff, counts the revision rounds (at most 3), 
 """
 
 import json
+import os
 import shutil
+import stat
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -23,10 +25,12 @@ from simulation.model import REPO, preview_config, simulate
 from validators.evidence_gate import STAGES, check_evidence
 from validators.handoff_hashes import check_files_current, check_handoff_hashes
 from validators.parameters import validate_parameters
-from validators.results_checks import build_evaluation
+from validators.results_checks import CHECKS, build_evaluation, check_identity
 
 MAX_ROUNDS = 3
 EVALUATION_SCHEMA = json.loads((REPO / "schemas" / "evaluation.schema.json").read_text(encoding="utf-8"))
+RESULTS_SCHEMA = json.loads((REPO / "schemas" / "results.schema.json").read_text(encoding="utf-8"))
+REQUIRED_CHECKS = {"input_schema", "results_schema", *(name for name, _ in CHECKS)}
 
 
 class HarnessError(Exception):
@@ -60,11 +64,30 @@ def _write(path, data):
     path.write_text(json.dumps(data, indent=2, allow_nan=False) + "\n", encoding="utf-8")
 
 
+def _remove_snapshot(output):
+    """Remove only this case's snapshot, including Windows read-only copies."""
+    snapshot = output / "snapshot"
+    if not snapshot.resolve().is_relative_to(output.resolve()):
+        raise OSError("snapshot cleanup target is outside the case directory")
+    if not snapshot.exists():
+        return
+
+    def writable_retry(function, path, error):
+        if not isinstance(error, PermissionError):
+            raise error
+        os.chmod(path, stat.S_IWRITE | stat.S_IREAD)
+        function(path)
+
+    shutil.rmtree(snapshot, onexc=writable_retry)
+
+
 def run_case(output, *, options, source_root=REPO, developer=simulator_developer,
              evaluator=code_evaluator, max_rounds=MAX_ROUNDS):
     """Run one case into a new folder.  `options` holds seed, months, food, and area, and may hold
     `stage` ("pilot" by default, or "final"), which sets how strict the evidence gate is."""
     output = Path(output)
+    if type(max_rounds) is not int or not 0 <= max_rounds <= MAX_ROUNDS:
+        raise HarnessError(f"max_rounds must be an integer from 0 to {MAX_ROUNDS}")
     stage = options.get("stage", "pilot")
     if stage not in STAGES:
         raise HarnessError(f"stage must be one of {', '.join(STAGES)}, not {stage!r}")
@@ -86,14 +109,20 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
         _write(output / "case.json", summary)
         return CaseResult(status, reason, state["attempts"], issues, output, state["evidence"])
 
+    def reject_snapshot(reason):
+        try:
+            _remove_snapshot(output)
+        except OSError as exc:
+            reason += f"; snapshot cleanup failed: {exc}"
+        return finish("rejected", reason, [])
+
     # 1. Snapshot and hash.  The agents carry these hashes unchanged.
     snapshot_root = output / "snapshot"
     try:
         state["hashes"] = make_snapshot(source_root, snapshot_root)
     except OSError as exc:
         trace.add("harness", "research files could not be copied", validator=str(exc))
-        shutil.rmtree(snapshot_root, ignore_errors=True)  # no half-made snapshot is left to read
-        return finish("rejected", f"research files could not be read: {exc}", [])
+        return reject_snapshot(f"research files could not be read: {exc}")
     trace.input_hashes = state["hashes"]
     trace.add("harness", "read-only snapshot of the research files made", validator="ok")
 
@@ -103,8 +132,7 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
     errors = validate_parameters(*paths)
     if errors:
         trace.add("harness", "research files failed validation", validator=errors)
-        shutil.rmtree(snapshot_root, ignore_errors=True)  # nothing that failed validation is left for an agent to read
-        return finish("rejected", "research files failed validation: " + "; ".join(errors[:3]), [])
+        return reject_snapshot("research files failed validation: " + "; ".join(errors[:3]))
     trace.add("harness", "research files passed validation", validator="ok")
 
     # 1b. The evidence gate, as CODE:  a malformed evidence file, or (in a final run) a contradiction
@@ -112,8 +140,7 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
     gate_errors, state["evidence"] = check_evidence(snapshot_root, *paths, stage)
     if gate_errors:
         trace.add("harness", "evidence gate stopped the case", validator=gate_errors, tool_args=dict(stage=stage))
-        shutil.rmtree(snapshot_root, ignore_errors=True)  # nothing that the gate refused is left for an agent to read
-        return finish("rejected", "evidence gate: " + "; ".join(gate_errors), [])
+        return reject_snapshot("evidence gate: " + "; ".join(gate_errors))
     gate = state["evidence"]
     trace.add("harness", f"evidence gate passed ({stage}):  {len(gate['low'])} low, "
               f"{len(gate['conflicts'])} with a recorded conflict, {len(gate['not_checked'])} not checked",
@@ -154,6 +181,13 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
                       revision_round=round_number)
             return finish("rejected", "research snapshot changed during the Developer step (no retry): "
                           + "; ".join(errors))
+        try:
+            json.dumps(results, allow_nan=False)
+            jsonschema.validate(results, RESULTS_SCHEMA)
+        except (TypeError, ValueError, jsonschema.ValidationError) as exc:
+            reason, _ = scrub(f"invalid Developer results: {exc}")
+            trace.add("harness", reason, revision_round=round_number)
+            return finish("rejected", reason + " (no retry)")
         _write(round_dir / "results.json", results)
         trace.add("developer", "results returned", tool="run_model", tool_args=options,
                   tool_result=f"persisted={results.get('persisted')}", revision_round=round_number)
@@ -162,6 +196,10 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
             trace.add("harness", "hashes differ between input and results", validator=errors,
                       revision_round=round_number)
             return finish("rejected", "hash mismatch between input and results (no retry): " + "; ".join(errors))
+        matched, detail, _ = check_identity(config, results, {})
+        if not matched or results["revision_round"] != round_number:
+            return finish("rejected", "results identity mismatch (no retry): "
+                          + (detail if not matched else "revision_round differs from the active round"))
 
         try:
             evaluation = evaluator(config, results, snapshot_root, round_number)
@@ -171,6 +209,12 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
             reason, _ = scrub(f"evaluator failed with {type(exc).__name__}: {exc}")
             trace.add("evaluator", reason, tool="check_artifacts", revision_round=round_number)
             return finish("failed", reason + " (no retry)")
+        if evaluation["run_id"] != config["run_id"] or evaluation["revision_round"] != round_number:
+            return finish("rejected", "evaluation identity mismatch: run_id or revision_round differs "
+                          "from the active run (no retry)")
+        names = [check["name"] for check in evaluation["checks"]]
+        if not REQUIRED_CHECKS <= set(names) or len(names) != len(set(names)):
+            return finish("rejected", "evaluation must report every required check exactly once (no retry)")
         _write(round_dir / "evaluation.json", evaluation)
         issues = evaluation["issues"]
         state["issues"] = issues
