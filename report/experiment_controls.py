@@ -15,7 +15,7 @@ from pathlib import Path
 
 import jsonschema
 
-from harness.snapshot import make_snapshot
+from harness.snapshot import make_snapshot, remove_snapshot
 from report.lynx_viewer import render_viewer
 from simulation.model import REPO, load_parameters, preview_config, simulate, summary, validate_config
 from validators.evidence_gate import check_repository
@@ -89,6 +89,9 @@ def run_experiment(settings, output_root, source_root=REPO):
                     record_url=f'/runs/{run_id}/preview.json')
     except Exception:
         # Only this freshly allocated, incomplete run may be removed.
+        if not directory.resolve().is_relative_to(Path(output_root).resolve()):
+            raise OSError('Incomplete run cleanup target is outside the output root')
+        remove_snapshot(directory)
         shutil.rmtree(directory)
         raise
 

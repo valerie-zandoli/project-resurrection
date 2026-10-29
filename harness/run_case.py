@@ -10,16 +10,13 @@ hashes, compares them at every handoff, counts the revision rounds (at most 3), 
 """
 
 import json
-import os
-import shutil
-import stat
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import jsonschema
 
 from harness.handback import OWNERS, Case
-from harness.snapshot import RESEARCH_FILES, check_snapshot_current, make_snapshot
+from harness.snapshot import RESEARCH_FILES, check_snapshot_current, make_snapshot, remove_snapshot
 from harness.trace import Trace, scrub
 from simulation.model import REPO, preview_config, simulate
 from validators.evidence_gate import STAGES, check_evidence
@@ -64,23 +61,6 @@ def _write(path, data):
     path.write_text(json.dumps(data, indent=2, allow_nan=False) + "\n", encoding="utf-8")
 
 
-def _remove_snapshot(output):
-    """Remove only this case's snapshot, including Windows read-only copies."""
-    snapshot = output / "snapshot"
-    if not snapshot.resolve().is_relative_to(output.resolve()):
-        raise OSError("snapshot cleanup target is outside the case directory")
-    if not snapshot.exists():
-        return
-
-    def writable_retry(function, path, error):
-        if not isinstance(error, PermissionError):
-            raise error
-        os.chmod(path, stat.S_IWRITE | stat.S_IREAD)
-        function(path)
-
-    shutil.rmtree(snapshot, onexc=writable_retry)
-
-
 def run_case(output, *, options, source_root=REPO, developer=simulator_developer,
              evaluator=code_evaluator, max_rounds=MAX_ROUNDS):
     """Run one case into a new folder.  `options` holds seed, months, food, and area, and may hold
@@ -111,7 +91,7 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
 
     def reject_snapshot(reason):
         try:
-            _remove_snapshot(output)
+            remove_snapshot(output)
         except OSError as exc:
             reason += f"; snapshot cleanup failed: {exc}"
         return finish("rejected", reason, [])
