@@ -4,6 +4,8 @@ Seed: the first 8 bytes of SHA-256 of the run ID, which is 4308562050698547274. 
 
 For each row, open the primary source and check that the value or range appears in it and that the source supports the claim.  Write `correct`, `incorrect`, or `unavailable` (a source that cannot be reached is reported apart).  Bar:  9 of 10 correct, or the batch stops.
 
+Checked by Valerie Zandoli on 2026-10-28 and 2026-10-29, one row at a time, from images of the quoted passages in the papers and on the catsg page.  Claude Code wrote the table and located each quote beforehand, so this is a person's confirmation of located quotes and not a blind search.  It shows that each value appears in its source and that the source supports the claim; it does not show that any value is the right one for the model.
+
 | # | Parameter | Baseline (low to high) | Units | Group | Sources and how each was read | Result | Note |
 |---|---|---|---|---|---|---|---|
 | 1 | `food_level_medium_rabbits_per_ha` | 4.6 (4.0 to 6.0) | rabbits per hectare | food input for the simulation | palomares2001 (full text read (scanned PDF, read by eye in the browser; abstract and discussion on 2026-10-24, the rest on 2026-10-25 except the cover and photograph pages; the rotated vegetation table on PDF page 9 only in part)); palomares2005 (full text) | `correct` | Palomares 2001 abstract (monograph p. 2): "rabbit densities as low as 1 and 4.6/ha ... were enough to sustain the lynx population"; Fig. 13 (p. 25) shows spring 1996 at about 4.6; p. 29 gives "at least one rabbit per hectare".  Caveat:  the same monograph (p. 31) says it "could not determine" the effect of density on females breeding, litter size, or cub survival, and Palomares 2005 (p. 57) says 4 per hectare in spring "might be close to critical".  The number is in the source; how far to lean on it is the row's stated assumption. |
@@ -21,6 +23,6 @@ For each row, open the primary source and check that the value or range appears 
 
 | Batch | Rows checked | Correct | Unavailable | Running total correct |
 |---|---|---|---|---|
-| shakedown-2026-10-29 | 10 |  |  |  |
+| shakedown-2026-10-29 | 10 | 10 | 0 | 10 of 10 (100%) |
 
 Review the audit design if the running total falls below 90% after 30 rows (a guess).
