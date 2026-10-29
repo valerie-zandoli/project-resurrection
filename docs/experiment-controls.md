@@ -89,3 +89,29 @@ was produced. No observed historical population is invented for synthetic
 settings. Editing the form leaves the panel attached to the saved run until a
 new run finishes or another saved run is chosen. The panel data is also saved
 as `research-comparison.json` alongside the results.
+
+## Preliminary historical comparison
+
+To make one development-only comparison, using five trials of the current
+uncalibrated model through 2010:
+
+```sh
+python -m report.history_preview --output /tmp/history-development-preview
+python -m report.experiment_controls --output /tmp/lynx-experiments --history-preview /tmp/history-development-preview/report.json
+```
+
+The page shows observed 2002/2010 counts, simulated medians and min–max counts
+across the five trials, differences and the growth comparison. This uses the
+separate historical initialization (53 lynxes, including 25 adults), total area
+750 square kilometres, food 4.6 and the research table's mortality, not the
+interactive form's settings. Source keys identify the observed counts.
+
+This is not calibration or the final history verdict. The seed is 20261028,
+different from the preregistered final seed. The preview never calls calibration
+or the held-out function and stops every trial at month 96 (2010). It never
+computes a 2011 outcome. Five trials are a development check, not an accuracy
+claim. The report, raw trial populations, input and research snapshot are saved
+to a new folder; existing output is never overwritten. The history report is
+read once at server startup and is independent of new interactive experiments.
+Without --history-preview, the panel is hidden. This does not change the final
+history procedure or its freeze requirements.
