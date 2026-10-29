@@ -14,7 +14,7 @@ from harness.provider import FakeProvider
 from harness.roles import RoleError, run_role, wrap_untrusted
 from harness.run_case import HarnessError, run_case, simulator_developer
 from harness.snapshot import RESEARCH_FILES
-from harness.trace import Trace, scrub
+from harness.trace import Trace, sanitize, scrub
 from simulation.model import REPO
 from validators.evidence_gate import EVIDENCE_FILE, check_evidence
 from validators.handoff_hashes import check_files_current
@@ -129,14 +129,18 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
     def record(role, outcome, round_number, **extra):
         text, removed = scrub(outcome["text"], limit=2000)
         path = output / f"round_{round_number}" / f"{role}.json"
-        path.write_text(json.dumps(dict(role=role, revision_round=round_number,
+        data, notes = sanitize(dict(role=role, revision_round=round_number,
                                        text=text, removed_text=removed,
                                        steps=outcome["steps"],
                                        prompt_version=outcome["prompt_version"],
-                                       tools_used=list(outcome["tool_results"]), **extra), indent=2) + "\n")
+                                       tools_used=list(outcome["tool_results"]), **extra))
+        data["removed_text"] += notes
+        path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
     def developer(config, round_number, issues, root):
         nonlocal research, graded
+        trace.run_id = config["run_id"]
+        trace.revision_round = round_number
         trace.input_hashes = {path: config[key] for path, key in zip(
             RESEARCH_FILES, ("parameters_sha256", "sources_sha256"))}
         if research is None:
@@ -195,6 +199,8 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
         return outcome["tool_results"]["run_model"]
 
     def evaluator(config, results, root, round_number):
+        trace.run_id = config["run_id"]
+        trace.revision_round = round_number
         checked = False
 
         def check_artifacts():
