@@ -52,7 +52,7 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 <section class="comparison" id="history-preview" hidden aria-label="Preliminary historical comparison">
 <div class="eyebrow">Early check · separate from your experiment below</div>
 <h2>Real counts vs. the model: 2002–2010</h2>
-<p id="history-settings"></p>
+<div id="calibration-result" hidden></div><p id="history-settings"></p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Year</th><th scope="col">Real count</th><th scope="col">Simulated count</th><th scope="col">Difference</th></tr></thead><tbody id="history-rows"></tbody></table></div>
 <p id="history-growth" class="meaning"></p>
 <p class="explanation">Preliminary development preview, not the final history verdict. Five trials are too few to establish accuracy. The model has not been calibrated for this preview. The 2002 count sets the starting population; it is not a prediction. Values from Doñana are transferred to Andújar–Cardeña, and 750 square kilometres is a boundary assumption. The reserved 2011 test has not been run. Changing the food or land below does not change this separate saved comparison.</p>
@@ -138,7 +138,16 @@ new ResizeObserver(animateHeader).observe($('project-hero'));
 async function loadHistoryPreview(){
   try{
     const response=await fetch('/api/history-preview');if(!response.ok)return;
-    const {preview}=await response.json();if(!preview)return;
+    const {preview,calibration}=await response.json();
+    if(calibration){
+      const box=$('calibration-result');box.hidden=false;
+      const title=document.createElement('h3');title.textContent='Preliminary historical calibration: '+(calibration.within_tolerance?'Growth target met':'Growth target not met');
+      const text=document.createElement('p');text.textContent=`2002–2010 only · ${calibration.chosen_mortality*100}% annual mortality · annual growth ${calibration.chosen_median_growth.toFixed(3)} (target 1.17; band 1.12–1.22). ${calibration.settings} settings × ${calibration.trials} trials; seed ${calibration.seed}.`;
+      const limit=document.createElement('p');limit.textContent='Final historical accuracy: Not tested yet. This saved development calibration fits the growth target, not every yearly count. It does not change your experiment settings. The reserved 2011 test has not been run.';
+      box.replaceChildren(title,text,limit);$('history-preview').hidden=false;
+    }
+    if(!preview)return;
+    const old=document.createElement('h3');old.textContent='Earlier uncalibrated comparison';$('history-settings').before(old);
     const number=value=>new Intl.NumberFormat(undefined,{maximumFractionDigits:2}).format(value);
     $('history-settings').textContent=`Andújar–Cardeña · ${preview.trials} trials · seed ${preview.seed} · ${preview.area_km2} square kilometres total · food ${preview.food} rabbits per hectare · annual mortality ${number(preview.annual_mortality*100)}%.`;
     preview.rows.forEach(row=>{

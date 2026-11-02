@@ -98,3 +98,24 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+def read_calibration(path):
+    """Read an explicitly selected development-only calibration, never run history."""
+    if path is None:
+        return None
+    report = json.loads(Path(path).read_text())
+    if (report.get('kind') != 'development_calibration_only'
+            or report.get('heldout_run') is not False or report.get('through_year') != 2010):
+        raise ValueError('Only a development calibration ending in 2010 may be displayed.')
+    rows = report['rows']
+    if not rows or any(not 0.10 <= row['mortality'] <= 0.50 for row in rows):
+        raise ValueError('Calibration mortality must remain in the agreed range.')
+    chosen = min(rows, key=lambda row: (abs(row['median_growth'] - 1.17), row['mortality']))
+    if (chosen['mortality'] != report['chosen_mortality']
+            or chosen['median_growth'] != report['chosen_median_growth']
+            or type(report['trials']) is not int or report['trials'] < 1):
+        raise ValueError('Calibration summary does not match its saved grid.')
+    return dict(chosen_mortality=chosen['mortality'], chosen_median_growth=chosen['median_growth'],
+                within_tolerance=1.12 <= chosen['median_growth'] <= 1.22,
+                settings=len(rows), trials=report['trials'], seed=report['seed'])

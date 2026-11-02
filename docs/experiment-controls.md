@@ -119,3 +119,10 @@ to a new folder; existing output is never overwritten. The history report is
 read once at server startup and is independent of new interactive experiments.
 Without --history-preview, the panel is hidden. This does not change the final
 history procedure or its freeze requirements.
+
+To display the saved development calibration without running any new simulation,
+add `--history-calibration examples/development_calibration_20261029/calibration.json`
+to the experiment-controls command. It may be shown with `--history-preview` for
+the earlier uncalibrated comparison. The calibration fits 2002–2010 growth only;
+it is separate from the synthetic experiment, does not alter its settings, and
+is not a 2011 held-out verdict. Its seed differs from the preregistered final seed.
