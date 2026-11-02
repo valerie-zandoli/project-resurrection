@@ -34,6 +34,10 @@ class HarnessError(Exception):
     """The harness could not start (for example, the output folder exists)."""
 
 
+class RevisionBlocked(Exception):
+    """A fixed tool cannot make a permitted correction; stop for human review."""
+
+
 @dataclass
 class CaseResult:
     status: str  # pass, stop, rejected, or failed
@@ -152,6 +156,10 @@ def run_case(output, *, options, source_root=REPO, developer=simulator_developer
 
         try:
             results = developer(config, round_number, issues, snapshot_root)
+        except RevisionBlocked as exc:
+            reason, _ = scrub(f"no_progress: {exc}")
+            trace.add("developer", reason, revision_round=round_number)
+            return finish("stop", reason)
         except Exception as exc:  # a failure of the Developer is reported, never retried
             reason, _ = scrub(f"developer failed with {type(exc).__name__}: {exc}")
             trace.add("developer", reason, tool="run_model", revision_round=round_number)

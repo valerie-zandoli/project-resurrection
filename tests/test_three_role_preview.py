@@ -105,8 +105,9 @@ def test_misleading_explanations_cannot_override_the_verdict_or_revision_cap(tmp
         reply for _ in range(4) for reply in (call("check_artifacts"), say("It passes!"))
     ])
     result = pipeline.run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
-    assert result.status == "stop" and result.attempts == 4 and result.issues
-    assert not (tmp_path / "case/round_4").exists()
+    assert result.status == "stop" and result.attempts == 2 and result.issues
+    assert "no_progress" in result.reason
+    assert not (tmp_path / "case/round_2").exists()
     assert len(providers["researcher"].calls) == 2  # one step of reads, one answer, once per case
     task = providers["developer"].calls[2]["messages"][0]["content"]
     assert "Prior code-check issues" in task and "requested_change" in task
@@ -237,3 +238,59 @@ def test_the_command_prints_the_caption_first_and_last_and_the_manifest_carries_
     caption = "Caption: scripted preview; the Researcher inspects existing tables"
     assert lines[0] == caption and lines[-1] == caption
     assert json.loads((output / "pipeline.json").read_text())["caption"] == pipeline.CAPTION
+
+
+def test_developer_repairs_flag_then_independent_evaluator_accepts(tmp_path, monkeypatch):
+    original = pipeline.simulator_developer
+    runs = []
+    def wrong(config, round_number, issues, root):
+        runs.append(round_number)
+        results = original(config, round_number, issues, root)
+        results['persisted'] = not results['persisted']
+        return results
+    monkeypatch.setattr(pipeline, 'simulator_developer', wrong)
+    providers = pipeline.scripted_providers()
+    providers['developer'] = FakeProvider([
+        call('run_model'), say('Initial result ready for checking.'),
+        call('run_model', action='repair_persistence'), say('Flag corrected; evaluator must recheck.')])
+    output = tmp_path / 'repair'
+    result = pipeline.run_three_role_case(output, providers=providers, options=OPTIONS)
+    assert result.status == 'pass' and result.attempts == 2
+    assert runs == [0]  # correction must not rerun the simulator
+    first = json.loads((output / 'round_0/results.json').read_text())
+    second = json.loads((output / 'round_1/results.json').read_text())
+    assert first['persisted'] != second['persisted']
+    assert {k:v for k,v in first.items() if k not in ('persisted', 'revision_round')} == {
+        k:v for k,v in second.items() if k not in ('persisted', 'revision_round')}
+    assert json.loads((output / 'round_0/evaluation.json').read_text())['status'] == 'revise'
+    evaluation = json.loads((output / 'round_1/evaluation.json').read_text())
+    assert evaluation['status'] == 'pass' and all(c['passed'] for c in evaluation['checks'])
+    records = [json.loads(line) for line in (output / 'roles.jsonl').read_text().splitlines()]
+    assert any(r['event'] == 'revision_repair' for r in records)
+
+
+def test_repair_cannot_be_used_before_evaluator_finds_issue(tmp_path):
+    providers = pipeline.scripted_providers()
+    providers['developer'] = FakeProvider([call('run_model', action='repair_persistence')])
+    output = tmp_path / 'premature'
+    result = pipeline.run_three_role_case(output, providers=providers, options=OPTIONS)
+    assert result.status == 'stop' and 'no_progress' in result.reason
+    assert not (output / 'round_0/results.json').exists()
+    assert providers['evaluator'].calls == []
+
+
+def test_unsupported_issue_cannot_be_hidden_by_persistence_repair(tmp_path, monkeypatch):
+    original = pipeline.simulator_developer
+    def wrong(config, round_number, issues, root):
+        result = original(config, round_number, issues, root)
+        result['history'][-1]['births'] += 1
+        return result
+    monkeypatch.setattr(pipeline, 'simulator_developer', wrong)
+    providers = pipeline.scripted_providers()
+    providers['developer'] = FakeProvider([
+        call('run_model'), say('Ready.'),
+        call('run_model', action='repair_persistence')])
+    result = pipeline.run_three_role_case(tmp_path / 'unsupported', providers=providers, options=OPTIONS)
+    assert result.status == 'stop' and 'no_progress' in result.reason
+    assert result.issues
+    assert not (tmp_path / 'unsupported/round_1/evaluation.json').exists()

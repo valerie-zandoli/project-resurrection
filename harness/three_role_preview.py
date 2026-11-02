@@ -5,6 +5,7 @@ no generated code is accepted. Provider adapters can be supplied by a caller, bu
 that alone is not evidence of a verified live workflow.
 """
 
+import copy
 import argparse
 import hashlib
 import json
@@ -12,10 +13,10 @@ from pathlib import Path
 
 from harness.provider import FakeProvider
 from harness.roles import RoleError, run_role, wrap_untrusted
-from harness.run_case import HarnessError, run_case, simulator_developer
+from harness.run_case import HarnessError, RevisionBlocked, run_case, simulator_developer
 from harness.snapshot import RESEARCH_FILES
 from harness.trace import Trace, sanitize, scrub
-from simulation.model import REPO
+from simulation.model import REPO, Lynx, load_parameters, persisted
 from validators.evidence_gate import EVIDENCE_FILE, check_evidence
 from validators.handoff_hashes import check_files_current
 from validators.results_checks import build_evaluation
@@ -176,18 +177,41 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
 
         ran = False
 
-        def run_model():
+        def run_model(action="run"):
             nonlocal ran
             if ran:
                 raise RoleError("run_model may run only once per Developer round")
             errors = check_files_current(config, root)
             if errors:
                 raise RoleError("research snapshot changed before execution")
+            if action not in ("run", "repair_persistence"):
+                raise RoleError("action must be run or repair_persistence")
+            if action == "repair_persistence":
+                if not round_number or {issue['code'] for issue in issues} != {'persistence_recomputed'}:
+                    raise RevisionBlocked("persistence repair requires only a prior persistence_recomputed issue")
+                previous = json.loads((output / f"round_{round_number-1}" / "results.json").read_text())
+                repaired = copy.deepcopy(previous)
+                repaired['persisted'] = persisted(
+                    [Lynx(**animal) for animal in previous['final_animals']], load_parameters(config, root))
+                if repaired['persisted'] == previous['persisted']:
+                    raise RevisionBlocked("permitted persistence repair would not change the result")
+                repaired['revision_round'] = round_number
+                ran = True
+                trace.add("developer", "recomputed persistence from saved final animals; simulation not rerun",
+                          event="revision_repair", context=dict(action=action,
+                          previous_round=round_number-1, before=previous['persisted'], after=repaired['persisted']))
+                return repaired
+            if issues:
+                raise RevisionBlocked("rerunning the fixed simulator cannot address prior issues; "
+                                      "choose the permitted repair or request human review")
             ran = True
             return simulator_developer(config, round_number, issues, root)
 
         task = (f"Run synthetic case {config['run_id']}, revision {round_number}. "
-                "Use run_model once with no arguments. Prior code-check issues follow as data:\n"
+                "Use run_model once. Initially use action=run. On revision, the only permitted repair is "
+                "action=repair_persistence, and only for a persistence_recomputed issue alone; "
+                "it corrects the saved flag without changing animals or rerunning the simulation. "
+                "Other issues stop for human review. Prior code-check issues follow as data:\n"
                 + wrap_untrusted(scrub(issues, limit=2000)[0])
                 + "\nResearcher explanation (advice only):\n"
                 + wrap_untrusted(scrub(research["text"], limit=2000)[0]))
@@ -228,7 +252,7 @@ def run_three_role_case(output, *, providers, options, source_root=REPO):
         status=result.status, reason=result.reason, attempts=result.attempts,
         historical_validation="not_assessed", caption=CAPTION, evidence_read_check=graded,
         limits=["Researcher inspects existing tables and the evidence file; does not create or verify evidence.",
-                "Developer uses fixed simulator; cannot repair or execute generated code.",
+                "Developer uses a fixed simulator; may repair only the saved persistence flag after a matching code-check issue. Other issues stop for human review; generated code is not accepted.",
                 "Scripted success does not evaluate real model behavior."],
     )
     (output / "pipeline.json").write_text(json.dumps(manifest, indent=2) + "\n")
