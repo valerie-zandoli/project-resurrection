@@ -63,10 +63,10 @@ def test_existing_folder_is_refused_before_creating_providers(tmp_path):
                        provider_factory=lambda role: pytest.fail('must not start'))
 
 
-def test_run_model_declaration_accepts_no_model_controlled_arguments():
+def test_run_model_declaration_only_allows_bounded_actions():
     from harness.litellm_provider import _tool_spec
     assert _tool_spec('run_model')['function']['parameters'] == {
-        'type': 'object', 'properties': {}, 'additionalProperties': False}
+        'type': 'object', 'properties': {'action': {'type': 'string', 'enum': ['run', 'repair_persistence']}}, 'additionalProperties': False}
 
 
 @pytest.mark.parametrize('role', ('researcher', 'developer', 'evaluator'))
