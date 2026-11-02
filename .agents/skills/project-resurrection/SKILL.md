@@ -143,10 +143,13 @@ and semicolon-separated source references with `validators/parameters.py`.
 Structural acceptance does not establish biological correctness.
 
 Evidence labels live in the separate `evidence_columns_DRAFT.csv` sidecar; the
-parameter table keeps its eight-column contract. Evidence validation/gating,
-snapshotting, and a separate batched clarification helper are implemented.
-Inspect current entrypoints before claiming a helper is wired into a runtime
-clarification loop. Preserve approved labels, reference syntax, and failure rules.
+parameter table keeps its eight-column contract. Evidence validation/gating
+and snapshotting are implemented and run in the harness. The hand-back
+bookkeeping for one batched Researcher round (`harness/handback.py`) is
+implemented and tested, but no run calls it yet, and the scripted three-role
+preview does not implement researcher clarification. Inspect current
+entrypoints before claiming a runtime clarification loop. Preserve approved
+labels, reference syntax, and failure rules.
 Count underlying evidence per claim rather than all studies mentioned in a report.
 Human audits and two additional planted flaws also remain planned work.
 
