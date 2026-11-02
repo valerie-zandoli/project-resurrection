@@ -3,7 +3,9 @@
   "runner": "Claude Code, at Valerie Zandoli's direct instruction",
   "code_commit": "33550920bdc72941873741bab5a89f696f60996d",
   "code_identical_to_freeze": "0aee597fa2229a6cb97bf057de5f26d9ae8d8328",
-  "python": "3.12.14",
+  "python": "3.12.15",
+  "freeze_python": "3.12.14",
+  "python_note": "Patch release differs from the freeze record; batch outputs unchanged, not rerun.",
   "run_seed": 20261102,
   "pilot": {
     "trials_per_cell": 100,

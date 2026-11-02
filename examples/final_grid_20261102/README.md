@@ -1,6 +1,6 @@
 # Final grid — pilot and final batches, 2026-11-02
 
-Runner: Claude Code, at Valerie Zandoli's direct instruction, after Anastasiya Glegg named the seed in Slack (2026-11-02, 12:36 EST). Ran from commit `3355092`, code-identical to the frozen commit `0aee597` (no change to `simulation/`, `schemas/`, or `validators/` between the two). Python 3.12.14, seed 20261102.
+Runner: Claude Code, at Valerie Zandoli's direct instruction, after Anastasiya Glegg named the seed in Slack (2026-11-02, 12:36 EST). Ran from commit `3355092`, code-identical to the frozen commit `0aee597` (no change to `simulation/`, `schemas/`, or `validators/` between the two). Python 3.12.15, seed 20261102. The freeze record lists Python 3.12.14; this run used the next patch release, 3.12.15, as both batch manifests record. The batch outputs are unchanged and were not rerun.
 
 ## What this is
 
