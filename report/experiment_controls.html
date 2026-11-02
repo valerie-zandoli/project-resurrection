@@ -88,6 +88,16 @@ iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12p
 <a id="download-evaluation" download="evaluation-report.json">Download evaluation report</a>
 </div></section>
 </section>
+<section class="comparison" id="history-final" hidden aria-label="Final historical comparison">
+<div class="eyebrow">Completed November 2, 2026 · separate saved comparison</div>
+<h2>Final historical comparison: <span id="history-final-verdict"></span></h2>
+<p>Andújar–Cardeña · calibrated on 2002–2010 · reserved 2011 count checked separately.</p>
+<div class="table-wrap"><table><thead><tr><th>Check</th><th>Model median</th><th>Observed target</th><th>Accepted range</th><th>Result</th></tr></thead><tbody id="history-final-rows"></tbody></table></div>
+<p id="history-final-settings"></p>
+<p class="explanation">These are saved results from the frozen model, not a historical verdict on your current experiment. Passing two checks is limited evidence, not a validated wildlife forecast. The 2011 count adds only one year beyond calibration.</p>
+<details><summary>See historical comparison limits</summary><ul id="history-final-limits"></ul></details>
+<a href="/api/history-final" download="final-historical-comparison.json">Download final historical report</a>
+</section>
 <section class="comparison" id="history-preview" hidden aria-label="Preliminary historical comparison">
 <div class="eyebrow">Early check · separate saved historical comparison</div>
 <h2>Real counts vs. the model: 2002–2010</h2>
@@ -141,6 +151,7 @@ new ResizeObserver(animateHeader).observe($('project-hero'));
 async function loadHistoryPreview(){
   try{
     const response=await fetch('/api/history-preview');if(!response.ok)return;
+    if(!$('history-final').hidden)return;
     const {preview,calibration}=await response.json();
     if(calibration){
       const box=$('calibration-result');box.hidden=false;
@@ -163,7 +174,26 @@ async function loadHistoryPreview(){
     $('history-preview').hidden=false;
   }catch(error){/* A history preview is optional; experiment controls remain usable. */}
 }
-loadHistoryPreview();
+async function loadFinalHistory(){
+  try{
+    const response=await fetch('/api/history-final');if(!response.ok)throw new Error('unavailable');
+    const report=await response.json(),main=report.areas.find(arm=>arm.main_run),held=main.heldout;
+    $('history-final-verdict').textContent=report.verdict.result==='pass'?'Both checks passed':'Checks did not both pass';
+    const number=value=>new Intl.NumberFormat(undefined,{maximumFractionDigits:4}).format(value);
+    for(const [label,value,target,bounds,passed] of [
+      ['Annual growth multiplier',held.growth.median,1.17,report.bounds.growth,report.verdict.growth_within_bounds],
+      ['2011 total population',held.count_2011.median,202,report.bounds.count_2011,report.verdict.count_2011_within_bounds]]){
+      const tr=document.createElement('tr');
+      [label,number(value),number(target),bounds.map(number).join('–'),passed?'Passed':'Failed'].forEach(value=>{const td=document.createElement('td');td.textContent=value;tr.append(td)});
+      $('history-final-rows').append(tr);
+    }
+    $('history-final-settings').textContent=`${held.trials} reserved-test trials · seed ${report.run_seed} · ${main.total_area_km2} km² total · calibrated annual mortality ${number(held.mortality*100)}%. 2011 simulated 10th–90th percentile: ${number(held.count_2011.p10)}–${number(held.count_2011.p90)}; acceptance applies to the median.`;
+    for(const text of report.must_say){const li=document.createElement('li');li.textContent=text;$('history-final-limits').append(li)}
+    $('history-final').hidden=false;
+  }catch(error){/* Optional archive unavailable: preserve development preview. */}
+  await loadHistoryPreview();
+}
+loadFinalHistory();
 function values(){return Object.fromEntries(['food','area','population','months','seed'].map(id=>[id,Number($(id).value)]))}
 function changed(){
   const area=Number($('area').value);

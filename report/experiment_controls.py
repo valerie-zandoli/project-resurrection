@@ -20,6 +20,7 @@ from report.lynx_viewer import render_viewer
 from report.preview_evaluator import evaluate_preview
 from report.research_comparison import research_comparison
 from report.history_preview import read_panel, read_calibration
+from report.final_history import read_final_history
 from harness.litellm_provider import LiteLLMProvider, DEFAULT_ENV_FILE
 from simulation.model import REPO, load_parameters, preview_config, simulate, summary, validate_config
 from validators.evidence_gate import check_repository
@@ -150,6 +151,9 @@ class PreviewHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self.correct_host():
             self.respond(403, {'error': 'Open the local address printed by the server.'})
+            return
+        if self.path == '/api/history-final':
+            self.respond(200, read_final_history())
             return
         if self.path == '/api/history-preview':
             self.respond(200, {'preview': self.server.history_preview, 'calibration': self.server.history_calibration})
