@@ -60,9 +60,14 @@ is historical context, not a reason to revert the later user-approved rules.
 - Provider fields differ by tab (proposed vs undecided); preserve proposal status
   consistently until the partners decide.
 
-## Pending task: update the repository PRD
+## Historical pending task: update the repository PRD
 
-No dedicated repo PRD file was found in the inspected develop tree. Before
+Status correction, October 29, 2026: `docs/prd.md` now exists and records the
+October 25 decision to use 202 ±10% for the held-out 2011 count. The paragraphs
+below describe the earlier inspection, not outstanding work to recreate that
+file. Read the current repository PRD before treating any old status as active.
+
+No dedicated repo PRD file was found in the earlier inspected develop tree. Before
 simulation integration is finalized, prepare a focused documentation PR from
 current develop to create/update `docs/prd.md`, unless the team chooses another
 canonical path. Re-read the latest Google PRD, synchronize all substantive

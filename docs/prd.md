@@ -17,6 +17,11 @@ agreed on October 25 (#45 and #49), and the held-out 2011 target now reads 202 (
 was not read again for this refresh; where it still gives other values, it is out of date, and its
 owner is to update it.
 
+Implementation-status correction, October 29, 2026: the runtime section and
+completed persistence/settlement items below were checked against `develop`.
+This is a targeted repository status correction, not a new full Google PRD sync
+or a change to biological assumptions, tolerances, or approval status.
+
 This specification consolidates all four project tabs: **PRD: Net new build**,
 **PRD: New feature**, **Agent PRD: Net new build**, and **Agent PRD: New feature**.
 Strong PRD Example is reference material. Requirements are not evidence that the
@@ -285,12 +290,14 @@ environment, and time/memory limits. A directory alone is not a sandbox. Runtime
 tools must not contact people, publish, merge, or take conservation actions.
 Preserve sources and redact secrets from logs.
 
-Parameter validation, schemas/examples, content-hash helpers, and automated
-checks exist. Numerical simulation (a first synthetic preview was merged in PR #40
-on October 24, 2026; no experiment has been run), the complete harness, runtime role agents,
-and end-to-end enforcement remain pending at synchronization. Test passes are
-not runtime results. Claude through LiteLLM with personal locally stored keys is
-the provider proposal; a direct-provider key check does not prove full integration.
+Parameter validation, schemas/examples, content-hash helpers, numerical simulation,
+the offline harness, independent result checks, and role tooling are implemented.
+The default rehearsal uses scripted providers; an opt-in Claude/LiteLLM path is
+implemented in `harness/live_case.py`. Saved live integration runs and their
+limits are documented in [the live-workflow guide](live-workflow.md). These do
+not establish historical validation, final scientific results, source accuracy,
+or comparative agent performance. Full autonomous research/code generation and
+generated-code isolation are not demonstrated by this fixed-tool workflow.
 
 Detailed plans: [architecture](architecture.md), [evaluation](eval-plan.md),
 [execution isolation](execution-sandbox.md), [provider](runtime-provider.md), and
@@ -304,7 +311,7 @@ PR #33 proposes survival → aging → settlement → male movement → March bi
 recording; uniform litter sizes 2–4; and Wilson intervals plus population and
 extinction summaries. These conventions are not yet agreed. Before experiments:
 
-- Implement the agreed persistence/settled contract and independent runtime checks.
+- The agreed persistence/settled contract and independent runtime checks are implemented; preserve them while resolving the remaining scientific decisions.
 - Agree monthly ordering, litter sampling, historical initialization,
   observation/ensemble procedure, seed derivation, and aggregation. The usable
   area of the history run is the exception: both owners agreed on October 25,
@@ -315,7 +322,7 @@ extinction summaries. These conventions are not yet agreed. Before experiments:
   then the other, in one seeded random order per month; Anastasiya approved and
   merged it in #49 on October 25, 2026. Two other rules (own patch only, one
   try only) run as sensitivity checks, reported apart from the main grid; the
-  simulator has no option for them yet.
+  simulator exposes them as `monthly_own_patch_only` and `one_try_at_dispersal`.
 - Align crash handling with transient retry rules; define incomplete cells and
   denominators before running.
 - Finalize provider, execution limits/isolation, trace retention, and the shared

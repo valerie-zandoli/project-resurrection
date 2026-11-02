@@ -150,3 +150,14 @@ def test_cli_requires_preview_and_reports_success_or_failure(tmp_path):
     args = ['--preview', '--stage', 'pilot', '--trials', '1', '--months', '1', '--output', str(tmp_path / 'out')]
     assert experiments.main(args) == 0
     assert experiments.main(args) == 1
+
+
+def test_the_batch_records_the_stage_that_the_command_ran_at(tmp_path):
+    # A 500-trial pilot only warns at the evidence gate, so the batch must say which stage it ran at.
+    for stage in ('pilot', 'final'):
+        out = tmp_path / stage
+        assert experiments.main(['--preview', '--stage', stage, '--trials', '1', '--months', '1',
+                                 '--output', str(out)]) == 0
+        assert json.loads((out / 'batch.json').read_text())['stage'] == stage
+    # Called from Python, without the command and its gate, the batch says so.
+    assert experiments.run_batch(tmp_path / 'direct', trials=1, months=1)['stage'] is None

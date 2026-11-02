@@ -26,3 +26,7 @@ The three retry bounds and the 6-of-20 review bar are guesses, as in the decisio
 - It does not check the parameter table; the validator does.
 - It does not count developer revisions (rounds 0 to 3); `docs/evaluator-checks.md` covers that stop.
 - It does not yet have a schema file for requests and responses; add one when the pair agrees on the shape.
+
+## The hand-back example (proposed by Anastasiya, 2026-10-27)
+
+`python -m harness.handback_example --output hand-back` runs these rules once on two real gaps in the research files, with scripted answers in place of a model, so it needs no key.  The Evaluator files one batched request:  a **required** gap, a measured female home range for Andujar-Cardena (the 10 km2 average comes from a web summary that names no study, and the model uses the home range to count territories), and an **optional** gap, a primary study for the rabbit share of the diet (the model does not use it).  The scripted Researcher answers both as unresolved.  The case stops on the required gap and names both owners, the optional gap becomes a logged limitation, and a second round is refused.  It writes `case.json` and `trace.jsonl` in the shape that `scripts/check_fallback.py` expects for `hand-back/`, and every screen it prints starts and ends with the caption "scripted hand-back example; no model is called".  Tests:  `tests/test_handback_example.py`.  It shows the code path, not a Researcher's judgment; a live hand-back needs the roles to file requests, which is not built.

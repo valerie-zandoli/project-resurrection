@@ -1,0 +1,74 @@
+{
+  "case_id": "shakedown-offline-1",
+  "status": "pass",
+  "reason": "every check passed",
+  "attempts": 1,
+  "run_ids": [
+    "preview-7"
+  ],
+  "issues": [],
+  "research_sha256": {
+    "data/parameters/iberian_lynx_baseline.csv": "b76fe642bfbcac51c18c087f00aadc0a60f6e36bafe5d152cff659b3a0cf8312",
+    "data/parameters/sources.csv": "186870d96510c03c56a6e492c190a80c3792b67b27dfe1fe45a4285c39433fdf",
+    "data/parameters/evidence_columns_DRAFT.csv": "f19ef904c735c10162d69268807a1aac6f72f5645e8bb8e942e8d22afa3e11e1"
+  },
+  "notify": [],
+  "clarification": null,
+  "evidence": {
+    "stage": "pilot",
+    "file": "data/parameters/evidence_columns_DRAFT.csv",
+    "sha256": "f19ef904c735c10162d69268807a1aac6f72f5645e8bb8e942e8d22afa3e11e1",
+    "confidence": {
+      "medium": 12,
+      "low": 11
+    },
+    "low": [
+      "annual_mortality_rate_all_causes",
+      "death_share_illegal_trapping",
+      "death_share_road_traffic",
+      "female_home_range_km2",
+      "male_home_range_km2",
+      "diet_rabbit_fraction",
+      "rabbit_density_spring_min_for_territorial_breeding",
+      "rabbit_density_autumn_min_for_territorial_breeding",
+      "food_level_low_rabbits_per_ha",
+      "food_level_medium_rabbits_per_ha",
+      "food_level_high_rabbits_per_ha"
+    ],
+    "not_checked": [],
+    "conflicts": {
+      "breeding_age_min": [
+        "source:palomares2005~source:catsg"
+      ],
+      "sex_ratio_female_per_male_at_birth": [
+        "source:palomares2005~source:eu_spain_report2018"
+      ],
+      "dispersal_age_months": [
+        "source:ferreras2004~source:catsg"
+      ],
+      "annual_mortality_rate_all_causes": [
+        "source:ferreras1992~source:palomares2005"
+      ],
+      "female_home_range_km2": [
+        "source:catsg~source:palomares2005",
+        "source:catsg~source:lopezbao2014",
+        "source:palomares2001a~source:palomares2005",
+        "source:palomares2001a~source:lopezbao2014",
+        "parameter:food_level_low_rabbits_per_ha",
+        "parameter:food_level_medium_rabbits_per_ha",
+        "parameter:food_level_high_rabbits_per_ha",
+        "source:palomares2001a~source:palomares2001"
+      ],
+      "rabbit_density_spring_min_for_territorial_breeding": [
+        "source:eu_spain_report2018~source:palomares2001"
+      ],
+      "rabbit_density_autumn_min_for_territorial_breeding": [
+        "source:eu_spain_report2018~source:palomares2001"
+      ],
+      "food_level_medium_rabbits_per_ha": [
+        "source:eu_spain_report2018~source:palomares2001"
+      ]
+    },
+    "warnings": []
+  }
+}

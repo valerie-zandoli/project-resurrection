@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your lynx experiment · Project Resurrection</title>
+<style>
+:root{color-scheme:light;--ink:#243e35;--muted:#576b61;--paper:#f6f5ed;--green:#234d3b}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,-apple-system,sans-serif}
+main{max-width:1240px;margin:auto;padding:30px 24px}.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:11px;font-weight:700;color:var(--muted)}
+h1{font:500 clamp(28px,4vw,43px)/1.15 Georgia,serif;margin:12px 0}p{margin:8px 0}.intro{color:var(--muted);max-width:720px}
+form{margin:24px 0;background:#fffdf8;border:1px solid #dce2d1;border-radius:20px;padding:22px}fieldset{margin:0;padding:0;border:0}
+.fields{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px}label{display:block;font-size:14px;font-weight:600}input,button,select{font:inherit}
+input,select{width:100%;border:1px solid #bdcbb5;background:#fffefa;color:var(--ink);border-radius:9px;padding:10px 12px;margin-top:7px;min-height:44px}
+.help{font-size:12px;font-weight:400;color:var(--muted);display:block;margin-top:6px}.actions{margin-top:22px;display:flex;align-items:center;flex-wrap:wrap;gap:14px}
+button{border:0;border-radius:11px;background:var(--green);color:#fff;padding:12px 22px;cursor:pointer;min-height:44px}button:disabled{opacity:.6;cursor:wait}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #da7e47;outline-offset:3px}.explanation{font-size:13px;color:var(--muted);margin-top:18px}
+#status{font-size:14px;flex:1;min-width:180px}#error{color:#8b3429;background:#faeee6;padding:12px 16px;border-radius:10px;margin-bottom:16px}
+[hidden]{display:none!important}.saved{display:flex;gap:20px;align-items:end;flex-wrap:wrap;margin:20px 0}.saved label{flex:1;min-width:200px}.links{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;padding-bottom:11px}a{color:var(--green)}
+details{font-size:13px;color:var(--muted);margin-bottom:16px}summary{cursor:pointer;color:var(--ink);padding:8px 0}details p{overflow-wrap:anywhere}
+.empty{min-height:240px;display:grid;place-content:center;text-align:center;border:1px dashed #becdb3;border-radius:20px;padding:25px;background:#eaf0db}.empty strong{font:500 25px Georgia,serif}.empty p{color:var(--muted)}
+iframe{display:block;width:100%;border:0;min-height:1100px}.footer{font-size:12px;color:var(--muted);margin:20px 0}
+.comparison{margin:22px 0;padding:22px;border:1px solid #dce2d1;border-radius:20px;background:#fffdf8}.comparison h2{font:500 27px Georgia,serif;margin:0 0 10px}.comparison .meaning{padding:12px 15px;border-radius:10px;background:#eaf0db}.comparison p{overflow-wrap:anywhere}.table-wrap{overflow-x:auto;margin-top:18px}table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{padding:12px 10px;border-bottom:1px solid #e1e6d8;vertical-align:top}th{background:#edf1e4;font-weight:600}td:first-child{min-width:180px}td small{display:block;color:var(--muted);margin-top:5px}td details{margin:8px 0 0}td details p{max-width:390px}.check-result{min-width:150px}#comparison-outcome{font-weight:600}
+.project-hero{position:relative;padding:96px 20px 25px;margin-bottom:25px;border-bottom:1px solid #ccd8be;background:radial-gradient(ellipse at 70% 40%,#e6edd5,transparent 65%);border-radius:28px 28px 0 0;isolation:isolate}.project-title{display:flex;justify-content:center;align-items:baseline;flex-wrap:wrap;gap:18px 28px;font:500 clamp(32px,7vw,84px)/1.3 Georgia,serif;letter-spacing:-.045em;margin:0;color:#244a38}.project-title span{position:relative;white-space:nowrap}.project-title span:after{content:'';position:absolute;height:5px;left:5%;right:3%;bottom:7px;border-radius:50%;background:#adc18c55;z-index:-1}.hero-animal{position:absolute;top:0;left:0;width:94px;height:76px;pointer-events:none;will-change:transform}.hero-rabbit{width:66px;height:76px}.hero-tagline{text-align:center;font-size:13px;color:#59705b;margin:15px 0 0}.hero-controls{display:flex;justify-content:center;margin-top:13px}#header-motion{width:auto;min-height:32px;padding:4px 12px;background:transparent;border:1px solid #c5d0bb;color:#536b55;font-size:11px;border-radius:20px}.question-title{font:500 clamp(24px,3vw,35px)/1.2 Georgia,serif;margin:18px 0 9px}@media(max-width:580px){.project-hero{padding:92px 8px 20px}.project-title{gap:66px 18px;font-size:clamp(32px,8.5vw,48px)}.hero-tagline{font-size:12px}.hero-animal{width:78px;height:64px}.hero-rabbit{width:54px;height:64px}}
+@media(max-width:900px){.fields{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:580px){main{padding:22px 14px}form{padding:16px}.fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.fields label:last-child{grid-column:1/-1}.actions{align-items:flex-start}button{width:100%}.saved{gap:10px}}
+</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap"><style>body,h1,h2,h3,p,input,button,select,table,summary,.project-title,.question-title,.empty strong{font-family:'Space Grotesk',sans-serif!important}</style><style>#reset,#previous,#next,.research-expand>summary{background:#c5a44b!important;color:#202c22!important;border-color:#a88a3c!important}.research-expand>summary{font-size:16px!important;min-height:48px;padding:12px 22px!important;display:list-item;width:fit-content;box-sizing:border-box}#evaluation-report details:not(.research-expand){margin:12px 0}#evaluation-checks{font-size:13px}</style><style>.research-expand>summary{cursor:pointer;padding:14px 18px;border:1px solid #c5d0bb;border-radius:12px;font-weight:600;color:#244a38}.research-expand[open]>summary{margin-bottom:18px}.research-expand>summary:focus-visible{outline:3px solid #59705b;outline-offset:3px}</style><style>#reset{font-weight:700}</style></head><body><main>
+<header class="project-hero" id="project-hero">
+<h1 class="project-title" aria-label="Project Resurrection"><span id="title-project">Project</span><span id="title-resurrection">Resurrection</span></h1>
+<svg class="hero-animal hero-rabbit" id="header-rabbit" viewBox="0 0 90 100" aria-hidden="true">
+<ellipse cx="44" cy="91" rx="27" ry="4" fill="#607b3922"/><ellipse cx="40" cy="73" rx="25" ry="17" fill="#d4c8ae"/>
+<circle cx="17" cy="70" r="9" fill="#f4eee0"/><ellipse cx="60" cy="43" rx="7" ry="24" fill="#dfd3bb" transform="rotate(-13 60 43)"/><ellipse cx="74" cy="40" rx="6" ry="23" fill="#dfd3bb" transform="rotate(9 74 40)"/>
+<ellipse cx="60" cy="42" rx="3" ry="16" fill="#dea8a0" transform="rotate(-13 60 42)"/><ellipse cx="74" cy="40" rx="2.5" ry="16" fill="#dea8a0" transform="rotate(9 74 40)"/>
+<ellipse cx="65" cy="65" rx="18" ry="16" fill="#e7dcc4"/><ellipse cx="69" cy="73" rx="13" ry="8" fill="#fff8e9"/><circle cx="72" cy="61" r="3" fill="#263f32"/><circle cx="73" cy="60" r="1" fill="white"/><circle cx="82" cy="69" r="2.6" fill="#b77b74"/>
+<ellipse cx="48" cy="87" rx="14" ry="5" fill="#b5a78d"/><ellipse cx="70" cy="85" rx="10" ry="4" fill="#eee3ce"/>
+</svg>
+<svg class="hero-animal" id="header-lynx" viewBox="0 0 130 105" aria-hidden="true">
+<ellipse cx="65" cy="97" rx="44" ry="5" fill="#607b3922"/>
+<path d="M30 70Q8 61 16 50" fill="none" stroke="#b57c3f" stroke-width="11" stroke-linecap="round"/><path d="M15 52L16 48" stroke="#344338" stroke-width="9" stroke-linecap="round"/>
+<ellipse cx="56" cy="70" rx="34" ry="21" fill="#cc9654"/><ellipse cx="48" cy="89" rx="15" ry="7" fill="#edc58a"/><ellipse cx="87" cy="90" rx="14" ry="6" fill="#edc58a"/>
+<path d="M70 37L69 13L86 28M99 28L117 13L112 42" fill="#d5a263" stroke="#d5a263" stroke-width="5" stroke-linejoin="round"/>
+<path d="M69 16L65 3M71 16L73 5M116 16L118 2M114 16L111 4" stroke="#344338" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M74 29L73 21L82 29M105 30L113 21L110 34" fill="#c37f70"/>
+<ellipse cx="92" cy="51" rx="29" ry="26" fill="#dfb578"/>
+<path d="M66 50L55 62L70 64L64 74L83 68M116 48L127 61L114 64L119 73L103 67" fill="#f1d4a3"/>
+<ellipse cx="81" cy="51" rx="7" ry="9" fill="#fff5d9"/><ellipse cx="103" cy="51" rx="7" ry="9" fill="#fff5d9"/><ellipse cx="83" cy="51" rx="3" ry="6" fill="#294638"/><ellipse cx="105" cy="51" rx="3" ry="6" fill="#294638"/>
+<circle cx="84" cy="48" r="1.5" fill="white"/><circle cx="106" cy="48" r="1.5" fill="white"/>
+<ellipse cx="87" cy="65" rx="10" ry="8" fill="#fff5df"/><ellipse cx="100" cy="65" rx="10" ry="8" fill="#fff5df"/><path d="M89 59L98 59L94 65Z" fill="#664d3e"/><path d="M94 65Q91 71 86 68M94 65Q98 71 102 68" fill="none" stroke="#664d3e" stroke-width="1.5"/>
+<g fill="#775b35"><ellipse cx="37" cy="65" rx="3" ry="4"/><ellipse cx="48" cy="76" rx="3" ry="4"/><ellipse cx="60" cy="62" rx="3" ry="4"/><ellipse cx="32" cy="78" rx="2" ry="3"/><ellipse cx="76" cy="37" rx="2" ry="3"/><ellipse cx="92" cy="32" rx="2" ry="3"/><ellipse cx="111" cy="38" rx="2" ry="3"/></g>
+</svg>
+<p class="hero-tagline">One Small Hop for a Rabbit, One Giant Leap for Iberian Lynx</p>
+<div class="hero-controls"><button id="header-motion" type="button" aria-pressed="false">Pause animation</button></div>
+</header>
+<h2 class="question-title">What if we changed their world?</h2>
+<p class="intro">The Researcher reads the research inputs. The Simulator runs your experiment. The Evaluator checks the saved results. Change food and land to explore how the simulated lynx population changes. Every experiment is saved separately.</p>
+
+<form id="experiment"><fieldset id="settings"><div class="fields">
+<label>Rabbit food level<select id="food" name="food" required><option value="1">Low · 1</option><option value="4.6" selected>Medium · 4.6</option><option value="55">High · 55</option></select><span class="help">Rabbits per hectare. Three fixed experiment settings, not ranges.</span></label>
+<label>Land per patch<input id="area" name="area" type="number" min="1" max="1000" step="any" value="100" required><span class="help" id="total-area">Two patches: 200 square kilometres in total.</span></label>
+<label>Starting lynxes<input id="population" name="population" type="number" min="4" max="200" step="4" value="20" required><span class="help">Multiples of 4; equal sexes and patch allocation.</span></label>
+<label>Months to simulate<input id="months" name="months" type="number" min="1" max="120" step="1" value="36" required><span class="help">12 months = 1 year. Up to 10 years.</span></label>
+<label>Random seed<input id="seed" name="seed" type="number" min="0" max="4294967295" step="1" value="42" required><span class="help">A number that lets us repeat the same random events.</span></label>
+</div><div class="actions"><button id="run" type="submit">Run my experiment</button><span id="status" role="status" aria-live="polite">Ready when you are.</span></div></fieldset>
+<p class="explanation">The research table supplies survival and breeding values. Food stays constant and affects breeding in this model. Starting ages are generated from 3–8 years. These controls run the existing numerical simulator, with no AI calls.</p>
+</form>
+<div class="empty" id="empty"><strong>Your little world starts here.</strong><p>Choose your settings above and press “Run my experiment.”</p></div>
+<iframe id="viewer" title="Your saved lynx simulation" hidden></iframe>
+<p id="error" role="alert" hidden></p>
+<section id="saved-section" hidden aria-label="Saved previews">
+<div class="saved"><label for="saved-runs">Saved experiments in this session<select id="saved-runs"></select></label>
+<div class="links"><a id="open-viewer" target="_blank" rel="noopener">Open saved viewer</a><a id="download-results" download="results.json">Download results</a><a id="download-input" download="input.json">Download settings</a></div></div>
+<details id="evidence"><summary id="evidence-title">Research notes</summary><div id="evidence-notes"></div></details>
+<section class="comparison" aria-label="Research versus this experiment"><details class="research-expand"><summary>Show research comparison</summary>
+<h2>Research vs. this experiment</h2>
+<p id="comparison-run" class="explanation"></p>
+<p id="food-comparison" class="meaning"></p><p id="land-comparison" class="meaning"></p>
+<p id="comparison-outcome"></p>
+<p class="explanation">The research estimates below are inputs to the model. The run uses those values to calculate outcomes. The low–high ranges come from the research table and can include team assumptions; they are not all statistical confidence intervals. Open a source note to see the distinction.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Research values and values used in the saved run"><table>
+<thead><tr><th scope="col">Research value</th><th scope="col">Research estimate / range</th><th scope="col">Used by this run</th><th scope="col">Evaluator finding</th></tr></thead>
+<tbody id="comparison-rows"></tbody></table></div>
+<p class="explanation">Real historical population comparison: not assessed for this synthetic experiment. A pass on an automatic check does not establish that a research estimate is scientifically correct.</p>
+</details></section>
+<section aria-label="Evaluator review">
+<button id="evaluate" type="button">Send to Evaluator</button>
+<p class="explanation">This sends the saved run's automatic artifact checks to the Claude Evaluator using your local key. It can take up to two minutes. The check verdict is recorded separately from Claude's explanation. Historical accuracy is not assessed.</p>
+<p id="evaluation-status" role="status" aria-live="polite">This experiment has not been sent for evaluation.</p>
+<div id="evaluation-report" hidden>
+<p><strong id="evaluation-verdict"></strong></p><p id="evaluation-short"></p><p><strong>Historical accuracy: Not assessed</strong></p><p class="explanation">This check does not compare your experiment with real population history.</p><details><summary>Full Claude explanation</summary><p id="evaluation-explanation" style="white-space:pre-wrap"></p></details>
+<ul id="evaluation-issues"></ul>
+<details><summary>See every check</summary><ul id="evaluation-checks"></ul></details>
+<a id="download-evaluation" download="evaluation-report.json">Download evaluation report</a>
+</div></section>
+</section>
+<section class="comparison" id="history-preview" hidden aria-label="Preliminary historical comparison">
+<div class="eyebrow">Early check · separate saved historical comparison</div>
+<h2>Real counts vs. the model: 2002–2010</h2>
+<div id="calibration-result" hidden></div><p id="history-settings"></p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Year</th><th scope="col">Real count</th><th scope="col">Simulated count</th><th scope="col">Difference</th></tr></thead><tbody id="history-rows"></tbody></table></div>
+<p id="history-growth" class="meaning"></p>
+<p class="explanation">Preliminary development preview, not the final history verdict. Five trials are too few to establish accuracy. The model has not been calibrated for this preview. The 2002 count sets the starting population; it is not a prediction. Values from Doñana are transferred to Andújar–Cardeña, and 750 square kilometres is a boundary assumption. The reserved 2011 test has not been run. Changing your experiment’s food or land does not change this separate saved comparison.</p>
+</section>
+
+
+<p class="footer">One synthetic preview explores what happens under this model's assumptions. It is not a final experiment batch or a validated wildlife forecast. The numerical simulator produces the run; the Evaluator reviews it separately when requested. Animals, rabbit symbols and locations in the viewer are illustrations.</p>
+</main><script>
+'use strict';
+const token='__SESSION_TOKEN__',$=id=>document.getElementById(id),saved=new Map();
+let active=null,viewerObserver=null;
+const headerReduced=matchMedia('(prefers-reduced-motion: reduce)');
+let headerAnimations=[],headerPaused=headerReduced.matches;
+function animateHeader(){
+  headerAnimations.forEach(animation=>animation.cancel());headerAnimations=[];
+  const hero=$('project-hero').getBoundingClientRect(),start=$('title-project').getBoundingClientRect(),end=$('title-resurrection').getBoundingClientRect();
+  for(const [id,offset,delay] of [['header-rabbit',25,0],['header-lynx',-35,480]]){
+    const animal=$(id),w=animal.clientWidth,h=animal.clientHeight;
+    const x1=Math.max(0,Math.min(hero.width-w,start.left-hero.left+start.width/2+offset-w/2));
+    const x2=Math.max(0,Math.min(hero.width-w,end.left-hero.left+end.width/2+offset-w/2));
+    const y1=start.top-hero.top-h+12,y2=end.top-hero.top-h+12;
+    const pose=(x,y,rotation=0)=>`translate(${x}px,${y}px) rotate(${rotation}deg)`;
+    animal.style.transform=pose(id==='header-rabbit'&&headerReduced.matches?x2:x1,id==='header-rabbit'&&headerReduced.matches?y2:y1);
+    if(headerReduced.matches)continue;
+    const animation=animal.animate([
+      {transform:pose(x1,y1),opacity:1,offset:0},
+      {transform:pose(x1,y1+3,-5),opacity:1,offset:.12},
+      {transform:pose(x1+(x2-x1)*.5,Math.min(y1,y2)-57,-9),opacity:1,offset:.28},
+      {transform:pose(x2,y2,5),opacity:1,offset:.44},
+      {transform:pose(x2,y2),opacity:1,offset:.49},
+      {transform:pose(x2,y2),opacity:1,offset:.74},
+      {transform:pose(x2,y2),opacity:0,offset:.8},
+      {transform:pose(x1,y1),opacity:0,offset:.83},
+      {transform:pose(x1,y1),opacity:1,offset:.9},
+      {transform:pose(x1,y1),opacity:1,offset:1}
+    ],{duration:5600,delay,iterations:Infinity,easing:'ease-in-out'});
+    if(headerPaused||document.hidden)animation.pause();headerAnimations.push(animation);
+  }
+  $('header-motion').hidden=headerReduced.matches;
+  $('header-motion').textContent=headerPaused?'Play animation':'Pause animation';
+  $('header-motion').setAttribute('aria-pressed',String(headerPaused));
+}
+$('header-motion').addEventListener('click',()=>{headerPaused=!headerPaused;headerAnimations.forEach(a=>headerPaused?a.pause():a.play());$('header-motion').textContent=headerPaused?'Play animation':'Pause animation';$('header-motion').setAttribute('aria-pressed',String(headerPaused))});
+headerReduced.addEventListener('change',()=>{headerPaused=headerReduced.matches;animateHeader()});
+document.addEventListener('visibilitychange',()=>headerAnimations.forEach(a=>document.hidden||headerPaused?a.pause():a.play()));
+new ResizeObserver(animateHeader).observe($('project-hero'));
+async function loadHistoryPreview(){
+  try{
+    const response=await fetch('/api/history-preview');if(!response.ok)return;
+    const {preview,calibration}=await response.json();
+    if(calibration){
+      const box=$('calibration-result');box.hidden=false;
+      const title=document.createElement('h3');title.textContent='Preliminary historical calibration: '+(calibration.within_tolerance?'Growth target met':'Growth target not met');
+      const text=document.createElement('p');text.textContent=`2002–2010 only · ${calibration.chosen_mortality*100}% annual mortality · annual growth ${calibration.chosen_median_growth.toFixed(3)} (target 1.17; band 1.12–1.22). ${calibration.settings} settings × ${calibration.trials} trials; seed ${calibration.seed}.`;
+      const limit=document.createElement('p');limit.textContent='Final historical accuracy: Not tested yet. This saved development calibration fits the growth target, not every yearly count. It does not change your experiment settings. The reserved 2011 test has not been run.';
+      box.replaceChildren(title,text,limit);$('history-preview').hidden=false;
+    }
+    if(!preview)return;
+    const old=document.createElement('h3');old.textContent='Earlier uncalibrated comparison';$('history-settings').before(old);
+    const number=value=>new Intl.NumberFormat(undefined,{maximumFractionDigits:2}).format(value);
+    $('history-settings').textContent=`Andújar–Cardeña · ${preview.trials} trials · seed ${preview.seed} · ${preview.area_km2} square kilometres total · food ${preview.food} rabbits per hectare · annual mortality ${number(preview.annual_mortality*100)}%.`;
+    preview.rows.forEach(row=>{
+      const tr=document.createElement('tr');
+      [row.year,number(row.observed),`${number(row.simulated_median)} median (${number(row.simulated_min)}–${number(row.simulated_max)} across five trials)`,`${row.difference>0?'+':''}${number(row.difference)} (${number(row.difference_percent)}%)`].forEach(text=>{const td=document.createElement('td');td.textContent=text;tr.append(td)});
+      const source=document.createElement('small');source.textContent=`Source: ${row.source}`+(row.initialization?' · starting condition':'');tr.children[1].append(source);$('history-rows').append(tr);
+    });
+    const inside=preview.simulated_growth>=preview.growth_bounds[0]&&preview.simulated_growth<=preview.growth_bounds[1];
+    $('history-growth').textContent=`Annual growth multiplier: real counts ${number(preview.observed_growth)}; model median ${number(preview.simulated_growth)}. This early result is ${inside?'inside':'outside'} the planned growth band of ${preview.growth_bounds.join('–')}. This is not the final pass/fail result.`;
+    $('history-preview').hidden=false;
+  }catch(error){/* A history preview is optional; experiment controls remain usable. */}
+}
+loadHistoryPreview();
+function values(){return Object.fromEntries(['food','area','population','months','seed'].map(id=>[id,Number($(id).value)]))}
+function changed(){
+  const area=Number($('area').value);
+  $('total-area').textContent=Number.isFinite(area)&&area>0?`Two patches: ${area*2} square kilometres in total.`:'Enter the usable land area of each patch.';
+  if(active)$('status').textContent=Object.entries(active.settings).every(([key,value])=>values()[key]===value)
+    ?'The viewer below shows these settings.'
+    :'Settings changed. Run again to see their effect; the viewer still shows the saved experiment.';
+}
+function show(result){
+  $('error').hidden=true;
+  active=result;$('saved-section').hidden=false;$('empty').hidden=true;$('viewer').hidden=false;
+  $('viewer').src=result.viewer_url;$('open-viewer').href=result.viewer_url;
+  $('download-results').href=result.results_url;$('download-input').href=result.input_url;
+  $('saved-runs').value=result.run_id;
+  const evidence=result.evidence;
+  $('evidence-title').textContent=`Research notes: ${evidence.low.length} low-confidence values, ${Object.keys(evidence.conflicts).length} recorded disagreements`;
+  $('evidence-notes').replaceChildren();
+  const lines=[...evidence.warnings];
+  if(evidence.low.length)lines.push('Low-confidence values: '+evidence.low.map(s=>s.replaceAll('_',' ')).join('; ')+'.');
+  if(Object.keys(evidence.conflicts).length)lines.push('Recorded source disagreements: '+Object.keys(evidence.conflicts).map(s=>s.replaceAll('_',' ')).join('; ')+'.');
+  if(!lines.length)lines.push('No evidence warnings were recorded. This does not establish scientific validity.');
+  lines.forEach(text=>{const p=document.createElement('p');p.textContent=text;$('evidence-notes').append(p)});
+  $('evidence').open=evidence.warnings.length>0;
+  showComparison(result);
+  showReview(result.review);
+  changed();
+}
+function showComparison(result){
+  const data=result.comparison,format=value=>Array.isArray(value)?value.join('–'):new Intl.NumberFormat(undefined,{maximumFractionDigits:4}).format(value);
+  $('comparison-run').textContent='From the research snapshot saved with run '+data.run_id+'. These values follow the saved experiment, even if you edit the form above.';
+  $('food-comparison').textContent=`Your food: ${format(data.food)} rabbits per hectare. The model's breeding threshold: ${format(data.food_threshold)}. `+(data.food_allows_breeding?'Food permits breeding; season, age, territory and eligible males must also allow it.':'Food is below the threshold, so this model allows no births.');
+  $('land-comparison').textContent=data.patches.map(p=>`Patch ${p.id}: ${format(p.area)} square kilometres → space for ${p.female_capacity} female territories; ${p.starting_females} starting females.`).join(' ');
+  const outcome=data.outcomes;
+  $('comparison-outcome').textContent=`Simulated outcome: ${outcome.starting_population} → ${outcome.final_population} lynxes; ${outcome.births} births and ${outcome.deaths} deaths over the run.`;
+  $('comparison-rows').replaceChildren();
+  data.rows.forEach(row=>{
+    const number=value=>/probability|proportion/.test(row.research_units)?`${format(value)} (${format(value*100)}%)`:format(value);
+    const tr=document.createElement('tr');tr.dataset.parameter=row.name;
+    const label=document.createElement('td');label.textContent=row.label;
+    const notes=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Sources & confidence';notes.append(summary);
+    [`Confidence: ${row.confidence}. ${row.confidence_reason}`,row.evidence_note,...row.sources.map(s=>s.key+': '+s.citation)].forEach(text=>{const p=document.createElement('p');p.textContent=text;notes.append(p)});label.append(notes);
+    const research=document.createElement('td');research.textContent=`${number(row.research_value)} (range ${number(row.low)}–${number(row.high)})`;
+    const researchUnits=document.createElement('small');researchUnits.textContent=row.research_units;research.append(researchUnits);
+    const used=document.createElement('td');used.textContent=number(row.used_value);const units=document.createElement('small');units.textContent=row.used_units;used.append(units);
+    const finding=document.createElement('td');finding.className='check-result';
+    if(!row.checks.length)finding.textContent='Value shown; no probability or scientific-validity verdict from these checks.';
+    else if(!result.review)finding.textContent='Not evaluated yet — send this run to the Evaluator.';
+    else{const checks=result.review.evaluation.checks.filter(check=>row.checks.includes(check.name));finding.textContent=checks.length?checks.map(check=>(check.passed?'Passed: ':'Failed: ')+check.detail).join(' '):'This check was not reached; see the evaluation report.'}
+    tr.append(label,research,used,finding);$('comparison-rows').append(tr);
+  });
+}
+function showReview(review){
+  $('evaluation-report').hidden=!review;
+  $('evaluate').disabled=Boolean(review);
+  $('evaluate').textContent=review?'Evaluation saved':'Send to Evaluator';
+  $('evaluation-status').textContent=review?'Review complete for this saved experiment.':'This experiment has not been sent for evaluation.';
+  if(!review)return;
+  const evaluation=review.evaluation;
+  $('evaluation-verdict').textContent={pass:'Checks passed',revise:'Changes requested',stop:'Review stopped'}[evaluation.status];
+  $('evaluation-explanation').textContent=review.explanation; const passedCount=evaluation.checks.filter(c=>c.passed).length; $('evaluation-verdict').textContent='Experiment checks: '+({pass:'Passed',revise:'Changes requested',stop:'Stopped'}[evaluation.status]||evaluation.status)+' — '+passedCount+' of '+evaluation.checks.length; $('evaluation-short').textContent=evaluation.issues.length?'Issues are listed below.':'No technical issues found.';
+  $('evaluation-issues').replaceChildren();$('evaluation-checks').replaceChildren();
+  evaluation.issues.forEach(issue=>{const li=document.createElement('li');li.textContent=issue.message+' Requested fix: '+issue.requested_change;$('evaluation-issues').append(li)});
+  evaluation.checks.forEach(check=>{const li=document.createElement('li');li.textContent=(check.passed?'Passed: ':'Failed: ')+check.name.replaceAll('_',' ')+'. '+check.detail;$('evaluation-checks').append(li)});
+  $('download-evaluation').href=review.report_url;
+}
+$('evaluate').addEventListener('click',async()=>{
+  if(!active)return;
+  const selected=active;
+  $('evaluate').disabled=true;$('settings').disabled=true;$('saved-runs').disabled=true;
+  $('evaluation-status').textContent='The Evaluator is checking this saved experiment…';
+  try{
+    const response=await fetch(`/api/runs/${selected.run_id}/evaluate`,{method:'POST',headers:{'Content-Type':'application/json','X-Experiment-Token':token},body:'{}'});
+    const result=await response.json();if(!response.ok)throw new Error(result.error||'Evaluation did not complete.');
+    selected.review=result;showReview(result);showComparison(selected);
+  }catch(error){$('evaluation-status').textContent=error.message;$('evaluate').disabled=false}
+  finally{$('settings').disabled=false;$('saved-runs').disabled=false}
+});
+$('experiment').addEventListener('input',changed);
+$('saved-runs').addEventListener('change',()=>{
+  const result=saved.get($('saved-runs').value);
+  Object.entries(result.settings).forEach(([key,value])=>$(key).value=value);show(result);
+});
+$('viewer').addEventListener('load',()=>{
+  if(viewerObserver)viewerObserver.disconnect();
+  const body=$('viewer').contentDocument?.body;
+  if(body){viewerObserver=new ResizeObserver(()=>{$('viewer').style.height=(body.scrollHeight+12)+'px'});viewerObserver.observe(body)}
+});
+$('experiment').addEventListener('submit',async event=>{
+  event.preventDefault();const settings=values();$('error').hidden=true;
+  $('settings').disabled=true;$('evaluate').disabled=true;$('saved-runs').disabled=true;$('run').textContent='Running…';$('status').textContent='Calculating and saving your new experiment…';
+  try{
+    const response=await fetch('/api/runs',{method:'POST',headers:{'Content-Type':'application/json','X-Experiment-Token':token},body:JSON.stringify(settings)});
+    const result=await response.json();if(!response.ok)throw new Error(result.error||'The experiment could not finish.');
+    saved.set(result.run_id,result);
+    const option=document.createElement('option');option.value=result.run_id;
+    option.textContent=`Run ${saved.size} · food ${settings.food} · ${settings.area} square kilometres per patch · ${settings.months} months · seed ${settings.seed}`;
+    $('saved-runs').prepend(option);show(result);
+    $('status').textContent=`Saved. ${result.summary.final_population} lynx remain at month ${settings.months}. Press Play below to watch.`;
+  }catch(error){$('error').textContent=error.message;$('error').hidden=false;$('status').textContent=active?'The previous saved experiment is still below.':'No result was created. Adjust the settings or try again.'}
+  finally{$('settings').disabled=false;$('saved-runs').disabled=false;$('evaluate').disabled=Boolean(active?.review);$('run').textContent='Run my experiment'}
+});
+</script><script>document.fonts.ready.then(()=>{if(typeof animateHeader==='function')animateHeader()})</script></body></html>

@@ -1,0 +1,12 @@
+{
+  "mode": "provider_supplied_unverified",
+  "status": "pass",
+  "reason": "every check passed",
+  "attempts": 1,
+  "historical_validation": "not_assessed",
+  "limits": [
+    "Researcher inspects existing tables; does not create or verify evidence.",
+    "Developer uses fixed simulator; cannot repair or execute generated code.",
+    "Scripted success does not evaluate real model behavior."
+  ]
+}

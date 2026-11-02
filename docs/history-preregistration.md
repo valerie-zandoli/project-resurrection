@@ -1,6 +1,6 @@
-# History test pre-registration (DRAFT until the freeze items are filled)
+# History test pre-registration — freeze record, 2026-11-02
 
-Started 2026-10-25 by Valerie with Claude Code.  This file fixes the history test before any run, as `docs/history-test.md` requires.  **It is not in force until the blanks marked TO FILL are filled in one commit that says why, and Anastasiya agrees.**  The held-out batch has not been run, and no result has been looked at.  Code:  `simulation/history.py` (#50).
+Started 2026-10-25 by Valerie with Claude Code.  This file fixes the history test before any run, as `docs/history-test.md` requires.  **This record takes effect after this freeze PR is reviewed and merged. Anastasiya agreed to freezing on 2026-11-02 (Slack, 10:08 EST).**  The held-out batch has not been run, and no result has been looked at.  Code:  `simulation/history.py` (#50).
 
 ## Fixed before any run
 
@@ -20,18 +20,22 @@ Started 2026-10-25 by Valerie with Claude Code.  This file fixes the history tes
 |---|---|---|
 | 2011 target and bounds | 214, bounds 192.6 to 235.4; or 202, bounds 181.8 to 222.2 (plus or minus 10%) | **202, bounds 181.8 to 222.2**, chosen by Valerie on 2026-10-25 on source quality (the issuer's 2011 and 2016 reports give 202; no primary document gives 214); agreed by Anastasiya on 2026-10-25 (Slack, 20:36 ET, and her comment on #50).  214 (bounds 192.6 to 235.4) is reported beside the verdict and never used for pass or fail. |
 | Main area and sensitivity areas | main 750 km2 (decided 2026-10-24, awaiting Anastasiya); sensitivity 500 and 1,000; proposed 264 km2 with home ranges 10 and 6.1 | **Main run:  750 km2 at the table's female home range of 10 km2** (a stand-in for the park boundary, not measured usable habitat).  **Comparison runs:  264 km2 at female home ranges of 6.1 and of 10 km2.**  The 500 and 1,000 km2 runs are dropped.  The verdict uses the 750 km2 run only, and the code refuses an arm list that starts with another arm.  Territory capacity:  74, 42, and 26 female territories.  Agreed on 2026-10-25:  recorded in #45, which Anastasiya approved and merged. |
-| A second observable (territorial females, 43 in 2010 and 51 in 2011) | add, or leave out | **AGREED by Valerie and Anastasiya on 2026-10-26** (decision 7 of the Meet list):  add it as **report-only, for the 750 km2 run only**.  The report prints the model's median number of settled females of breeding age at months 96 and 108, with the 10th and 90th percentiles, beside the census counts of 43 and 51.  It has no tolerance and no pass or fail, and we will not call it support or failure.  The 264 km2 runs hold only 42 and 26 female territories, below the census counts, so their numbers are printed marked capacity-limited and are not compared.  The report code is #78, which must merge before the freeze (Thu 2026-10-29, #54). |
+| A second observable (territorial females, 43 in 2010 and 51 in 2011) | add, or leave out | **AGREED by Valerie and Anastasiya on 2026-10-26** (decision 7 of the Meet list):  add it as **report-only, for the 750 km2 run only**.  The report prints the model's median number of settled females of breeding age at months 96 and 108, with the 10th and 90th percentiles, beside the census counts of 43 and 51.  It has no tolerance and no pass or fail, and we will not call it support or failure.  The 264 km2 runs hold only 42 and 26 female territories, below the census counts, so their numbers are printed marked capacity-limited and are not compared.  The report code is #78, which must merge before the freeze (Fri 2026-10-30, midday, #54). |
 | Settlement retry rule | monthly, own patch first (chosen 2026-10-24, awaiting Anastasiya) | **Every month, each unsettled female of at least 18 months tries again, her current patch first and then the other, in one seeded random order per month.**  Chosen by Valerie on 2026-10-24 and recorded in `docs/model-conventions.md` by #49, which Anastasiya approved and merged on 2026-10-25.  The two sensitivity checks (own patch only, one try only) have no simulator option yet and are not part of this verdict. |
 
-## TO FILL at the freeze, in the same commit
+## Freeze record — 2026-11-02
 
-The freeze is Thu 2026-10-29 (#54).  Fill these four items in the commit that freezes the code, and merge this file before the run.  The run happens after the freeze and is finished by Fri 2026-10-30, 18:00 ET.
+The October 30 schedule was missed; this record is prepared on November 2 before any final held-out run. Merge this file before the run. The recorded commit below identifies the executable code; this documentation-only freeze commit does not change it. Anastasiya requested completion of the final test on November 2; execution will be assisted by Codex on her behalf, subject to review and merge of this freeze PR. No held-out result was produced while preparing this record.
 
-- The commit of the code that will run (hash):  TO FILL.
-- The hashes of the two research files:  TO FILL (`validators/handoff_hashes.py`).
-- The Python version:  TO FILL.
-- The date and the name of the person who ran it:  TO FILL.
+- The commit of the code that will run (hash):  `0aee597fa2229a6cb97bf057de5f26d9ae8d8328`.
+- The hashes of the two research files (normalized by `validators/handoff_hashes.py`): `data/parameters/iberian_lynx_baseline.csv` `b76fe642bfbcac51c18c087f00aadc0a60f6e36bafe5d152cff659b3a0cf8312`; `data/parameters/sources.csv` `186870d96510c03c56a6e492c190a80c3792b67b27dfe1fe45a4285c39433fdf`.
+- The Python version:  **3.12.14**.
+- Planned run date and runner: **2026-11-02, Anastasiya Glegg, assisted by Codex**. Actual start/completion time and outcome will be recorded with the result; the test has not run yet.
 
 ## What counts as looking
 
 Reading any held-out result, even from another seed, before this file is complete.  Development smoke runs must use other seeds, a tiny trial count, and must not print the 2011 count.  A change after any look needs a new version of this file with the reason, and the first held-out result stays on record.
+
+## Development work disclosed before the final run
+
+The development-only calibration in `examples/development_calibration_20261029/` used seed 20261029, stopped at month 96 (2010), and selected 0.17 mortality with median growth 1.1687318733895244. It did not run 2011 and does not replace the final protocol above. The final seed, grid, trial counts, arms, targets and tolerances remain unchanged.

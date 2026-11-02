@@ -32,7 +32,10 @@ Each trial directory contains `input.json`, `results.json`, and `summary.json`.
 Replay its exact input with `python -m simulation --preview --input INPUT_PATH
 --output NEW_DIRECTORY` (on one command line). Use the same Python version, model,
 schemas, and research files. `batch.json` records Python version, code/schema
-hashes, the seed rule, and every attempted trial. Research hashes are in the
+hashes, the seed rule, every attempted trial, and the evidence-gate `stage` that
+the command ran at (`pilot` or `final`; `null` when `run_batch` is called without
+the command). A pilot only warns about unchecked evidence, so only a batch whose
+`stage` is `final` counts as the final grid (`scripts/check_fallback.py`). Research hashes are in the
 saved inputs and are captured before the batch; an edit during execution stops
 the batch. Batch identity also includes configuration, research/code hashes,
 Python version, and planned trial count, so changed inputs get different run IDs.

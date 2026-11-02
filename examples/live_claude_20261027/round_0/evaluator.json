@@ -1,0 +1,11 @@
+{
+  "role": "evaluator",
+  "revision_round": 0,
+  "text": "**Run preview-7, revision 0: status `pass`. The tool returned no issues.**\n\nAll 12 checks passed:\n- input_schema\n- results_schema\n- run_identity\n- provenance\n- file_hashes\n- history_months (months 0\u201312, in order)\n- population_accounting (balances in all 12 months)\n- animal_records (40 final animals)\n- territory_capacity\n- final_counts (30 living, 10 dead)\n- birth_timing_and_food\n- persistence_recomputed (`persisted` is True and matches the final animals)\n\n**What the Developer must change:** nothing, because the tool returned no requested changes.\n\n**Limits on this result:**\n- `historical_validation` is `not_assessed`. This pass does not show that the model matches the history, because the history test hasn't run.\n- The birth-timing check only confirms that birth timing and food agree with the recorded breeding rule. It does not assess the probabilities statistically.\n- The top-level `data_kind` is `evaluation`, but the provenance detail text says \"data_kind simulation\". The tool still marked provenance as passed. I'm noting the wording difference only. I'm not treating it as an issue.",
+  "removed_text": [],
+  "steps": 2,
+  "prompt_version": "2026-10-25-draft-1",
+  "tools_used": [
+    "check_artifacts"
+  ]
+}

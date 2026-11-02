@@ -8,6 +8,7 @@ import pytest
 
 from harness.provider import FakeProvider
 from harness.run_case import HarnessError
+from harness.snapshot import EVIDENCE_FILE, SNAPSHOT_FILES
 from harness import three_role_preview as pipeline
 from simulation.model import REPO
 from validators.handoff_hashes import file_sha256
@@ -21,6 +22,11 @@ def say(text):
 
 def call(name, **arguments):
     return dict(text="", tool_calls=[dict(name=name, arguments=arguments)])
+
+
+def calls(*names):
+    """One reply that asks for several calls at once; it differs from a single call, so it is not a stuck loop."""
+    return dict(text="", tool_calls=[dict(name=name, arguments={}) for name in names])
 
 
 def test_one_case_reaches_all_three_roles_and_keeps_real_artifacts(tmp_path):
@@ -37,7 +43,9 @@ def test_one_case_reaches_all_three_roles_and_keeps_real_artifacts(tmp_path):
     assert evaluation["historical_validation"] == "not_assessed"
     records = [json.loads(line) for line in (output / "roles.jsonl").read_text().splitlines()]
     # the Researcher reads the three files in one step (three tool calls), then answers
-    assert [r["role"] for r in records] == ["researcher"] * 4 + ["developer"] * 2 + ["evaluator"] * 2
+    handoffs = [r for r in records if r["event"] in {"tool_result", "role_final"}]
+    assert [r["role"] for r in handoffs] == ["researcher"] * 4 + ["developer"] * 2 + ["evaluator"] * 2
+    assert all(r["case_id"] == output.name and r["run_id"] == results["run_id"] for r in records)
     assert all(r["input_hashes"] and r["prompt_version"] for r in records)
     for role in providers:
         assert (output / f"round_0/{role}.json").exists()
@@ -77,7 +85,7 @@ def test_invalid_research_stops_before_any_role_or_simulation(tmp_path):
 
 def test_duplicate_execution_is_not_silently_run_again(tmp_path):
     providers = pipeline.scripted_providers()
-    providers["developer"] = FakeProvider([call("run_model"), call("run_model")])
+    providers["developer"] = FakeProvider([call("run_model"), calls("run_model", "run_model")])
     result = pipeline.run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
     assert result.status == "failed" and "only once" in result.reason
     assert providers["evaluator"].calls == []
@@ -114,14 +122,15 @@ def test_unknown_research_key_fails_without_reading_arbitrary_files(tmp_path):
 
 def test_role_step_limit_is_preserved(tmp_path):
     providers = pipeline.scripted_providers()
-    providers["researcher"] = FakeProvider([call("read_research", key="parameters")] * 5)
+    providers["researcher"] = FakeProvider([call("read_research", key=key) for key in
+                                            ("parameters", "sources", "evidence", "parameters", "sources")])
     result = pipeline.run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
     assert result.status == "failed" and "no final answer in 4 steps" in result.reason
 
 
 def test_a_second_check_artifacts_call_fails_and_is_not_run_again(tmp_path):
     providers = pipeline.scripted_providers()
-    providers["evaluator"] = FakeProvider([call("check_artifacts"), call("check_artifacts")])
+    providers["evaluator"] = FakeProvider([call("check_artifacts"), calls("check_artifacts", "check_artifacts")])
     result = pipeline.run_three_role_case(tmp_path / "case", providers=providers, options=OPTIONS)
     assert result.status == "failed" and "only once" in result.reason
 
@@ -163,6 +172,39 @@ def test_the_researcher_reads_the_evidence_file_and_the_run_records_which_versio
     first_label = (REPO / pipeline.EVIDENCE_FILE).read_text().splitlines()[1].split(",")[1]  # a confidence label
     evidence_result = providers["researcher"].calls[1]["messages"][-1]["content"]
     assert "UNTRUSTED SOURCE TEXT" in evidence_result and first_label in evidence_result  # data, not instructions
+
+
+def test_the_researcher_reads_the_evidence_bytes_that_the_gate_checked(tmp_path, monkeypatch):
+    source = tmp_path / "source"
+    for relative in SNAPSHOT_FILES:
+        target = source / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REPO / relative, target)
+    original_run_case = pipeline.run_case
+
+    def change_source_before_research(output, *, options, source_root, developer, evaluator,
+                                      max_rounds=3):
+        def change_then_run(config, round_number, issues, root):
+            (Path(source_root) / EVIDENCE_FILE).write_text("changed after snapshot\\n", encoding="utf-8")
+            return developer(config, round_number, issues, root)
+
+        return original_run_case(output, options=options, source_root=source_root,
+                                 developer=change_then_run, evaluator=evaluator,
+                                 max_rounds=max_rounds)
+
+    monkeypatch.setattr(pipeline, "run_case", change_source_before_research)
+    providers = pipeline.scripted_providers()
+    output = tmp_path / "case"
+    result = pipeline.run_three_role_case(output, providers=providers, options=OPTIONS, source_root=source)
+    snapshot_evidence = output / "snapshot" / EVIDENCE_FILE
+    saved = json.loads((output / "round_0/researcher.json").read_text())
+    assert result.status == "pass"
+    assert saved["evidence_sha256"] == file_sha256(snapshot_evidence)
+    assert saved["evidence_sha256"] == json.loads((output / "case.json").read_text())["evidence"]["sha256"]
+    assert saved["evidence_sha256"] != file_sha256(source / EVIDENCE_FILE)
+    evidence_result = providers["researcher"].calls[1]["messages"][-1]["content"]
+    original_first_label = (snapshot_evidence.read_text().splitlines()[1].split(",")[1])
+    assert original_first_label in evidence_result
 
 
 def test_a_researcher_that_skips_the_evidence_file_fails(tmp_path):

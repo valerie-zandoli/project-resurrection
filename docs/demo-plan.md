@@ -13,9 +13,10 @@ Written 2026-10-24 by Valerie with Claude Code.  Everything here is a proposal u
 |---|---|
 | Mon 2026-10-26 | Anastasiya presents the design plan.  Tuesday 09:30 ET:  key check (reminder set). |
 | by Wed 2026-10-28 | The open decisions that change the contract or the parameter table are made (the 2011 target, the area, the retry rule, the thresholds), so the freeze below freezes the final versions. |
-| Thu 2026-10-29, 17:30 to 19:30 ET (proposed) | Shake-down live pass together, not saved as a final run.  A flaw that it exposes in the contract or the parameter table is fixed before the freeze. |
-| Thu 2026-10-29, at the end of the pairing (about 19:30 ET) | Freeze the contract and the parameter table (a change after this date means a new run ID and a re-run of every saved result). |
+| Thu 2026-10-29, 17:30 to 19:30 ET (proposed; Anastasiya works from 17:00) | Shake-down live pass, run by Valerie alone, not saved as a final run.  A flaw that it exposes in the contract or the parameter table is fixed before the freeze. |
+| Fri 2026-10-30, at midday (agreed by both on 2026-10-26) | Freeze the contract and the parameter table, in person at Pursuit if Valerie's hours allow (she learns them at 09:05 ET), otherwise over Meet (a change after this time means a new run ID and a re-run of every saved result). |
 | by Fri 2026-10-30, 18:00 ET | Every run that needs the key is finished and saved against the frozen version:  the history test, the pilot and final grid, one live pass through the three roles, and one hand-back example. |
+| Fri 2026-10-30, after the freeze (Valerie records) | The video, from the frozen version:  the Evaluator's code check returns `revise` with its issue on the planted flaw 6 case (#69), then the unflawed run passes; label it a planted flaw.  Every screen or slide that shows the three-role preview carries the words "scripted preview; the Researcher inspects existing tables" (`docs/demo-script.md`). |
 | Sat 2026-10-31 | Draft the report from the saved files. |
 | Sun 2026-11-01 | Full rehearsal with a timer; key check at 19:00 ET (reminder set). |
 | Mon 2026-11-02 | The demonstration. |
@@ -41,4 +42,4 @@ Follow `docs/history-test.md` ("The report must say") and `docs/model-convention
 
 ## To agree
 
-Who presents which part on 2026-11-02; the length of the slot; whether the demonstration is live, recorded, or both; the contract-freeze date and time (proposed Thu 2026-10-29, at the end of the pairing and after a shake-down live pass, so that every saved result matches what we present; the date is Anastasiya's suggestion of 2026-10-25).
+Who presents which part on 2026-11-02.  Decided:  the contract freeze is Fri 2026-10-30 at midday (both, 2026-10-26); the format is a four-minute maximum, slides and video, in the Sunnyside space, and it must show improvement over each previous presentation (told by Valerie on 2026-10-26).  Anastasiya will not record the video; Valerie records it after the freeze, from the frozen version.

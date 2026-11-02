@@ -7,8 +7,8 @@ Run it from the repository root before 2026-11-01 (`docs/demo-plan.md`, "The fal
 The bundle is a folder with this layout (a proposal; change `LAYOUT` and the docs together):
 
     history/report.json                  the history test report, from the one pre-registered run
-    batches/pilot/batch.json             the pilot grid (100 trials per cell)
-    batches/final/batch.json             the final grid (500 trials per cell)
+    batches/pilot/batch.json             the pilot grid (100 trials per cell, stage pilot or final)
+    batches/final/batch.json             the final grid (500 trials per cell, stage final)
     batches/final/table1.md              the table and the figure of the final grid
     batches/final/figure1.svg
     case/input.json, results.json,       one saved case:  its input, results, and evaluation, the harness's
@@ -86,10 +86,14 @@ def check_history(path, run_seed=RUN_SEED):
         raise Bad("the hash of the parameter file is missing")
 
 
-def check_batch(path, trials):
+def check_batch(path, trials, stages):
     batch = read_json(path)
     if not str(batch.get("format_version", "")).startswith("preview-batch"):
         raise Bad("not a batch file (format_version)")
+    # A pilot run only warns at the evidence gate, so a batch must say which stage it ran at.
+    if batch.get("stage") not in stages:
+        raise Bad(f"the batch ran at stage {batch.get('stage')!r}; this item needs {' or '.join(stages)} "
+                  "(run it with python -m simulation.experiments --stage ...)")
     if batch.get("status") != "completed":
         raise Bad(f"the batch status is {batch.get('status')!r}, not completed")
     cells = batch.get("cells", [])
@@ -167,8 +171,8 @@ def run_checks(root, *, run_seed=RUN_SEED, pilot_trials=PILOT_TRIALS, final_tria
     root = Path(root)
     checks = {
         "history": lambda p: check_history(p, run_seed),
-        "pilot": lambda p: check_batch(p, pilot_trials),
-        "final": lambda p: check_batch(p, final_trials),
+        "pilot": lambda p: check_batch(p, pilot_trials, ("pilot", "final")),
+        "final": lambda p: check_batch(p, final_trials, ("final",)),
         "table": lambda p: check_text_file(p, "|"),
         "figure": lambda p: check_text_file(p, "<svg"),
         "input": lambda p: read_json(p),

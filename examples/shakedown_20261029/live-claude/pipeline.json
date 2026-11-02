@@ -1,0 +1,71 @@
+{
+  "mode": "provider_supplied_unverified",
+  "status": "pass",
+  "reason": "every check passed",
+  "attempts": 1,
+  "historical_validation": "not_assessed",
+  "caption": "scripted preview; the Researcher inspects existing tables",
+  "evidence_read_check": {
+    "answered": true,
+    "low": {
+      "expected": [
+        "annual_mortality_rate_all_causes",
+        "death_share_illegal_trapping",
+        "death_share_road_traffic",
+        "diet_rabbit_fraction",
+        "female_home_range_km2",
+        "food_level_high_rabbits_per_ha",
+        "food_level_low_rabbits_per_ha",
+        "food_level_medium_rabbits_per_ha",
+        "male_home_range_km2",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding"
+      ],
+      "reported": [
+        "annual_mortality_rate_all_causes",
+        "death_share_illegal_trapping",
+        "death_share_road_traffic",
+        "diet_rabbit_fraction",
+        "female_home_range_km2",
+        "food_level_high_rabbits_per_ha",
+        "food_level_low_rabbits_per_ha",
+        "food_level_medium_rabbits_per_ha",
+        "male_home_range_km2",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding"
+      ],
+      "missing": [],
+      "invented": []
+    },
+    "conflicts": {
+      "expected": [
+        "annual_mortality_rate_all_causes",
+        "breeding_age_min",
+        "dispersal_age_months",
+        "female_home_range_km2",
+        "food_level_medium_rabbits_per_ha",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding",
+        "sex_ratio_female_per_male_at_birth"
+      ],
+      "reported": [
+        "annual_mortality_rate_all_causes",
+        "breeding_age_min",
+        "dispersal_age_months",
+        "female_home_range_km2",
+        "food_level_medium_rabbits_per_ha",
+        "rabbit_density_autumn_min_for_territorial_breeding",
+        "rabbit_density_spring_min_for_territorial_breeding",
+        "sex_ratio_female_per_male_at_birth"
+      ],
+      "missing": [],
+      "invented": []
+    },
+    "pass": true
+  },
+  "limits": [
+    "Researcher inspects existing tables and the evidence file; does not create or verify evidence.",
+    "Developer uses fixed simulator; cannot repair or execute generated code.",
+    "Scripted success does not evaluate real model behavior."
+  ]
+}

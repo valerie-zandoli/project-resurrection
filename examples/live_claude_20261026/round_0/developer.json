@@ -1,0 +1,11 @@
+{
+  "role": "developer",
+  "revision_round": 0,
+  "text": "I ran `run_model` once for preview-7, revision 0. The output was cut off partway through the month-by-month history, so I can only describe what came back.\n\n**Setup (set by the harness)**\n- The seed was 7 and the run lasted 12 months.\n- The model had two patches (A and B) of 50 km\u00b2 each, with habitat quality 1.0.\n- Food was 4.6 rabbits/ha.\n- The starting population was 20 animals, 10 females and 10 males, aged 36\u201396 months.\n- The persistence rule was \"settled breeding pair in the same patch at the end\".\n- There were no parameter overrides.\n\n**What the visible history shows (months 0\u20139)**\n- The population went from 20 to 19 in month 1.\n- In month 2 it rose to 38, with 20 births. The female count jumped from 10 to 25, but I haven't checked why.\n- It then drifted down through scattered deaths to 33 by month 5 and 31 by month 8. That was 24 females and 7 males.\n- There were a few movements: 2 in month 1, and 1 each in months 5 and 8.\n\n**What is missing**\n- The history stops at month 9, and the rest of the record was cut off.\n- I can't see the final population, the months 10\u201312 events, or any persistence outcome.\n- I'm not inferring them. Whether the run passes is for the Evaluator to decide from the full artifacts.\n\n**Caveats**\n- This is a synthetic preview, and historical validation is not assessed.\n- The researcher's snapshot summary also noted truncated parameter and source tables. I didn't use that summary to change anything.\n- There were no prior code-check issues to address.",
+  "removed_text": [],
+  "steps": 2,
+  "prompt_version": "2026-10-26-preview-1",
+  "tools_used": [
+    "run_model"
+  ]
+}

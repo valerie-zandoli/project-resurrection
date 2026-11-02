@@ -38,4 +38,4 @@ Tests that prove it (`tests/test_evidence_gate.py`):  a table with one `not_chec
 
 ## What this file does not show
 
-Nothing here has run with a model.  Every **CODE** row is tested offline, so none of it shows that an agent obeys the rules that the code enforces.  The first live pass (proposed for Thursday 2026-10-29 in `docs/demo-plan.md`, #54) is the first test of these seams with real calls.
+Nothing here has run with a model.  Every **CODE** row is tested offline, so none of it shows that an agent obeys the rules that the code enforces.  The first live pass (the shake-down is proposed for Thursday 2026-10-29, and the freeze is Friday 2026-10-30 at midday, in `docs/demo-plan.md`) is the first test of these seams with real calls.

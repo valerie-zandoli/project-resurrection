@@ -1,0 +1,726 @@
+{
+  "run_seed": 20261101,
+  "bounds": {
+    "growth": [
+      1.12,
+      1.22
+    ],
+    "count_2011": [
+      181.8,
+      222.2
+    ]
+  },
+  "parameters_sha256": "b76fe642bfbcac51c18c087f00aadc0a60f6e36bafe5d152cff659b3a0cf8312",
+  "sources_sha256": "186870d96510c03c56a6e492c190a80c3792b67b27dfe1fe45a4285c39433fdf",
+  "verdict": {
+    "growth_within_bounds": true,
+    "count_2011_within_bounds": true,
+    "result": "pass"
+  },
+  "reported_beside": {
+    "count_2011": 214,
+    "bounds": [
+      192.6,
+      235.4
+    ],
+    "used_for_verdict": false,
+    "median_within_bounds": true
+  },
+  "second_observable": {
+    "scored": false,
+    "tolerance": null,
+    "definition": "living females that hold a territory and are of breeding age, at the census month",
+    "census": {
+      "2010": 43,
+      "2011": 51
+    },
+    "arms": [
+      {
+        "total_area_km2": 750,
+        "female_home_range_km2": 10.0,
+        "territories": 74,
+        "main_run": true,
+        "compared": true,
+        "capacity_limited": {
+          "2010": false,
+          "2011": false
+        },
+        "model_2010": {
+          "median": 27.0,
+          "p10": 19.0,
+          "p90": 39.0
+        },
+        "model_2011": {
+          "median": 33.0,
+          "p10": 21.900000000000006,
+          "p90": 45.0
+        }
+      },
+      {
+        "total_area_km2": 264,
+        "female_home_range_km2": 6.1,
+        "territories": 42,
+        "main_run": false,
+        "compared": false,
+        "capacity_limited": {
+          "2010": true,
+          "2011": true
+        },
+        "model_2010": {
+          "median": 28.0,
+          "p10": 20.0,
+          "p90": 32.0
+        },
+        "model_2011": {
+          "median": 29.0,
+          "p10": 23.0,
+          "p90": 33.0
+        }
+      },
+      {
+        "total_area_km2": 264,
+        "female_home_range_km2": 10.0,
+        "territories": 26,
+        "main_run": false,
+        "compared": false,
+        "capacity_limited": {
+          "2010": true,
+          "2011": true
+        },
+        "model_2010": {
+          "median": 16.0,
+          "p10": 12.0,
+          "p90": 18.0
+        },
+        "model_2011": {
+          "median": 15.0,
+          "p10": 12.0,
+          "p90": 19.0
+        }
+      }
+    ]
+  },
+  "main_area_km2": 750,
+  "areas": [
+    {
+      "total_area_km2": 750,
+      "female_home_range_km2": 10.0,
+      "main_run": true,
+      "territories": 74,
+      "calibration": {
+        "trials": 100,
+        "rows": [
+          {
+            "mortality": 0.1,
+            "median_growth": 1.2358993431949123
+          },
+          {
+            "mortality": 0.11,
+            "median_growth": 1.2293550528589323
+          },
+          {
+            "mortality": 0.12,
+            "median_growth": 1.2142731386647179
+          },
+          {
+            "mortality": 0.13,
+            "median_growth": 1.2102883299030935
+          },
+          {
+            "mortality": 0.14,
+            "median_growth": 1.1997400557563194
+          },
+          {
+            "mortality": 0.15,
+            "median_growth": 1.1916405544210849
+          },
+          {
+            "mortality": 0.16,
+            "median_growth": 1.1768448688322635
+          },
+          {
+            "mortality": 0.17,
+            "median_growth": 1.1667409470384542
+          },
+          {
+            "mortality": 0.18,
+            "median_growth": 1.157255426437612
+          },
+          {
+            "mortality": 0.19,
+            "median_growth": 1.1507711535014258
+          },
+          {
+            "mortality": 0.2,
+            "median_growth": 1.144014607695468
+          },
+          {
+            "mortality": 0.21,
+            "median_growth": 1.1244951970217112
+          },
+          {
+            "mortality": 0.22,
+            "median_growth": 1.119758655813889
+          },
+          {
+            "mortality": 0.23,
+            "median_growth": 1.1063916423706222
+          },
+          {
+            "mortality": 0.24,
+            "median_growth": 1.0992550302597204
+          },
+          {
+            "mortality": 0.25,
+            "median_growth": 1.0892164173719672
+          },
+          {
+            "mortality": 0.26,
+            "median_growth": 1.0756747318888846
+          },
+          {
+            "mortality": 0.27,
+            "median_growth": 1.0691677828705566
+          },
+          {
+            "mortality": 0.28,
+            "median_growth": 1.0608228895717644
+          },
+          {
+            "mortality": 0.29,
+            "median_growth": 1.0494876725022833
+          },
+          {
+            "mortality": 0.3,
+            "median_growth": 1.0353755946429213
+          },
+          {
+            "mortality": 0.31,
+            "median_growth": 1.0228471970457549
+          },
+          {
+            "mortality": 0.32,
+            "median_growth": 1.0134959504515602
+          },
+          {
+            "mortality": 0.33,
+            "median_growth": 1.0057735527486467
+          },
+          {
+            "mortality": 0.34,
+            "median_growth": 0.992742847713993
+          },
+          {
+            "mortality": 0.35,
+            "median_growth": 0.992742847713993
+          },
+          {
+            "mortality": 0.36,
+            "median_growth": 0.9684194389485885
+          },
+          {
+            "mortality": 0.37,
+            "median_growth": 0.9623844389780537
+          },
+          {
+            "mortality": 0.38,
+            "median_growth": 0.9388782181234264
+          },
+          {
+            "mortality": 0.39,
+            "median_growth": 0.9351595817079774
+          },
+          {
+            "mortality": 0.4,
+            "median_growth": 0.9388782181234264
+          },
+          {
+            "mortality": 0.41,
+            "median_growth": 0.912586218379299
+          },
+          {
+            "mortality": 0.42,
+            "median_growth": 0.9009101830400438
+          },
+          {
+            "mortality": 0.43,
+            "median_growth": 0.8880156428072892
+          },
+          {
+            "mortality": 0.44,
+            "median_growth": 0.8609551220959792
+          },
+          {
+            "mortality": 0.45,
+            "median_growth": 0.8609551220959792
+          },
+          {
+            "mortality": 0.46,
+            "median_growth": 0.8428002126452134
+          },
+          {
+            "mortality": 0.47,
+            "median_growth": 0.8305450076408603
+          },
+          {
+            "mortality": 0.48,
+            "median_growth": 0.8118307856694771
+          },
+          {
+            "mortality": 0.49,
+            "median_growth": 0.8065199028804184
+          },
+          {
+            "mortality": 0.5,
+            "median_growth": 0.7764308292240563
+          }
+        ],
+        "chosen_mortality": 0.17,
+        "chosen_median_growth": 1.1667409470384542,
+        "within_tolerance": true
+      },
+      "heldout": {
+        "trials": 500,
+        "mortality": 0.17,
+        "growth": {
+          "median": 1.16833596055421,
+          "p10": 1.1186865983252068,
+          "p90": 1.210351333281451
+        },
+        "count_2011": {
+          "median": 217.0,
+          "p10": 152.0,
+          "p90": 288.1
+        },
+        "extinct_share": 0.0,
+        "settled_females_2010": {
+          "median": 27.0,
+          "p10": 19.0,
+          "p90": 39.0
+        },
+        "settled_females_2011": {
+          "median": 33.0,
+          "p10": 21.900000000000006,
+          "p90": 45.0
+        }
+      }
+    },
+    {
+      "total_area_km2": 264,
+      "female_home_range_km2": 6.1,
+      "main_run": false,
+      "territories": 42,
+      "calibration": {
+        "trials": 100,
+        "rows": [
+          {
+            "mortality": 0.1,
+            "median_growth": 1.210289441637225
+          },
+          {
+            "mortality": 0.11,
+            "median_growth": 1.207791368285318
+          },
+          {
+            "mortality": 0.12,
+            "median_growth": 1.203652904091849
+          },
+          {
+            "mortality": 0.13,
+            "median_growth": 1.19404592458596
+          },
+          {
+            "mortality": 0.14,
+            "median_growth": 1.1909507419489525
+          },
+          {
+            "mortality": 0.15,
+            "median_growth": 1.1835027931397621
+          },
+          {
+            "mortality": 0.16,
+            "median_growth": 1.1768465613912815
+          },
+          {
+            "mortality": 0.17,
+            "median_growth": 1.1614485165509676
+          },
+          {
+            "mortality": 0.18,
+            "median_growth": 1.158528100357669
+          },
+          {
+            "mortality": 0.19,
+            "median_growth": 1.150328718004683
+          },
+          {
+            "mortality": 0.2,
+            "median_growth": 1.1407617133076007
+          },
+          {
+            "mortality": 0.21,
+            "median_growth": 1.1213525187140916
+          },
+          {
+            "mortality": 0.22,
+            "median_growth": 1.120823576375291
+          },
+          {
+            "mortality": 0.23,
+            "median_growth": 1.104050017633095
+          },
+          {
+            "mortality": 0.24,
+            "median_growth": 1.1004710515861922
+          },
+          {
+            "mortality": 0.25,
+            "median_growth": 1.088565356645954
+          },
+          {
+            "mortality": 0.26,
+            "median_growth": 1.0749637704834476
+          },
+          {
+            "mortality": 0.27,
+            "median_growth": 1.0691677828705566
+          },
+          {
+            "mortality": 0.28,
+            "median_growth": 1.0608228895717644
+          },
+          {
+            "mortality": 0.29,
+            "median_growth": 1.0494876725022833
+          },
+          {
+            "mortality": 0.3,
+            "median_growth": 1.0353755946429213
+          },
+          {
+            "mortality": 0.31,
+            "median_growth": 1.0228471970457549
+          },
+          {
+            "mortality": 0.32,
+            "median_growth": 1.0134959504515602
+          },
+          {
+            "mortality": 0.33,
+            "median_growth": 1.0057735527486467
+          },
+          {
+            "mortality": 0.34,
+            "median_growth": 0.992742847713993
+          },
+          {
+            "mortality": 0.35,
+            "median_growth": 0.992742847713993
+          },
+          {
+            "mortality": 0.36,
+            "median_growth": 0.9684194389485885
+          },
+          {
+            "mortality": 0.37,
+            "median_growth": 0.9623844389780537
+          },
+          {
+            "mortality": 0.38,
+            "median_growth": 0.9388782181234264
+          },
+          {
+            "mortality": 0.39,
+            "median_growth": 0.9351595817079774
+          },
+          {
+            "mortality": 0.4,
+            "median_growth": 0.9388782181234264
+          },
+          {
+            "mortality": 0.41,
+            "median_growth": 0.912586218379299
+          },
+          {
+            "mortality": 0.42,
+            "median_growth": 0.9009101830400438
+          },
+          {
+            "mortality": 0.43,
+            "median_growth": 0.8880156428072892
+          },
+          {
+            "mortality": 0.44,
+            "median_growth": 0.8609551220959792
+          },
+          {
+            "mortality": 0.45,
+            "median_growth": 0.8609551220959792
+          },
+          {
+            "mortality": 0.46,
+            "median_growth": 0.8428002126452134
+          },
+          {
+            "mortality": 0.47,
+            "median_growth": 0.8305450076408603
+          },
+          {
+            "mortality": 0.48,
+            "median_growth": 0.8118307856694771
+          },
+          {
+            "mortality": 0.49,
+            "median_growth": 0.8065199028804184
+          },
+          {
+            "mortality": 0.5,
+            "median_growth": 0.7764308292240563
+          }
+        ],
+        "chosen_mortality": 0.16,
+        "chosen_median_growth": 1.1768465613912815,
+        "within_tolerance": true
+      },
+      "heldout": {
+        "trials": 500,
+        "mortality": 0.16,
+        "growth": {
+          "median": 1.1749494919192138,
+          "p10": 1.131101450581193,
+          "p90": 1.200728866610705
+        },
+        "count_2011": {
+          "median": 216.5,
+          "p10": 164.9,
+          "p90": 250.0
+        },
+        "extinct_share": 0.0,
+        "settled_females_2010": {
+          "median": 28.0,
+          "p10": 20.0,
+          "p90": 32.0
+        },
+        "settled_females_2011": {
+          "median": 29.0,
+          "p10": 23.0,
+          "p90": 33.0
+        }
+      }
+    },
+    {
+      "total_area_km2": 264,
+      "female_home_range_km2": 10.0,
+      "main_run": false,
+      "territories": 26,
+      "calibration": {
+        "trials": 100,
+        "rows": [
+          {
+            "mortality": 0.1,
+            "median_growth": 1.1610348941827742
+          },
+          {
+            "mortality": 0.11,
+            "median_growth": 1.1589480102146212
+          },
+          {
+            "mortality": 0.12,
+            "median_growth": 1.1533975572759854
+          },
+          {
+            "mortality": 0.13,
+            "median_growth": 1.1507711535014258
+          },
+          {
+            "mortality": 0.14,
+            "median_growth": 1.1458436087722632
+          },
+          {
+            "mortality": 0.15,
+            "median_growth": 1.1444744222006034
+          },
+          {
+            "mortality": 0.16,
+            "median_growth": 1.1379254217304737
+          },
+          {
+            "mortality": 0.17,
+            "median_growth": 1.1330806625088585
+          },
+          {
+            "mortality": 0.18,
+            "median_growth": 1.1290976948631914
+          },
+          {
+            "mortality": 0.19,
+            "median_growth": 1.1250138779355319
+          },
+          {
+            "mortality": 0.2,
+            "median_growth": 1.122932408713077
+          },
+          {
+            "mortality": 0.21,
+            "median_growth": 1.1170639788685057
+          },
+          {
+            "mortality": 0.22,
+            "median_growth": 1.1104068486326781
+          },
+          {
+            "mortality": 0.23,
+            "median_growth": 1.0968038365826076
+          },
+          {
+            "mortality": 0.24,
+            "median_growth": 1.0949436920954132
+          },
+          {
+            "mortality": 0.25,
+            "median_growth": 1.0872577342893228
+          },
+          {
+            "mortality": 0.26,
+            "median_growth": 1.074246160007453
+          },
+          {
+            "mortality": 0.27,
+            "median_growth": 1.0684293999344034
+          },
+          {
+            "mortality": 0.28,
+            "median_growth": 1.061598920882987
+          },
+          {
+            "mortality": 0.29,
+            "median_growth": 1.0503239288008053
+          },
+          {
+            "mortality": 0.3,
+            "median_growth": 1.042604226818063
+          },
+          {
+            "mortality": 0.31,
+            "median_growth": 1.0208195961627462
+          },
+          {
+            "mortality": 0.32,
+            "median_growth": 1.0134959504515602
+          },
+          {
+            "mortality": 0.33,
+            "median_growth": 1.0069062107882392
+          },
+          {
+            "mortality": 0.34,
+            "median_growth": 0.992742847713993
+          },
+          {
+            "mortality": 0.35,
+            "median_growth": 0.9952032561939845
+          },
+          {
+            "mortality": 0.36,
+            "median_growth": 0.9741733057789306
+          },
+          {
+            "mortality": 0.37,
+            "median_growth": 0.9623844389780537
+          },
+          {
+            "mortality": 0.38,
+            "median_growth": 0.9424965275058301
+          },
+          {
+            "mortality": 0.39,
+            "median_growth": 0.9424965275058301
+          },
+          {
+            "mortality": 0.4,
+            "median_growth": 0.9370188999157019
+          },
+          {
+            "mortality": 0.41,
+            "median_growth": 0.912586218379299
+          },
+          {
+            "mortality": 0.42,
+            "median_growth": 0.9009101830400438
+          },
+          {
+            "mortality": 0.43,
+            "median_growth": 0.8907235362263021
+          },
+          {
+            "mortality": 0.44,
+            "median_growth": 0.8609551220959792
+          },
+          {
+            "mortality": 0.45,
+            "median_growth": 0.8609551220959792
+          },
+          {
+            "mortality": 0.46,
+            "median_growth": 0.8428002126452134
+          },
+          {
+            "mortality": 0.47,
+            "median_growth": 0.8305450076408603
+          },
+          {
+            "mortality": 0.48,
+            "median_growth": 0.8166956914515613
+          },
+          {
+            "mortality": 0.49,
+            "median_growth": 0.8012090200913597
+          },
+          {
+            "mortality": 0.5,
+            "median_growth": 0.7764308292240563
+          }
+        ],
+        "chosen_mortality": 0.1,
+        "chosen_median_growth": 1.1610348941827742,
+        "within_tolerance": true
+      },
+      "heldout": {
+        "trials": 500,
+        "mortality": 0.1,
+        "growth": {
+          "median": 1.16268528110795,
+          "p10": 1.1444744222006034,
+          "p90": 1.179837378201286
+        },
+        "count_2011": {
+          "median": 184.0,
+          "p10": 163.0,
+          "p90": 205.10000000000002
+        },
+        "extinct_share": 0.0,
+        "settled_females_2010": {
+          "median": 16.0,
+          "p10": 12.0,
+          "p90": 18.0
+        },
+        "settled_females_2011": {
+          "median": 15.0,
+          "p10": 12.0,
+          "p90": 19.0
+        }
+      }
+    }
+  ],
+  "must_say": [
+    "Three counts (2002, 2010, 2011) are all we hold, so a pass is weak evidence.",
+    "Donana parameters are applied to Andujar-Cardena (a transfer assumption).",
+    "The starting population is an assumption except the two counts:  12 or 13 adult females, adult ages 36 to 108 months, non-adult ages 0 to 35 months, cub sex ratio of the table.",
+    "The census date is assumed to be the end of the year (month 0 is a December).",
+    "The usable area is an assumption (750 km2 for the main run); the verdict uses the main run only.  The 264 km2 arms use female home ranges of 6.1 and 10 km2 and are reported beside it.",
+    "The 2011 target of 202 is the issuer's own figure (its 2011 and 2016 reports); 214 (Cat Specialist Group) is reported beside it and never used for pass or fail.",
+    "The 2011 count adds one year at the calibrated rate; it is not independent of the calibration.",
+    "Territorial females (43 in 2010 and 51 in 2011) are reported beside the verdict for the 750 km2 run only, as the median number of settled females of breeding age with the 10th and 90th percentiles; there is no tolerance and no pass or fail, and we do not call it support or failure.  The 264 km2 arms hold fewer territories than the census counts, so their numbers are marked capacity-limited and are not compared."
+  ],
+  "historical_validation": "weak evidence only; see must_say"
+}

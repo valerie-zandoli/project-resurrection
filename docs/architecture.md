@@ -8,7 +8,7 @@ Project Resurrection is a research tool with one question:  how do food and usab
 
 The simulated lynx are individual animals inside ordinary Python code.  They are not AI agents, and the AI roles do not compare predator and prey numbers themselves.  Rabbits are a food amount (rabbits per hectare) that stays fixed in each run; a changing rabbit population model is a stretch goal if time allows.  Two coding assistants (Claude Code and Codex) help the two teammates write this repository; they are not part of the running system.
 
-Built today:  the file contracts (schemas and examples), the parameter validator, the content-hash checks, and the tests and CI.  Planned:  the simulation, the harness, the role agents, and the hand-back path.  A document that describes a planned part says so.
+Implementation status checked against `develop` on October 29, 2026: file contracts, validators, numerical simulation, the offline harness, hand-back helpers, role runner, and opt-in live adapter exist. The default three-role rehearsal is scripted; the live workflow has separately saved integration examples described in `docs/live-workflow.md`. The Developer invokes a fixed simulator, not generated code. Integration evidence does not establish scientific validity or better performance than one agent.
 
 ## Who owns what
 
@@ -46,10 +46,10 @@ The one shared state is the parameter table plus the source registry.  The Resea
 |---|---|
 | Handoff files match the schema | CODE (validator) |
 | Content hashes match across handoffs | CODE (`check_handoff_hashes`, pull request 9; it compares the hash fields only) |
-| Run ID, seed, and revision round match across handoffs | CODE, planned (not built; `check_handoff_hashes` does not check them) |
+| Result run ID, seed, and configuration match input | CODE (`validators/results_checks.check_identity`); `check_handoff_hashes` compares hashes only. Strict callback run/round checks are a separate harness fix. |
 | Parameter files unchanged since the input | CODE (`check_files_current`, pull request 9) |
 | Maximum 3 revision rounds, then stop and report | CODE (harness) |
-| Generated code runs under the execution rules | CODE (`docs/execution-sandbox.md`) |
+| Generated code runs under the execution rules | PLAN (`docs/execution-sandbox.md`); the current Developer runs only the fixed simulator, so this is not evidence of generated-code isolation |
 | Source text is evidence, never instructions | PROMPT plus CODE (unknown source keys rejected) |
 | Do not invent citations, values, or results | PROMPT, checked by the Evaluator |
 | Historical validation stays "not assessed" until the test runs | CODE (schema constant) |
