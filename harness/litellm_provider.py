@@ -43,7 +43,7 @@ def _tool_spec(name):
         },
         "run_model": {
             "type": "object",
-            "properties": {},
+            "properties": {"action": {"type": "string", "enum": ["run", "repair_persistence"]}},
             "additionalProperties": False,
         },
         "check_artifacts": {

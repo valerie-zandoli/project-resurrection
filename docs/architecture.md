@@ -10,6 +10,26 @@ The simulated lynx are individual animals inside ordinary Python code.  They are
 
 Implementation status checked against `develop` on October 29, 2026: file contracts, validators, numerical simulation, the offline harness, hand-back helpers, role runner, and opt-in live adapter exist. The default three-role rehearsal is scripted; the live workflow has separately saved integration examples described in `docs/live-workflow.md`. The Developer invokes a fixed simulator, not generated code. Integration evidence does not establish scientific validity or better performance than one agent.
 
+## Bounded revision repair (November 2, 2026)
+
+The Developer still runs reviewed code, not generated code. Its `run_model`
+tool now accepts one bounded action: `run` initially, or `repair_persistence`
+after the Evaluator reports only `persistence_recomputed`. The repair copies the
+previous result, recomputes its persistence flag from the saved final animals,
+and updates only that flag and the revision number. It preserves the previous
+round, input identity, animal records, monthly history, research and model rules.
+A fresh Evaluator conversation independently runs every artifact check again.
+The role trace records the chosen action, previous round, old flag and new flag.
+
+Repeating the fixed simulator after an issue cannot repair its code. That path,
+an unsupported repair, or a repair that changes nothing stops with `no_progress`
+and records the unresolved issues for human review. The maximum of three
+revisions remains an upper bound, not a requirement to repeat ineffective work.
+This is a narrow reporting repair, not general autonomous model development or
+scientific calibration. Offline planted-fault tests demonstrate the handoff and
+checks; they do not establish that a live model will reliably choose the repair.
+Frozen history and grid artifacts are not edited or rerun by this change.
+
 ## Who owns what
 
 - Researcher and its files (the parameter table and the source registry):  Valerie.
