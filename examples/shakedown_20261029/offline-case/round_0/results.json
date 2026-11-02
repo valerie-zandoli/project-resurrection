@@ -1,0 +1,1029 @@
+{
+  "schema_version": "3.1",
+  "run_id": "preview-7",
+  "data_kind": "simulation",
+  "seed": 7,
+  "revision_round": 0,
+  "config": {
+    "schema_version": "2.1",
+    "run_id": "preview-7",
+    "purpose": "synthetic_experiment",
+    "seed": 7,
+    "duration_months": 36,
+    "start_month": 1,
+    "parameters_csv": "data/parameters/iberian_lynx_baseline.csv",
+    "parameters_sha256": "b76fe642bfbcac51c18c087f00aadc0a60f6e36bafe5d152cff659b3a0cf8312",
+    "sources_csv": "data/parameters/sources.csv",
+    "sources_sha256": "186870d96510c03c56a6e492c190a80c3792b67b27dfe1fe45a4285c39433fdf",
+    "initial_population": {
+      "females": 10,
+      "males": 10,
+      "age_months_min": 36,
+      "age_months_max": 96
+    },
+    "patches": [
+      {
+        "id": "A",
+        "area_km2": 50,
+        "habitat_quality": 1.0
+      },
+      {
+        "id": "B",
+        "area_km2": 50,
+        "habitat_quality": 1.0
+      }
+    ],
+    "food_rabbits_per_ha": 4.6,
+    "persistence_rule": "settled_breeding_pair_same_patch_at_end",
+    "model_conventions": "proposed-2026-10-22",
+    "male_patch_crossing_probability": 0.1,
+    "settlement_rule": "monthly_current_then_other",
+    "parameter_overrides": {}
+  },
+  "history": [
+    {
+      "month": 0,
+      "population": 20,
+      "females": 10,
+      "males": 10,
+      "births": 0,
+      "deaths": 0,
+      "movements": 0
+    },
+    {
+      "month": 1,
+      "population": 19,
+      "females": 10,
+      "males": 9,
+      "births": 0,
+      "deaths": 1,
+      "movements": 2
+    },
+    {
+      "month": 2,
+      "population": 38,
+      "females": 25,
+      "males": 13,
+      "births": 20,
+      "deaths": 1,
+      "movements": 0
+    },
+    {
+      "month": 3,
+      "population": 38,
+      "females": 25,
+      "males": 13,
+      "births": 0,
+      "deaths": 0,
+      "movements": 0
+    },
+    {
+      "month": 4,
+      "population": 36,
+      "females": 25,
+      "males": 11,
+      "births": 0,
+      "deaths": 2,
+      "movements": 0
+    },
+    {
+      "month": 5,
+      "population": 33,
+      "females": 24,
+      "males": 9,
+      "births": 0,
+      "deaths": 3,
+      "movements": 1
+    },
+    {
+      "month": 6,
+      "population": 33,
+      "females": 24,
+      "males": 9,
+      "births": 0,
+      "deaths": 0,
+      "movements": 0
+    },
+    {
+      "month": 7,
+      "population": 33,
+      "females": 24,
+      "males": 9,
+      "births": 0,
+      "deaths": 0,
+      "movements": 0
+    },
+    {
+      "month": 8,
+      "population": 31,
+      "females": 24,
+      "males": 7,
+      "births": 0,
+      "deaths": 2,
+      "movements": 1
+    },
+    {
+      "month": 9,
+      "population": 31,
+      "females": 24,
+      "males": 7,
+      "births": 0,
+      "deaths": 0,
+      "movements": 0
+    },
+    {
+      "month": 10,
+      "population": 30,
+      "females": 23,
+      "males": 7,
+      "births": 0,
+      "deaths": 1,
+      "movements": 1
+    },
+    {
+      "month": 11,
+      "population": 30,
+      "females": 23,
+      "males": 7,
+      "births": 0,
+      "deaths": 0,
+      "movements": 0
+    },
+    {
+      "month": 12,
+      "population": 30,
+      "females": 23,
+      "males": 7,
+      "births": 0,
+      "deaths": 0,
+      "movements": 0
+    },
+    {
+      "month": 13,
+      "population": 29,
+      "females": 22,
+      "males": 7,
+      "births": 0,
+      "deaths": 1,
+      "movements": 0
+    },
+    {
+      "month": 14,
+      "population": 53,
+      "females": 36,
+      "males": 17,
+      "births": 24,
+      "deaths": 0,
+      "movements": 0
+    },
+    {
+      "month": 15,
+      "population": 49,
+      "females": 32,
+      "males": 17,
+      "births": 0,
+      "deaths": 4,
+      "movements": 0
+    },
+    {
+      "month": 16,
+      "population": 47,
+      "females": 30,
+      "males": 17,
+      "births": 0,
+      "deaths": 2,
+      "movements": 0
+    },
+    {
+      "month": 17,
+      "population": 44,
+      "females": 29,
+      "males": 15,
+      "births": 0,
+      "deaths": 3,
+      "movements": 0
+    },
+    {
+      "month": 18,
+      "population": 44,
+      "females": 29,
+      "males": 15,
+      "births": 0,
+      "deaths": 0,
+      "movements": 2
+    },
+    {
+      "month": 19,
+      "population": 40,
+      "females": 25,
+      "males": 15,
+      "births": 0,
+      "deaths": 4,
+      "movements": 1
+    },
+    {
+      "month": 20,
+      "population": 40,
+      "females": 25,
+      "males": 15,
+      "births": 0,
+      "deaths": 0,
+      "movements": 1
+    },
+    {
+      "month": 21,
+      "population": 38,
+      "females": 23,
+      "males": 15,
+      "births": 0,
+      "deaths": 2,
+      "movements": 1
+    },
+    {
+      "month": 22,
+      "population": 38,
+      "females": 23,
+      "males": 15,
+      "births": 0,
+      "deaths": 0,
+      "movements": 0
+    },
+    {
+      "month": 23,
+      "population": 37,
+      "females": 22,
+      "males": 15,
+      "births": 0,
+      "deaths": 1,
+      "movements": 0
+    },
+    {
+      "month": 24,
+      "population": 36,
+      "females": 21,
+      "males": 15,
+      "births": 0,
+      "deaths": 1,
+      "movements": 0
+    },
+    {
+      "month": 25,
+      "population": 34,
+      "females": 20,
+      "males": 14,
+      "births": 0,
+      "deaths": 2,
+      "movements": 0
+    },
+    {
+      "month": 26,
+      "population": 49,
+      "females": 29,
+      "males": 20,
+      "births": 16,
+      "deaths": 1,
+      "movements": 4
+    },
+    {
+      "month": 27,
+      "population": 46,
+      "females": 28,
+      "males": 18,
+      "births": 0,
+      "deaths": 3,
+      "movements": 0
+    },
+    {
+      "month": 28,
+      "population": 42,
+      "females": 24,
+      "males": 18,
+      "births": 0,
+      "deaths": 4,
+      "movements": 0
+    },
+    {
+      "month": 29,
+      "population": 41,
+      "females": 24,
+      "males": 17,
+      "births": 0,
+      "deaths": 1,
+      "movements": 0
+    },
+    {
+      "month": 30,
+      "population": 40,
+      "females": 24,
+      "males": 16,
+      "births": 0,
+      "deaths": 1,
+      "movements": 0
+    },
+    {
+      "month": 31,
+      "population": 39,
+      "females": 23,
+      "males": 16,
+      "births": 0,
+      "deaths": 1,
+      "movements": 0
+    },
+    {
+      "month": 32,
+      "population": 39,
+      "females": 23,
+      "males": 16,
+      "births": 0,
+      "deaths": 0,
+      "movements": 1
+    },
+    {
+      "month": 33,
+      "population": 38,
+      "females": 23,
+      "males": 15,
+      "births": 0,
+      "deaths": 1,
+      "movements": 1
+    },
+    {
+      "month": 34,
+      "population": 38,
+      "females": 23,
+      "males": 15,
+      "births": 0,
+      "deaths": 0,
+      "movements": 0
+    },
+    {
+      "month": 35,
+      "population": 37,
+      "females": 22,
+      "males": 15,
+      "births": 0,
+      "deaths": 1,
+      "movements": 0
+    },
+    {
+      "month": 36,
+      "population": 36,
+      "females": 22,
+      "males": 14,
+      "births": 0,
+      "deaths": 1,
+      "movements": 0
+    }
+  ],
+  "final_animals": [
+    {
+      "id": "lynx-000001",
+      "sex": "female",
+      "age_months": 92,
+      "patch_id": "A",
+      "alive": true,
+      "settled": true
+    },
+    {
+      "id": "lynx-000002",
+      "sex": "female",
+      "age_months": 132,
+      "patch_id": "B",
+      "alive": true,
+      "settled": true
+    },
+    {
+      "id": "lynx-000003",
+      "sex": "female",
+      "age_months": 75,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000004",
+      "sex": "female",
+      "age_months": 79,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000005",
+      "sex": "female",
+      "age_months": 86,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000006",
+      "sex": "female",
+      "age_months": 66,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000007",
+      "sex": "female",
+      "age_months": 58,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000008",
+      "sex": "female",
+      "age_months": 111,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000009",
+      "sex": "female",
+      "age_months": 106,
+      "patch_id": "A",
+      "alive": true,
+      "settled": true
+    },
+    {
+      "id": "lynx-000010",
+      "sex": "female",
+      "age_months": 56,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000011",
+      "sex": "male",
+      "age_months": 59,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000012",
+      "sex": "male",
+      "age_months": 99,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000013",
+      "sex": "male",
+      "age_months": 40,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000014",
+      "sex": "male",
+      "age_months": 126,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000015",
+      "sex": "male",
+      "age_months": 96,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000016",
+      "sex": "male",
+      "age_months": 84,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000017",
+      "sex": "male",
+      "age_months": 41,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000018",
+      "sex": "male",
+      "age_months": 48,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000019",
+      "sex": "male",
+      "age_months": 99,
+      "patch_id": "B",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000020",
+      "sex": "male",
+      "age_months": 69,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000021",
+      "sex": "female",
+      "age_months": 34,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000022",
+      "sex": "male",
+      "age_months": 34,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000023",
+      "sex": "female",
+      "age_months": 34,
+      "patch_id": "A",
+      "alive": true,
+      "settled": true
+    },
+    {
+      "id": "lynx-000024",
+      "sex": "male",
+      "age_months": 2,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000025",
+      "sex": "female",
+      "age_months": 34,
+      "patch_id": "B",
+      "alive": true,
+      "settled": true
+    },
+    {
+      "id": "lynx-000026",
+      "sex": "female",
+      "age_months": 34,
+      "patch_id": "B",
+      "alive": true,
+      "settled": true
+    },
+    {
+      "id": "lynx-000027",
+      "sex": "male",
+      "age_months": 2,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000028",
+      "sex": "female",
+      "age_months": 23,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000029",
+      "sex": "male",
+      "age_months": 1,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000030",
+      "sex": "female",
+      "age_months": 34,
+      "patch_id": "A",
+      "alive": true,
+      "settled": true
+    },
+    {
+      "id": "lynx-000031",
+      "sex": "female",
+      "age_months": 32,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000032",
+      "sex": "female",
+      "age_months": 18,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000033",
+      "sex": "female",
+      "age_months": 10,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000034",
+      "sex": "female",
+      "age_months": 14,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000035",
+      "sex": "female",
+      "age_months": 34,
+      "patch_id": "B",
+      "alive": true,
+      "settled": true
+    },
+    {
+      "id": "lynx-000036",
+      "sex": "female",
+      "age_months": 34,
+      "patch_id": "A",
+      "alive": true,
+      "settled": true
+    },
+    {
+      "id": "lynx-000037",
+      "sex": "female",
+      "age_months": 2,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000038",
+      "sex": "female",
+      "age_months": 22,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000039",
+      "sex": "female",
+      "age_months": 18,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000040",
+      "sex": "male",
+      "age_months": 34,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000041",
+      "sex": "female",
+      "age_months": 22,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000042",
+      "sex": "female",
+      "age_months": 22,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000043",
+      "sex": "male",
+      "age_months": 22,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000044",
+      "sex": "female",
+      "age_months": 1,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000045",
+      "sex": "female",
+      "age_months": 22,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000046",
+      "sex": "male",
+      "age_months": 12,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000047",
+      "sex": "male",
+      "age_months": 15,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000048",
+      "sex": "female",
+      "age_months": 4,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000049",
+      "sex": "female",
+      "age_months": 0,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000050",
+      "sex": "male",
+      "age_months": 22,
+      "patch_id": "B",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000051",
+      "sex": "male",
+      "age_months": 22,
+      "patch_id": "B",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000052",
+      "sex": "male",
+      "age_months": 2,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000053",
+      "sex": "male",
+      "age_months": 10,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000054",
+      "sex": "female",
+      "age_months": 1,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000055",
+      "sex": "male",
+      "age_months": 2,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000056",
+      "sex": "female",
+      "age_months": 22,
+      "patch_id": "B",
+      "alive": true,
+      "settled": true
+    },
+    {
+      "id": "lynx-000057",
+      "sex": "female",
+      "age_months": 4,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000058",
+      "sex": "female",
+      "age_months": 22,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000059",
+      "sex": "female",
+      "age_months": 8,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000060",
+      "sex": "female",
+      "age_months": 0,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000061",
+      "sex": "female",
+      "age_months": 22,
+      "patch_id": "B",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000062",
+      "sex": "male",
+      "age_months": 22,
+      "patch_id": "B",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000063",
+      "sex": "female",
+      "age_months": 0,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000064",
+      "sex": "male",
+      "age_months": 22,
+      "patch_id": "B",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000065",
+      "sex": "male",
+      "age_months": 10,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000066",
+      "sex": "female",
+      "age_months": 0,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000067",
+      "sex": "male",
+      "age_months": 10,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000068",
+      "sex": "male",
+      "age_months": 10,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000069",
+      "sex": "male",
+      "age_months": 10,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000070",
+      "sex": "female",
+      "age_months": 1,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000071",
+      "sex": "female",
+      "age_months": 10,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000072",
+      "sex": "female",
+      "age_months": 1,
+      "patch_id": "A",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000073",
+      "sex": "female",
+      "age_months": 1,
+      "patch_id": "B",
+      "alive": false,
+      "settled": false
+    },
+    {
+      "id": "lynx-000074",
+      "sex": "male",
+      "age_months": 10,
+      "patch_id": "B",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000075",
+      "sex": "male",
+      "age_months": 10,
+      "patch_id": "B",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000076",
+      "sex": "female",
+      "age_months": 10,
+      "patch_id": "B",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000077",
+      "sex": "female",
+      "age_months": 10,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000078",
+      "sex": "female",
+      "age_months": 10,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000079",
+      "sex": "female",
+      "age_months": 10,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    },
+    {
+      "id": "lynx-000080",
+      "sex": "female",
+      "age_months": 10,
+      "patch_id": "A",
+      "alive": true,
+      "settled": false
+    }
+  ],
+  "persisted": false,
+  "assumptions": [
+    "Synthetic preview, not historical validation or a live multi-agent workflow.",
+    "Provisional: survival, aging, settlement, male movement, births, recording.",
+    "Provisional: uniform integer litter size across the table range.",
+    "Provisional: female settlement rule is monthly_current_then_other.",
+    "Mortality transfers older abstract evidence; dispersal at 18 months is assumed.",
+    "Food affects breeding only; density is constant; habitat_quality is 1.0."
+  ]
+}

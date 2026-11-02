@@ -1,0 +1,68 @@
+{
+  "case_id": "handback-example-1",
+  "status": "stop",
+  "reason": "required gap unresolved after the one round:  female_home_range_km2: No source in the registry measures female home range in Andujar-Cardena; the measured ranges are from Donana.",
+  "mode": "scripted_handback_example",
+  "caption": "scripted hand-back example; no model is called",
+  "notify": [
+    "Valerie",
+    "Anastasiya"
+  ],
+  "second_round": "refused:  case handback-example-1 is stopped:  required gap unresolved after the one round:  female_home_range_km2: No source in the registry measures female home range in Andujar-Cardena; the measured ranges are from Donana.",
+  "handback": {
+    "case_id": "handback-example-1",
+    "run_ids": [
+      "handback-example-1-run-1"
+    ],
+    "status": "stopped",
+    "stop_reason": "required gap unresolved after the one round:  female_home_range_km2: No source in the registry measures female home range in Andujar-Cardena; the measured ranges are from Donana.",
+    "notify": [
+      "Valerie",
+      "Anastasiya"
+    ],
+    "round_used": true,
+    "requests": [
+      {
+        "case_id": "handback-example-1",
+        "run_id": "handback-example-1-run-1",
+        "parameter": "female_home_range_km2",
+        "missing": "A measured female home range for Andujar-Cardena.  The 10 km2 average comes from a web summary that names no study, and the evidence file labels it low.",
+        "classification": "required",
+        "classification_reason": "The home range sets the number of female territories (area divided by home range), so the persistence endpoint depends on it.",
+        "filed_by": "evaluator",
+        "resolution_needed": "A primary study, read in full, that measures female home range in Andujar-Cardena, with its sample size."
+      },
+      {
+        "case_id": "handback-example-1",
+        "run_id": "handback-example-1-run-1",
+        "parameter": "diet_rabbit_fraction",
+        "missing": "A primary study for the rabbit share of the diet; the two sources name none.",
+        "classification": "optional",
+        "classification_reason": "The simulator does not use the diet share, so the run does not depend on it.",
+        "filed_by": "evaluator",
+        "resolution_needed": "A primary diet study read in full, or the share labeled as an assumption."
+      }
+    ],
+    "responses": [
+      {
+        "parameter": "female_home_range_km2",
+        "outcome": "unresolved",
+        "answer": "",
+        "reviewer": "",
+        "reason": "No source in the registry measures female home range in Andujar-Cardena; the measured ranges are from Donana."
+      },
+      {
+        "parameter": "diet_rabbit_fraction",
+        "outcome": "unresolved",
+        "answer": "",
+        "reviewer": "",
+        "reason": "No primary diet study is in the registry."
+      }
+    ],
+    "limitations": [
+      "diet_rabbit_fraction: No primary diet study is in the registry."
+    ],
+    "retries": [],
+    "failures": []
+  }
+}
