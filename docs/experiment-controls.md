@@ -126,3 +126,14 @@ to the experiment-controls command. It may be shown with `--history-preview` for
 the earlier uncalibrated comparison. The calibration fits 2002–2010 growth only;
 it is separate from the synthetic experiment, does not alter its settings, and
 is not a 2011 held-out verdict. Its seed differs from the preregistered final seed.
+
+## Interface layout
+
+The page uses Space Grotesk (loaded from Google Fonts, with a local sans-serif
+fallback). Food choices are Low (1), Medium (4.6), and High (55) rabbits/hectare;
+these are fixed experiment settings, not ecological ranges. The map and population
+story follow the experiment form. Research inputs and the full Claude explanation
+are collapsed by default, while the concise code-check verdict remains visible.
+“See every check” remains available. Mustard controls distinguish map navigation
+and the research disclosure. Historical development calibration stays separate
+from the current experiment's technical review.

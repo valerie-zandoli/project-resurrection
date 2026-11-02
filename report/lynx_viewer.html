@@ -26,7 +26,7 @@
   .legend{flex-wrap:wrap;gap:6px 16px}
 }
 </style>
-</head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap"><style>body,h1,h2,h3,p,input,button,select,table,summary,.project-title,.question-title,.empty strong{font-family:'Space Grotesk',sans-serif!important}</style><style>#reset,#previous,#next,.research-expand>summary{background:#c5a44b!important;color:#202c22!important;border-color:#a88a3c!important}.research-expand>summary{font-size:16px!important;min-height:48px;padding:12px 22px!important;display:list-item;width:fit-content;box-sizing:border-box}#evaluation-report details:not(.research-expand){margin:12px 0}#evaluation-checks{font-size:13px}</style><style>.research-expand>summary{cursor:pointer;padding:14px 18px;border:1px solid #c5d0bb;border-radius:12px;font-weight:600;color:#244a38}.research-expand[open]>summary{margin-bottom:18px}.research-expand>summary:focus-visible{outline:3px solid #59705b;outline-offset:3px}</style><style>#reset{font-weight:700}</style></head>
 <body><main>
 <header><div><div class="eyebrow">Project Resurrection / field notes</div><h1>A little room to roam.</h1><p class="subtitle">Meet the lynx in our simulated world. Watch one month at a time.</p></div><span class="badge" id="kind">Synthetic model</span></header>
 <section class="stats" aria-label="Recorded monthly counts">
@@ -212,6 +212,8 @@ function drawRabbits(time){
 }
 function resizeScene(){
   const w=canvas.clientWidth,h=canvas.clientHeight,compact=matchMedia('(max-width:650px)').matches;
+  // An iframe can briefly have no layout while its saved run is being loaded.
+  if(w<120||h<160){scene=null;return;}
   const dpr=Math.min(window.devicePixelRatio||1,2);
   const patches=compact
     ?[{x:12,y:44,w:w-24,h:h/2-62},{x:12,y:h/2+44,w:w-24,h:h/2-62}]
@@ -273,4 +275,4 @@ $('rabbit-note').textContent=`Food stays at ${run.config.food_rabbits_per_ha} ra
 run.config.patches.slice(0,2).forEach((p,i)=>{$(i?'patch-b':'patch-a').textContent=`Patch ${p.id} · ${p.area_km2} km²`});
 $('end-label').textContent=`Month ${last}`;$('scrub').max=last;
 new ResizeObserver(resizeScene).observe(canvas);resizeScene();select(0);motionChanged();
-</script></body></html>
+</script><script>document.fonts.ready.then(()=>{if(typeof animateHeader==='function')animateHeader()})</script></body></html>
