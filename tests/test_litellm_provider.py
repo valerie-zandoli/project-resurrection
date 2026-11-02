@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from harness.litellm_provider import LiteLLMProvider
+from harness.litellm_provider import MAX_TOKENS, LiteLLMProvider
 from harness.provider import ProviderError
 from harness.roles import run_role
 
@@ -118,7 +118,7 @@ def _reply_ending(reason):
 def test_a_reply_cut_off_at_the_token_limit_fails_loudly_without_its_text():
     provider = LiteLLMProvider(api_key="test-key", completion=_reply_ending("length"))
 
-    with pytest.raises(ProviderError, match=r"cut off at the 1200-token limit") as error:
+    with pytest.raises(ProviderError, match=rf"cut off at the {MAX_TOKENS}-token limit") as error:
         provider.complete("rules", [], [])
     assert "sk-ant-partial-text" not in str(error.value)
 

@@ -12,7 +12,9 @@ from harness.provider import ProviderError
 
 DEFAULT_MODEL = "anthropic/claude-sonnet-5-5"
 DEFAULT_ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
-MAX_TOKENS = 1200
+# The reply limit counts hidden reasoning as well as visible text.  On 2026-10-29 the largest reply used 1,003 tokens
+# (493 reasoning, 510 visible), and a limit of 1,200 failed three live runs of three, with no visible text at all.
+MAX_TOKENS = 4000
 TIMEOUT_SECONDS = 30
 
 
